@@ -5,7 +5,7 @@
     document.body.append(text)
   })
   
-  sock.on('click', pos => {
+  sock.on('mousemove', pos => {
     console.log( pos );
     const serverDot = document.createElement('div')
     serverDot.classList.add('server-dot')
@@ -14,8 +14,8 @@
     document.body.append(serverDot)
   })
   
-  window.addEventListener('click', event => {
-    sock.emit('click', {
+  window.addEventListener('mousemove', event => {
+    sock.emit('mousemove', {
       x: event.pageX,
       y: event.pageY,
     })
