@@ -1,8 +1,14 @@
+// const randomColor = require('randomcolor');
+
 (() => {
   const sock = io()
   
-  sock.on('welcome_message', text => {
-    document.body.append(text)
+  const create_player_avatar = () => {
+    
+  }
+  
+  sock.on('init_player', text => {
+    // console.log( randomColor() );
   })
   
   sock.on('mousemove', pos => {

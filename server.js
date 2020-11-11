@@ -10,7 +10,7 @@ const server = http.createServer(app)
 const io = socketio(server)
 
 io.on('connection', sock => {
-  sock.emit('welcome_message', 'Salut dude.')
+  sock.emit('init_player', 'Salut dude.')
   
   sock.on('mousemove', pos => io.emit('mousemove', pos))
 })
