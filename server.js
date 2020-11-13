@@ -11,10 +11,26 @@ const server = http.createServer(app)
 const io = socketio(server)
 
 const players = {}
+const usedColors = []
+
+const getRandomColor = (tries = 0) => {
+  const newColor = randomColor()
+  if (usedColors.some(testColor => testColor === newColor)) {
+    if (10 > tries) {
+      tries++
+      return getRandomColor(tries)
+    }
+    
+    return '#000'
+  }
+  
+  usedColors.push(newColor)
+  return newColor
+}
 
 io.on('connection', socket => {  
   players[socket.id] = {
-    color: randomColor(),
+    color: getRandomColor(),
     x: 300,
     y: 300,
   }
@@ -26,7 +42,11 @@ io.on('connection', socket => {
   })
   
   socket.on('disconnect', (reason) => {
-    console.log(`Player ${players[socket.id].color} (${socket.id}) has disconnected. Reason:`, reason);
+    const colorIndex = usedColors.indexOf(players[socket.id].color)
+    if (-1 < colorIndex) {
+      usedColors.splice(colorIndex, 1)
+    }
+    // console.log(`Player ${players[socket.id].color} (${socket.id}) has disconnected. Reason:`, reason, usedColors);
     io.emit('player_disconnect', players[socket.id].color)
     delete players[socket.id]
   });

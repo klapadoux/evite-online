@@ -7,7 +7,8 @@ body {
 }
 
 body {
-  background: #f5e8d0;
+  /* background: #f5e8d0; */
+  background: #acbcbf;
 }
 
 #playground {
@@ -20,7 +21,9 @@ body {
   position: absolute;
   width: 30px;
   height: 30px;
-  background: #000;
+  border: 2px solid white;
+  background: black;
   border-radius: 30px;
   transform: translate(-50%, -50%);
+  box-sizing: border-box;
 }
