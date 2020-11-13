@@ -1,69 +1,50 @@
+import Player from './class-player.js'
+
 (() => {
   const sock = io()
   
-  let thisPlayer;
+  let thisPlayer
   const players = {}
+  const playground = document.getElementById('playground')
   
-  const Player = (args) => {
-    return {
-      args,
-      color: '#000',
-      x: 0,
-      y: 0,
-      node: null,
-      
-      createNode() {
-        this.node = document.createElement('div')
-        this.node.classList.add('player')
-        this.node.style.backgroundColor = this.color
-        this.node.style.top = this.y + 'px'
-        this.node.style.left = this.x + 'px'
-      },
-      
-      moveTo({x, y}) {
-        this.y = x
-        this.y = y
-        this.node.style.top = y + 'px'
-        this.node.style.left = x + 'px'
-      },
-      
-      getEmitParams() {
-        return {
-          color: this.color,
-          x: this.x,
-          y: this.y,
-        }
-      },
-      
-      init() {
-        const {color, x, y} = args
-        this.color = color
-        this.x = x
-        this.y = y
-        this.createNode()
-        
-        return this
-      }
-    }.init()
-  }
   
   const addPlayerToGame = (player) => {
-    document.body.append(player.node)
+    playground.append(player.node)
     players[player.color] = player
+  }
+  
+  const removePlayerFromGame = (player) => {
+    if (player) {
+      console.log( `Player with color ${player.color} has been removed.`, players )
+      player.node.remove()
+      delete players[player.color]
+    }
+  }
+  
+  const getPlayerByColor = (playerColor) => {
+    if ( 'undefined' !== typeof players[playerColor] ) {
+      return players[playerColor]
+    }
+    
+    return null
   }
   
   
   sock.on('init_player', args => {
-    thisPlayer = Player(args)
+    thisPlayer = new Player(args)
     addPlayerToGame(thisPlayer)
   })
   
   sock.on('mousemove', playerArgs => {
     if ( 'undefined' === typeof players[playerArgs.color] ) {
-      addPlayerToGame(Player(playerArgs))
+      addPlayerToGame(new Player(playerArgs))
     }
     
     players[playerArgs.color].moveTo(playerArgs) 
+  })
+  
+  sock.on('player_disconnect', playerColor => {
+    removePlayerFromGame(getPlayerByColor(playerColor))
   })
   
   window.addEventListener('mousemove', event => {

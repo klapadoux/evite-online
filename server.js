@@ -10,14 +10,46 @@ app.use(express.static(`${__dirname}/client`))
 const server = http.createServer(app)
 const io = socketio(server)
 
-io.on('connection', sock => {
-  sock.emit('init_player', {
-    color: randomColor(),
+const players = {}
+const usedColors = []
+
+const getRandomColor = (tries = 0) => {
+  const newColor = randomColor()
+  if (usedColors.some(testColor => testColor === newColor)) {
+    if (10 > tries) {
+      tries++
+      return getRandomColor(tries)
+    }
+    
+    return '#000'
+  }
+  
+  usedColors.push(newColor)
+  return newColor
+}
+
+io.on('connection', socket => {  
+  players[socket.id] = {
+    color: getRandomColor(),
     x: 300,
     y: 300,
+  }
+  
+  socket.emit('init_player', players[socket.id])
+  
+  socket.on('mousemove', playerParams => {
+    io.emit('mousemove', playerParams)
   })
   
-  sock.on('mousemove', playerParams => io.emit('mousemove', playerParams))
+  socket.on('disconnect', (reason) => {
+    const colorIndex = usedColors.indexOf(players[socket.id].color)
+    if (-1 < colorIndex) {
+      usedColors.splice(colorIndex, 1)
+    }
+    // console.log(`Player ${players[socket.id].color} (${socket.id}) has disconnected. Reason:`, reason, usedColors);
+    io.emit('player_disconnect', players[socket.id].color)
+    delete players[socket.id]
+  });
 })
 
 server.on('error', error => {
