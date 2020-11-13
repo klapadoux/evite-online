@@ -11,7 +11,7 @@ const server = http.createServer(app)
 const io = socketio(server)
 
 const players = {}
-const usedColors = []
+const usedColors = [] 
 
 const getRandomColor = (tries = 0) => {
   const newColor = randomColor()
@@ -28,13 +28,16 @@ const getRandomColor = (tries = 0) => {
   return newColor
 }
 
+const startTickIfNeeded = () => {
+  
+}
+
 io.on('connection', socket => {  
   players[socket.id] = {
     color: getRandomColor(),
     x: 300,
     y: 300,
   }
-  
   socket.emit('init_player', players[socket.id])
   
   socket.on('mousemove', playerParams => {
@@ -49,7 +52,9 @@ io.on('connection', socket => {
     // console.log(`Player ${players[socket.id].color} (${socket.id}) has disconnected. Reason:`, reason, usedColors);
     io.emit('player_disconnect', players[socket.id].color)
     delete players[socket.id]
-  });
+  })
+  
+  startTickIfNeeded()
 })
 
 server.on('error', error => {
@@ -58,5 +63,5 @@ server.on('error', error => {
 
 const port = process.env.PORT || 8080
 server.listen(port, () => {
-  console.log('Our app is running on http://localhost:' + port);
+  console.log('Our app is running on http://localhost:' + port)
 })
