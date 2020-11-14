@@ -2,6 +2,8 @@ const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
 const randomColor = require('randomcolor')
+const Gameheart = require('./server/gameheart')
+
 
 const app = express()
 
@@ -11,7 +13,19 @@ const server = http.createServer(app)
 const io = socketio(server)
 
 const players = {}
-const usedColors = [] 
+const usedColors = []
+
+
+const updateGameboard = (dt, t) => {
+  // console.log( gameheart.getFps() );
+}
+
+const renderGameboard = (dt) => {
+  console.log( gameheart.trappedFrames.length );
+}
+
+const gameheart = new Gameheart(10100, 12, 100, updateGameboard, renderGameboard)
+gameheart.start()
 
 const getRandomColor = (tries = 0) => {
   const newColor = randomColor()
@@ -29,10 +43,12 @@ const getRandomColor = (tries = 0) => {
 }
 
 const startTickIfNeeded = () => {
-  
+  if ( Gameheart ) {
+    // Gameheart
+  }
 }
 
-io.on('connection', socket => {  
+io.on('connection', socket => {
   players[socket.id] = {
     color: getRandomColor(),
     x: 300,
