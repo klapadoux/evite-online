@@ -6,36 +6,93 @@ const gameloop = require('node-gameloop')
 
 
 const app = express()
-
 app.use(express.static(`${__dirname}/client`))
-
 const server = http.createServer(app)
 const io = socketio(server)
+
 
 const players = {}
 const usedColors = []
 
+const enemies = []
+let ennemiesBirthCount = 0
+
 let gameLoopId = null
 
+let enemiesAreGestating = false
+const checkEnnemiesGestation = () => {
+  // Entamer la création d'ennemies si ce n'est pas déjà en cours.
+  if (!enemiesAreGestating) {
+    enemiesAreGestating = true
+    
+    setTimeout(() => {
+      console.log( 'NEW ENEMY!!!' );
+      
+      enemies.push({
+        id: ++ennemiesBirthCount,
+        x: -30,
+        y: Math.floor(Math.random() * 1080) - 30,
+        goalPos: {
+          x: 1000, // 1920
+          y: Math.floor(Math.random() * 1080),
+        },
+        velocity: Math.floor(Math.random() * 500) + 100, // Pixels by ms
+        size: Math.floor(Math.random() * 100) + 10,
+      })
+      
+      enemiesAreGestating = false
+    }, 1000);
+  }
+}
 
+const moveEnnemies = (delta) => {
+  enemies.forEach(enemy => {
+    const nextStep = enemy.velocity * delta
+    const remainingDistance = get2PosDistance(enemy.goalPos, {x: enemy.x, y: enemy.y})
+    if (nextStep < remainingDistance) {
+      const ratio = nextStep / remainingDistance
+      const stepX = (enemy.goalPos.x - enemy.x) * ratio
+      const stepY = (enemy.goalPos.y - enemy.y) * ratio
+      enemy.x = enemy.x + stepX
+      enemy.y = enemy.y + stepY
+    } else {
+      enemy.x = enemy.goalPos.x
+      enemy.y = enemy.goalPos.y
+      enemy.dead = true
+    }
+  })
+}
 
 const updateGameboard = (delta) => {
-  
+  checkEnnemiesGestation()
+  moveEnnemies(delta)
+  emitUpdateToClients()
+}
+
+const emitUpdateToClients = () => {
+  io.emit('tick_update', {
+    enemies: enemies,
+  })
 }
 
 const startGameloopIfNeeded = () => {
   if (!gameLoopId) {
-    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 30)
+    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 60)
   }
 }
 
 const stopGameloopIfNeeded = () => {
   if (!Object.keys(players).length) {
     gameloop.clearGameLoop(gameLoopId)
+    gameLoopId = null
   }
 }
 
-
+const get2PosDistance = (pos1, pos2) => {
+  const dx = pos1.x - pos2.x
+  const dy = pos1.y - pos2.y
+  return Math.sqrt(dx * dx + dy * dy)
+}
 
 const getRandomColor = (tries = 0) => {
   const newColor = randomColor()

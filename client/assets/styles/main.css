@@ -12,8 +12,10 @@ body {
 }
 
 #playground {
+  position: relative;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 .player {
@@ -24,6 +26,16 @@ body {
   border: 2px solid white;
   background: black;
   border-radius: 30px;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+}
+
+.enemy {
+  pointer-events: none;
+  user-select: none;
+  position: absolute;
+  border: 2px solid black;
+  background: red;
   transform: translate(-50%, -50%);
   box-sizing: border-box;
 }
