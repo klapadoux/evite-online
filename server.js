@@ -2,6 +2,7 @@ const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
 const randomColor = require('randomcolor')
+const gameloop = require('node-gameloop')
 
 
 const app = express()
@@ -14,15 +15,26 @@ const io = socketio(server)
 const players = {}
 const usedColors = []
 
+let gameLoopId = null
 
-const updateGameboard = (dt, t) => {
+
+
+const updateGameboard = (delta) => {
+  
 }
 
-const renderGameboard = (dt) => {
+const startGameloopIfNeeded = () => {
+  if (!gameLoopId) {
+    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 30)
+  }
 }
 
-const startTickIfNeeded = () => {
+const stopGameloopIfNeeded = () => {
+  if (!Object.keys(players).length) {
+    gameloop.clearGameLoop(gameLoopId)
+  }
 }
+
 
 
 const getRandomColor = (tries = 0) => {
@@ -62,9 +74,11 @@ io.on('connection', socket => {
     // console.log(`Player ${players[socket.id].color} (${socket.id}) has disconnected. Reason:`, reason, usedColors);
     io.emit('player_disconnect', players[socket.id].color)
     delete players[socket.id]
+
+    stopGameloopIfNeeded()
   })
   
-  startTickIfNeeded()
+  startGameloopIfNeeded()
 })
 
 server.on('error', error => {
