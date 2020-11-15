@@ -21,7 +21,7 @@ const updateGameboard = (dt, t) => {
 }
 
 const renderGameboard = (dt) => {
-  console.log( gameheart.trappedFrames.length );
+  // console.log( gameheart.trappedFrames.length );
 }
 
 const gameheart = new Gameheart(10100, 12, 100, updateGameboard, renderGameboard)
