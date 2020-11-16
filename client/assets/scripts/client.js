@@ -36,6 +36,22 @@ import Enemy from './enemy.js'
     return null
   }
   
+  const getEnemyById = (id) => {
+    if ( 'undefined' !== typeof enemiesOnBoard[id] ) {
+      return enemiesOnBoard[id]
+    }
+    
+    return null
+  }
+  
+  const removeEnemyFromGame = (enemy) => {
+    if (enemy) {
+      console.log( `Enemy with ID ${enemy.id} has been removed.`, enemiesOnBoard )
+      enemy.node.remove()
+      delete enemiesOnBoard[enemy.id]
+    }
+  }
+  
   /**
    * @param {object} enemyArgs - Contains the basic to create and/or move an enemy.
    */
@@ -45,6 +61,13 @@ import Enemy from './enemy.js'
       addEnemyToGame(new Enemy(enemyArgs))
     } else {
       enemiesOnBoard[id].update(enemyArgs)
+    }
+  }
+  
+  const deleteEnemy = (enemyArgs) => {
+    const {id} = enemyArgs
+    if ( 'undefined' !== typeof enemiesOnBoard[id] ) {
+      removeEnemyFromGame(getEnemyById(id))
     }
   }
   
@@ -69,11 +92,15 @@ import Enemy from './enemy.js'
   sock.on('tick_update', tickInfo => {
     const {enemies} = tickInfo
     
-    enemies.forEach(enemy => {
-      if ( enemy.dead ) {
+    console.log( enemies );
+    
+    enemies.forEach(enemyData => {
+      if (enemyData.dead) {
         console.log( 'LE TUER' );
+        deleteEnemy(enemyData)
+      } else {
+        updateEnemy(enemyData)
       }
-      updateEnemy(enemy)
     })
   })
   

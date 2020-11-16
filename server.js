@@ -45,7 +45,7 @@ const checkEnnemiesGestation = () => {
   }
 }
 
-const moveEnnemies = (delta) => {
+const updateEnemies = (delta) => {
   enemies.forEach(enemy => {
     const nextStep = enemy.velocity * delta
     const remainingDistance = get2PosDistance(enemy.goalPos, {x: enemy.x, y: enemy.y})
@@ -55,6 +55,7 @@ const moveEnnemies = (delta) => {
       const stepY = (enemy.goalPos.y - enemy.y) * ratio
       enemy.x = enemy.x + stepX
       enemy.y = enemy.y + stepY
+      enemy.dead = false
     } else {
       enemy.x = enemy.goalPos.x
       enemy.y = enemy.goalPos.y
@@ -63,10 +64,20 @@ const moveEnnemies = (delta) => {
   })
 }
 
+const deleteDeadEnemies = () => {
+  enemies.forEach((enemy, index) => {
+    if (enemy.dead) {
+      console.log( enemies[index] );
+      delete enemies[index]
+    }
+  })
+}
+
 const updateGameboard = (delta) => {
   checkEnnemiesGestation()
-  moveEnnemies(delta)
+  updateEnemies(delta)
   emitUpdateToClients()
+  deleteDeadEnemies()
 }
 
 const emitUpdateToClients = () => {
