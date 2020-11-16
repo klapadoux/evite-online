@@ -11,8 +11,6 @@ export class Enemy {
     this.dead = dead ? dead : false
     
     this.createNode()
-    
-    console.log( 'NEW ENEMY', this.id );
   }
   
   createNode() {

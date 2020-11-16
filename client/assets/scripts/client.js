@@ -46,7 +46,6 @@ import Enemy from './enemy.js'
   
   const removeEnemyFromGame = (enemy) => {
     if (enemy) {
-      console.log( `Enemy with ID ${enemy.id} has been removed.`, enemiesOnBoard )
       enemy.node.remove()
       delete enemiesOnBoard[enemy.id]
     }
@@ -91,12 +90,8 @@ import Enemy from './enemy.js'
   
   sock.on('tick_update', tickInfo => {
     const {enemies} = tickInfo
-    
-    console.log( enemies );
-    
     enemies.forEach(enemyData => {
       if (enemyData.dead) {
-        console.log( 'LE TUER' );
         deleteEnemy(enemyData)
       } else {
         updateEnemy(enemyData)

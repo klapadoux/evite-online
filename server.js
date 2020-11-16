@@ -25,15 +25,13 @@ const checkEnnemiesGestation = () => {
   if (!enemiesAreGestating) {
     enemiesAreGestating = true
     
-    setTimeout(() => {
-      console.log( 'NEW ENEMY!!!' );
-      
+    setTimeout(() => {      
       enemies.push({
         id: ++ennemiesBirthCount,
         x: -30,
         y: Math.floor(Math.random() * 1080) - 30,
         goalPos: {
-          x: 1000, // 1920
+          x: 1920,
           y: Math.floor(Math.random() * 1080),
         },
         velocity: Math.floor(Math.random() * 500) + 100, // Pixels by ms
@@ -68,16 +66,27 @@ const updateEnemies = (delta) => {
 const deleteDeadEnemies = () => {
   enemies.forEach((enemy, index) => {
     if (enemy.dead) {
-      console.log( enemies[index] );
-      // delete enemies[index]
       enemies.splice(index, 1)
     }
   })
 }
 
+const checkEnemiesPlayersCollisions = () => {
+  for (let playerId in players) {
+    enemies.forEach(enemy => {
+      const playerPos = {x: players[playerId].x, y: players[playerId].y}
+      const enemyPos = {x: enemy.x, y: enemy.y}
+      const distance = get2PosDistance(playerPos, enemyPos)
+      
+      console.log( distance );
+    })
+  }
+}
+
 const updateGameboard = (delta) => {
   checkEnnemiesGestation()
   updateEnemies(delta)
+  checkEnemiesPlayersCollisions()
   emitUpdateToClients()
   deleteDeadEnemies()
 }
@@ -90,7 +99,7 @@ const emitUpdateToClients = () => {
 
 const startGameloopIfNeeded = () => {
   if (!gameLoopId) {
-    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 60)
+    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 15)
   }
 }
 
@@ -141,7 +150,7 @@ io.on('connection', socket => {
     if (-1 < colorIndex) {
       usedColors.splice(colorIndex, 1)
     }
-    // console.log(`Player ${players[socket.id].color} (${socket.id}) has disconnected. Reason:`, reason, usedColors);
+    console.log(`Player ${players[socket.id].color} (${socket.id}) has disconnected. Reason:`, reason, usedColors);
     io.emit('player_disconnect', players[socket.id].color)
     delete players[socket.id]
 

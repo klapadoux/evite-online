@@ -38,4 +38,5 @@ body {
   background: red;
   transform: translate(-50%, -50%);
   box-sizing: border-box;
+  transition: transform 0.1s;
 }
