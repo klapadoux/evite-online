@@ -38,6 +38,7 @@ const checkEnnemiesGestation = () => {
         },
         velocity: Math.floor(Math.random() * 500) + 100, // Pixels by ms
         size: Math.floor(Math.random() * 100) + 10,
+        dead: false,
       })
       
       enemiesAreGestating = false
@@ -68,7 +69,8 @@ const deleteDeadEnemies = () => {
   enemies.forEach((enemy, index) => {
     if (enemy.dead) {
       console.log( enemies[index] );
-      delete enemies[index]
+      // delete enemies[index]
+      enemies.splice(index, 1)
     }
   })
 }
