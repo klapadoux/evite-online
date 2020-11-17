@@ -9,7 +9,6 @@ import Enemy from './enemy.js'
   const enemiesOnBoard = {}
   const playground = document.getElementById('playground')
   
-  
   const addPlayerToGame = (player) => {
     playground.append(player.node)
     playersOnBoard[player.color] = player
@@ -70,18 +69,18 @@ import Enemy from './enemy.js'
     }
   }
   
-  
   sock.on('init_player', args => {
     thisPlayer = new Player(args)
     addPlayerToGame(thisPlayer)
   })
   
   sock.on('mousemove', playerArgs => {
-    if ( 'undefined' === typeof playersOnBoard[playerArgs.color] ) {
+    if ('undefined' !== typeof playersOnBoard[playerArgs.color] ) {
+      playersOnBoard[playerArgs.color].moveTo(playerArgs)
+    } else {
       addPlayerToGame(new Player(playerArgs))
+      // playersOnBoard[playerArgs.color].moveTo(playerArgs)
     }
-    
-    playersOnBoard[playerArgs.color].moveTo(playerArgs) 
   })
   
   sock.on('player_disconnect', playerColor => {
@@ -102,7 +101,6 @@ import Enemy from './enemy.js'
   window.addEventListener('mousemove', event => {
     thisPlayer.x = event.pageX
     thisPlayer.y = event.pageY
-    
-    sock.emit('mousemove', thisPlayer.getEmitParams())
+    sock.emit('mousemove', {color: thisPlayer.color, x: thisPlayer.x, y: thisPlayer.y})
   })
 })()
