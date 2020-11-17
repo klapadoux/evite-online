@@ -34,14 +34,13 @@ const checkEnnemiesGestation = () => {
           x: 1920,
           y: Math.floor(Math.random() * 1080),
         },
-        // velocity: Math.floor(Math.random() * 500) + 100, // Pixels by ms
-        velocity: 100, // Pixels by ms
+        velocity: Math.floor(Math.random() * 500) + 100, // Pixels by ms
         size: Math.floor(Math.random() * 100) + 10,
         dead: false,
       })
       
       enemiesAreGestating = false
-    }, 1200 / Object.keys(players).length);
+    }, 2000 / (Object.keys(players).length + 1));
   }
 }
 
@@ -73,18 +72,19 @@ const deleteDeadEnemies = () => {
 }
 
 const checkCollisions = () => {
+  // Players circle against enemies square.
   for (let playerId in players) {
     enemies.forEach(enemy => {
-      const playerPos = {x: players[playerId].x, y: players[playerId].y}
-      const enemyPos = {x: enemy.x, y: enemy.y}
-      const distance = get2PosDistance(playerPos, enemyPos)
-      
-      if (enemy.size > distance - players[playerId].size / 2) {
-        if (enemyPos.x <= playerPos.x + players[playerId].size / 2 ) {
-          if (enemyPos.y <= playerPos.y + players[playerId].size / 2) {
-            enemy.dead = true
-          }
-        }
+      const {x, y, size} = players[playerId]
+      const playerRadius = size / 2
+
+      if (
+        enemy.y <= y + playerRadius &&
+        enemy.x + enemy.size >= x - playerRadius &&
+        enemy.y + enemy.size >= y - playerRadius &&
+        enemy.x <= x + playerRadius
+      ) {
+        enemy.dead = true
       }
     })
   }
@@ -166,7 +166,7 @@ io.on('connection', socket => {
     y: 300,
     size: 30,
   }
-  socket.emit('init_player', players[socket.id])
+  io.emit('init_player', players[socket.id])
   
   socket.on('mousemove', playerParams => {
     updatePlayer(playerParams)

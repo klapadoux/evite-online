@@ -5,7 +5,7 @@ export class Player {
     this.color = color ? color : '#000'
     this.x = x ? x : 0
     this.y = y ? y : 0
-    this.size = size ? size : 0
+    this.size = size ? size : 30
     
     this.createNode()
   }
