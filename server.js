@@ -12,35 +12,36 @@ const io = socketio(server)
 
 
 const players = {}
-const usedColors = []
-
 const enemies = []
-let ennemiesBirthCount = 0
+const usedColors = []
 
 let gameLoopId = null
 
+let ennemiesBirthCount = 0
 let enemiesAreGestating = false
+
 const checkEnnemiesGestation = () => {
   // Entamer la création d'ennemies si ce n'est pas déjà en cours.
   if (!enemiesAreGestating) {
     enemiesAreGestating = true
     
-    setTimeout(() => {      
+    setTimeout(() => {
       enemies.push({
         id: ++ennemiesBirthCount,
         x: -30,
-        y: Math.floor(Math.random() * 1080) - 30,
+        y: Math.floor(Math.random() * 1080) - 50,
         goalPos: {
           x: 1920,
           y: Math.floor(Math.random() * 1080),
         },
-        velocity: Math.floor(Math.random() * 500) + 100, // Pixels by ms
+        // velocity: Math.floor(Math.random() * 500) + 100, // Pixels by ms
+        velocity: 100, // Pixels by ms
         size: Math.floor(Math.random() * 100) + 10,
         dead: false,
       })
       
       enemiesAreGestating = false
-    }, 1000);
+    }, 1200 / Object.keys(players).length);
   }
 }
 
@@ -71,22 +72,47 @@ const deleteDeadEnemies = () => {
   })
 }
 
-const checkEnemiesPlayersCollisions = () => {
+const checkCollisions = () => {
   for (let playerId in players) {
     enemies.forEach(enemy => {
       const playerPos = {x: players[playerId].x, y: players[playerId].y}
       const enemyPos = {x: enemy.x, y: enemy.y}
       const distance = get2PosDistance(playerPos, enemyPos)
       
-      console.log( distance );
+      if (enemy.size > distance - players[playerId].size / 2) {
+        if (enemyPos.x <= playerPos.x + players[playerId].size / 2 ) {
+          if (enemyPos.y <= playerPos.y + players[playerId].size / 2) {
+            enemy.dead = true
+          }
+        }
+      }
     })
   }
 }
 
+const getPlayerByColor = (playerColor) => {
+  for(playerId in players) {
+    if ('undefined' !== typeof players[playerId].color && playerColor === players[playerId].color) {
+      return players[playerId]
+    }
+  }
+  
+  return null
+}
+
+const updatePlayer = (data) => {
+  const {color} = data
+  const player = getPlayerByColor(color)
+  
+  if (player) {
+    Object.assign(player, data)
+  }
+} 
+
 const updateGameboard = (delta) => {
   checkEnnemiesGestation()
   updateEnemies(delta)
-  checkEnemiesPlayersCollisions()
+  checkCollisions()
   emitUpdateToClients()
   deleteDeadEnemies()
 }
@@ -138,10 +164,12 @@ io.on('connection', socket => {
     color: getRandomColor(),
     x: 300,
     y: 300,
+    size: 30,
   }
   socket.emit('init_player', players[socket.id])
   
   socket.on('mousemove', playerParams => {
+    updatePlayer(playerParams)
     io.emit('mousemove', playerParams)
   })
   

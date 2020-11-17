@@ -21,10 +21,7 @@ body {
 .player {
   cursor: none;
   position: absolute;
-  width: 30px;
-  height: 30px;
   border: 2px solid white;
-  background: black;
   border-radius: 30px;
   transform: translate(-50%, -50%);
   box-sizing: border-box;
@@ -36,7 +33,6 @@ body {
   position: absolute;
   border: 2px solid black;
   background: red;
-  transform: translate(-50%, -50%);
   box-sizing: border-box;
   transition: transform 0.1s;
 }
