@@ -12,18 +12,27 @@ body {
 }
 
 #playground {
+  position: relative;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 .player {
   cursor: none;
   position: absolute;
-  width: 30px;
-  height: 30px;
   border: 2px solid white;
-  background: black;
   border-radius: 30px;
   transform: translate(-50%, -50%);
   box-sizing: border-box;
+}
+
+.enemy {
+  pointer-events: none;
+  user-select: none;
+  position: absolute;
+  border: 2px solid black;
+  background: red;
+  box-sizing: border-box;
+  transition: transform 0.1s;
 }
