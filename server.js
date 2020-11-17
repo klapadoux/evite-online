@@ -166,7 +166,7 @@ io.on('connection', socket => {
     y: 300,
     size: 30,
   }
-  socket.on('init_player', players[socket.id])
+  socket.emit('init_player', players[socket.id])
   
   socket.on('mousemove', playerParams => {
     updatePlayer(playerParams)
