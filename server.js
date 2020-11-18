@@ -24,18 +24,18 @@ const checkEnnemiesGestation = () => {
   // Entamer la création d'ennemies si ce n'est pas déjà en cours.
   if (!enemiesAreGestating) {
     enemiesAreGestating = true
-    
+    const size = Math.floor(Math.random() * 100) + 10
     setTimeout(() => {
       enemies.push({
         id: ++ennemiesBirthCount,
-        x: -30,
+        x: size * -1,
         y: Math.floor(Math.random() * 1080) - 50,
         goalPos: {
           x: 1920,
           y: Math.floor(Math.random() * 1080),
         },
         velocity: Math.floor(Math.random() * 500) + 100, // Pixels by ms
-        size: Math.floor(Math.random() * 100) + 10,
+        size: size,
         dead: false,
       })
       
@@ -46,6 +46,8 @@ const checkEnnemiesGestation = () => {
 
 const updateEnemies = (delta) => {
   enemies.forEach(enemy => {
+    
+    // Calculating next step.
     const nextStep = enemy.velocity * delta
     const remainingDistance = get2PosDistance(enemy.goalPos, {x: enemy.x, y: enemy.y})
     if (nextStep < remainingDistance) {
@@ -54,7 +56,6 @@ const updateEnemies = (delta) => {
       const stepY = (enemy.goalPos.y - enemy.y) * ratio
       enemy.x = enemy.x + stepX
       enemy.y = enemy.y + stepY
-      enemy.dead = false
     } else {
       enemy.x = enemy.goalPos.x
       enemy.y = enemy.goalPos.y
@@ -74,6 +75,10 @@ const deleteDeadEnemies = () => {
 const checkCollisions = () => {
   // Players circle against enemies square.
   for (let playerId in players) {
+    if (players[playerId].dead) {
+      continue
+    }
+    
     enemies.forEach(enemy => {
       const {x, y, size} = players[playerId]
       const playerRadius = size / 2
@@ -84,7 +89,9 @@ const checkCollisions = () => {
         enemy.y + enemy.size >= y - playerRadius &&
         enemy.x <= x + playerRadius
       ) {
-        enemy.dead = true
+        players[playerId].dead = true
+        io.emit('player_death', players[playerId].color)
+        // enemy.dead = true
       }
     })
   }
@@ -100,19 +107,23 @@ const getPlayerByColor = (playerColor) => {
   return null
 }
 
-const updatePlayer = (data) => {
+const updatePlayer = (data, isPlayerResurrecting = false) => {
   const {color} = data
   const player = getPlayerByColor(color)
   
   if (player) {
     Object.assign(player, data)
+    
+    if (isPlayerResurrecting) {
+      player.dead = false
+    }
   }
 } 
 
 const updateGameboard = (delta) => {
   checkEnnemiesGestation()
-  updateEnemies(delta)
   checkCollisions()
+  updateEnemies(delta)
   emitUpdateToClients()
   deleteDeadEnemies()
 }
@@ -173,7 +184,12 @@ io.on('connection', socket => {
     io.emit('mousemove', playerParams)
   })
   
-  socket.on('disconnect', (reason) => {
+  socket.on('player_resurrect', playerParams => {
+    updatePlayer(playerParams, true)
+    io.emit('player_resurrect', playerParams.color)
+  })
+  
+  socket.on('disconnect', reason => {
     const colorIndex = usedColors.indexOf(players[socket.id].color)
     if (-1 < colorIndex) {
       usedColors.splice(colorIndex, 1)
