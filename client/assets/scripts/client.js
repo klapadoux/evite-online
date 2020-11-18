@@ -7,11 +7,83 @@ import Enemy from './enemy.js'
   let thisPlayer
   const playersOnBoard = {}
   const enemiesOnBoard = {}
+  const cleanupList = []
   const playground = document.getElementById('playground')
+  
+  const addNodeToCleanupList = (node) => {
+    cleanupList.push(node)
+    if (100 < cleanupList.length) {
+      const nodeToBeCleaned = cleanupList.shift()
+      if (nodeToBeCleaned) {
+        nodeToBeCleaned.style.opacity = 0
+        // Let time for CSS animation before removing it.
+        setTimeout(function(){
+          this.remove()
+        }.bind(nodeToBeCleaned), 500)
+      }
+    }
+  }
+  
+  const isThisOurPlayer = (player) => {
+    return thisPlayer.color === player.color
+  }
+  
+  const doEventMouseMove = (event) => {
+    thisPlayer.x = event.pageX
+    thisPlayer.y = event.pageY
+    sock.emit('mousemove', thisPlayer.getEmitParams())
+  }
   
   const addPlayerToGame = (player) => {
     playground.append(player.node)
     playersOnBoard[player.color] = player
+    
+    if (isThisOurPlayer(player)) {
+      window.addEventListener('mousemove', doEventMouseMove)
+    }
+  }
+  
+  const killPlayer = (player) => {
+    console.log( player );
+    
+    if (! player) {
+      // BAIL if that player no longer exist
+      return false;
+    }
+    
+    player.die()
+    addNodeToCleanupList(player.node)
+    
+    if (isThisOurPlayer(player)) {
+      window.removeEventListener('mousemove', doEventMouseMove)
+      
+      if (isThisOurPlayer(player)) {
+        setTimeout(() => {
+          window.addEventListener('click', resurrectThisPlayer)
+        }, 1000);
+      }
+    }
+  }
+  
+  const resurrectPlayer = (player) => {
+    if (! player) {
+      // BAIL if that player no longer exist
+      return false;
+    }
+    
+    console.log( player );
+    player.resurrect()
+    addPlayerToGame(player)
+    if (isThisOurPlayer(player)) {
+      window.removeEventListener('click', resurrectThisPlayer)
+      window.addEventListener('mousemove', doEventMouseMove)
+    }
+  }
+  
+  const resurrectThisPlayer = (event) => {
+    thisPlayer.x = event.pageX
+    thisPlayer.y = event.pageY
+    sock.emit('player_resurrect', thisPlayer.getEmitParams())
   }
   
   const addEnemyToGame = (enemy) => {
@@ -36,7 +108,7 @@ import Enemy from './enemy.js'
   }
   
   const getEnemyById = (id) => {
-    if ( 'undefined' !== typeof enemiesOnBoard[id] ) {
+    if ('undefined' !== typeof enemiesOnBoard[id]) {
       return enemiesOnBoard[id]
     }
     
@@ -55,7 +127,7 @@ import Enemy from './enemy.js'
    */
   const updateEnemy = (enemyArgs) => {
     const {id} = enemyArgs
-    if ( 'undefined' === typeof enemiesOnBoard[id] ) {
+    if ('undefined' === typeof enemiesOnBoard[id]) {
       addEnemyToGame(new Enemy(enemyArgs))
     } else {
       enemiesOnBoard[id].update(enemyArgs)
@@ -64,7 +136,7 @@ import Enemy from './enemy.js'
   
   const deleteEnemy = (enemyArgs) => {
     const {id} = enemyArgs
-    if ( 'undefined' !== typeof enemiesOnBoard[id] ) {
+    if ('undefined' !== typeof enemiesOnBoard[id]) {
       removeEnemyFromGame(getEnemyById(id))
     }
   }
@@ -74,6 +146,10 @@ import Enemy from './enemy.js'
     addPlayerToGame(thisPlayer)
   })
   
+  sock.on('player_death', color => {
+    killPlayer(getPlayerByColor(color))
+  })
+  
   sock.on('mousemove', playerArgs => {
     if ('undefined' !== typeof playersOnBoard[playerArgs.color] ) {
       playersOnBoard[playerArgs.color].moveTo(playerArgs)
@@ -81,6 +157,10 @@ import Enemy from './enemy.js'
       addPlayerToGame(new Player(playerArgs))
       // playersOnBoard[playerArgs.color].moveTo(playerArgs)
     }
+  })
+  
+  sock.on('player_resurrect', playerColor => {
+    resurrectPlayer(getPlayerByColor(playerColor))
   })
   
   sock.on('player_disconnect', playerColor => {
@@ -96,11 +176,5 @@ import Enemy from './enemy.js'
         updateEnemy(enemyData)
       }
     })
-  })
-  
-  window.addEventListener('mousemove', event => {
-    thisPlayer.x = event.pageX
-    thisPlayer.y = event.pageY
-    sock.emit('mousemove', {color: thisPlayer.color, x: thisPlayer.x, y: thisPlayer.y})
   })
 })()
