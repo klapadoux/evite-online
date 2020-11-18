@@ -184,6 +184,11 @@ io.on('connection', socket => {
     io.emit('mousemove', playerParams)
   })
   
+  socket.on('player_resurrect', playerParams => {
+    updatePlayer(playerParams, true)
+    io.emit('player_resurrect', playerParams.color)
+  })
+  
   socket.on('disconnect', reason => {
     const colorIndex = usedColors.indexOf(players[socket.id].color)
     if (-1 < colorIndex) {
@@ -194,10 +199,6 @@ io.on('connection', socket => {
     delete players[socket.id]
 
     stopGameloopIfNeeded()
-  })
-  
-  socket.on('resurrect_player', playerParams => {
-    updatePlayer(playerParams, true)
   })
   
   startGameloopIfNeeded()

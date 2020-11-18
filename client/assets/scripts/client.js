@@ -44,6 +44,13 @@ import Enemy from './enemy.js'
   }
   
   const killPlayer = (player) => {
+    console.log( player );
+    
+    if (! player) {
+      // BAIL if that player no longer exist
+      return false;
+    }
+    
     player.die()
     addNodeToCleanupList(player.node)
     
@@ -59,17 +66,24 @@ import Enemy from './enemy.js'
   }
   
   const resurrectPlayer = (player) => {
+    if (! player) {
+      // BAIL if that player no longer exist
+      return false;
+    }
+    
+    console.log( player );
     player.resurrect()
     addPlayerToGame(player)
+    if (isThisOurPlayer(player)) {
+      window.removeEventListener('click', resurrectThisPlayer)
+      window.addEventListener('mousemove', doEventMouseMove)
+    }
   }
   
   const resurrectThisPlayer = (event) => {
     thisPlayer.x = event.pageX
     thisPlayer.y = event.pageY
-    resurrectPlayer(thisPlayer)
-    sock.emit('resurrect_player', thisPlayer.getEmitParams())
-    window.removeEventListener('click', resurrectThisPlayer)
-    window.addEventListener('mousemove', doEventMouseMove)
+    sock.emit('player_resurrect', thisPlayer.getEmitParams())
   }
   
   const addEnemyToGame = (enemy) => {
@@ -133,8 +147,6 @@ import Enemy from './enemy.js'
   })
   
   sock.on('player_death', color => {
-    console.log( color );
-    
     killPlayer(getPlayerByColor(color))
   })
   
@@ -145,6 +157,10 @@ import Enemy from './enemy.js'
       addPlayerToGame(new Player(playerArgs))
       // playersOnBoard[playerArgs.color].moveTo(playerArgs)
     }
+  })
+  
+  sock.on('player_resurrect', playerColor => {
+    resurrectPlayer(getPlayerByColor(playerColor))
   })
   
   sock.on('player_disconnect', playerColor => {
