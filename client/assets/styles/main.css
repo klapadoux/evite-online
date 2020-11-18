@@ -26,11 +26,11 @@ body {
   border-radius: 30px;
   transform: translate(-50%, -50%);
   box-sizing: border-box;
-  transition: transform 0.3s, opacity 0.3s;
+  transition: transform 0.3s, opacity 0.5s;
 }
 .player.dead {
   cursor: auto;
-  opacity: 0.4;
+  opacity: 0.35;
   transform: translate(50px, -50%);
 }
 .player::before {

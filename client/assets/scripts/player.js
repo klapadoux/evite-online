@@ -42,20 +42,19 @@ export class Player {
   die() {
     this.node.classList.add('dead')
     this.deathCount++
-    
-    let blood1 = document.createElement('span')
-    blood1.style.top = (Math.floor(Math.random()*10) - 5) + 'px'
-    blood1.style.left = (Math.floor(Math.random()*10) - 5) + 'px'
-    blood1.classList.add('blood')
-    blood1.classList.add(`blood--${Math.floor(Math.random()*8)}`)
-    this.node.append(blood1)
-    
-    let blood2 = document.createElement('span')
-    blood2.style.top = (Math.floor(Math.random()*10) - 5) + 'px'
-    blood2.style.left = (Math.floor(Math.random()*10) - 5) + 'px'
-    blood2.classList.add('blood')
-    blood2.classList.add(`blood--${Math.floor(Math.random()*8)}`)
-    this.node.append(blood2)
+    this.addBlood()
+    this.addBlood()
+  }
+  
+  addBlood() {
+    let blood = document.createElement('span')
+    blood.style.top = (Math.floor(Math.random()*50) - 15) + '%'
+    blood.style.left = (Math.floor(Math.random()*50) - 15) + '%'
+    blood.style.width = (Math.floor(Math.random()*70) + 30) + '%'
+    blood.style.height = (Math.floor(Math.random()*70) + 30) + '%'
+    blood.classList.add('blood')
+    // blood.classList.add(`blood--${Math.floor(Math.random()*8)}`)
+    this.node.append(blood)
   }
   
   resurrect() {

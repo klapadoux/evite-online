@@ -7,7 +7,22 @@ import Enemy from './enemy.js'
   let thisPlayer
   const playersOnBoard = {}
   const enemiesOnBoard = {}
+  const cleanupList = []
   const playground = document.getElementById('playground')
+  
+  const addNodeToCleanupList = (node) => {
+    cleanupList.push(node)
+    if (100 < cleanupList.length) {
+      const nodeToBeCleaned = cleanupList.shift()
+      if (nodeToBeCleaned) {
+        nodeToBeCleaned.style.opacity = 0
+        // Let time for CSS animation before removing it.
+        setTimeout(function(){
+          this.remove()
+        }.bind(nodeToBeCleaned), 500)
+      }
+    }
+  }
   
   const isThisOurPlayer = (player) => {
     return thisPlayer.color === player.color
@@ -30,6 +45,7 @@ import Enemy from './enemy.js'
   
   const killPlayer = (player) => {
     player.die()
+    addNodeToCleanupList(player.node)
     
     if (isThisOurPlayer(player)) {
       window.removeEventListener('mousemove', doEventMouseMove)
