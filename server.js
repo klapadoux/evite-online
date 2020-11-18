@@ -24,18 +24,18 @@ const checkEnnemiesGestation = () => {
   // Entamer la création d'ennemies si ce n'est pas déjà en cours.
   if (!enemiesAreGestating) {
     enemiesAreGestating = true
-    
+    const size = Math.floor(Math.random() * 100) + 10
     setTimeout(() => {
       enemies.push({
         id: ++ennemiesBirthCount,
-        x: -30,
+        x: size * -1,
         y: Math.floor(Math.random() * 1080) - 50,
         goalPos: {
           x: 1920,
           y: Math.floor(Math.random() * 1080),
         },
         velocity: Math.floor(Math.random() * 500) + 100, // Pixels by ms
-        size: Math.floor(Math.random() * 100) + 10,
+        size: size,
         dead: false,
       })
       
