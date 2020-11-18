@@ -9,9 +9,26 @@ import Enemy from './enemy.js'
   const enemiesOnBoard = {}
   const playground = document.getElementById('playground')
   
+  const event_mousemove = event => {
+    thisPlayer.x = event.pageX
+    thisPlayer.y = event.pageY
+    sock.emit('mousemove', {
+      x: thisPlayer.x,
+      y: thisPlayer.y,
+      color: thisPlayer.color,
+    })
+  }
+  
   const addPlayerToGame = (player) => {
     playground.append(player.node)
     playersOnBoard[player.color] = player
+    
+    window.addEventListener('mousemove', event_mousemove)
+  }
+  
+  const killPlayer = (player) => {
+    player.die()
+    window.removeEventListener('mousemove', event_mousemove)
   }
   
   const addEnemyToGame = (enemy) => {
@@ -36,7 +53,7 @@ import Enemy from './enemy.js'
   }
   
   const getEnemyById = (id) => {
-    if ( 'undefined' !== typeof enemiesOnBoard[id] ) {
+    if ('undefined' !== typeof enemiesOnBoard[id]) {
       return enemiesOnBoard[id]
     }
     
@@ -55,7 +72,7 @@ import Enemy from './enemy.js'
    */
   const updateEnemy = (enemyArgs) => {
     const {id} = enemyArgs
-    if ( 'undefined' === typeof enemiesOnBoard[id] ) {
+    if ('undefined' === typeof enemiesOnBoard[id]) {
       addEnemyToGame(new Enemy(enemyArgs))
     } else {
       enemiesOnBoard[id].update(enemyArgs)
@@ -64,7 +81,7 @@ import Enemy from './enemy.js'
   
   const deleteEnemy = (enemyArgs) => {
     const {id} = enemyArgs
-    if ( 'undefined' !== typeof enemiesOnBoard[id] ) {
+    if ('undefined' !== typeof enemiesOnBoard[id]) {
       removeEnemyFromGame(getEnemyById(id))
     }
   }
@@ -72,6 +89,10 @@ import Enemy from './enemy.js'
   sock.on('init_player', args => {
     thisPlayer = new Player(args)
     addPlayerToGame(thisPlayer)
+  })
+  
+  sock.on('player_death', color => {
+    killPlayer(getPlayerByColor(color))
   })
   
   sock.on('mousemove', playerArgs => {
@@ -96,11 +117,5 @@ import Enemy from './enemy.js'
         updateEnemy(enemyData)
       }
     })
-  })
-  
-  window.addEventListener('mousemove', event => {
-    thisPlayer.x = event.pageX
-    thisPlayer.y = event.pageY
-    sock.emit('mousemove', {color: thisPlayer.color, x: thisPlayer.x, y: thisPlayer.y})
   })
 })()

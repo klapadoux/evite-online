@@ -54,7 +54,6 @@ const updateEnemies = (delta) => {
       const stepY = (enemy.goalPos.y - enemy.y) * ratio
       enemy.x = enemy.x + stepX
       enemy.y = enemy.y + stepY
-      enemy.dead = false
     } else {
       enemy.x = enemy.goalPos.x
       enemy.y = enemy.goalPos.y
@@ -74,6 +73,10 @@ const deleteDeadEnemies = () => {
 const checkCollisions = () => {
   // Players circle against enemies square.
   for (let playerId in players) {
+    if (players[playerId].dead) {
+      continue
+    }
+    
     enemies.forEach(enemy => {
       const {x, y, size} = players[playerId]
       const playerRadius = size / 2
@@ -84,7 +87,9 @@ const checkCollisions = () => {
         enemy.y + enemy.size >= y - playerRadius &&
         enemy.x <= x + playerRadius
       ) {
-        enemy.dead = true
+        players[playerId].dead = true
+        io.emit('player_death', players[playerId].color)
+        // enemy.dead = true
       }
     })
   }
@@ -111,8 +116,8 @@ const updatePlayer = (data) => {
 
 const updateGameboard = (delta) => {
   checkEnnemiesGestation()
-  updateEnemies(delta)
   checkCollisions()
+  updateEnemies(delta)
   emitUpdateToClients()
   deleteDeadEnemies()
 }
