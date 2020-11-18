@@ -16,34 +16,43 @@ import Enemy from './enemy.js'
   const doEventMouseMove = (event) => {
     thisPlayer.x = event.pageX
     thisPlayer.y = event.pageY
-    sock.emit('mousemove', {
-      x: thisPlayer.x,
-      y: thisPlayer.y,
-      color: thisPlayer.color,
-    })
+    sock.emit('mousemove', thisPlayer.getEmitParams())
   }
   
   const addPlayerToGame = (player) => {
     playground.append(player.node)
     playersOnBoard[player.color] = player
     
-    window.addEventListener('mousemove', doEventMouseMove)
+    if (isThisOurPlayer(player)) {
+      window.addEventListener('mousemove', doEventMouseMove)
+    }
   }
   
   const killPlayer = (player) => {
     player.die()
-    window.removeEventListener('mousemove', doEventMouseMove)
     
     if (isThisOurPlayer(player)) {
-      setTimeout(() => {
-        window.addEventListener('click', resurrectPlayer)
-      }, 3000);
+      window.removeEventListener('mousemove', doEventMouseMove)
+      
+      if (isThisOurPlayer(player)) {
+        setTimeout(() => {
+          window.addEventListener('click', resurrectThisPlayer)
+        }, 1000);
+      }
     }
   }
   
   const resurrectPlayer = (player) => {
     player.resurrect()
-    window.removeEventListener('click', resurrectPlayer)
+    addPlayerToGame(player)
+  }
+  
+  const resurrectThisPlayer = (event) => {
+    thisPlayer.x = event.pageX
+    thisPlayer.y = event.pageY
+    resurrectPlayer(thisPlayer)
+    sock.emit('resurrect_player', thisPlayer.getEmitParams())
+    window.removeEventListener('click', resurrectThisPlayer)
     window.addEventListener('mousemove', doEventMouseMove)
   }
   
@@ -108,6 +117,8 @@ import Enemy from './enemy.js'
   })
   
   sock.on('player_death', color => {
+    console.log( color );
+    
     killPlayer(getPlayerByColor(color))
   })
   

@@ -21,11 +21,17 @@ body {
 .player {
   cursor: none;
   position: absolute;
+  z-index: 0;
   border: 2px solid white;
   border-radius: 30px;
   transform: translate(-50%, -50%);
   box-sizing: border-box;
   transition: transform 0.3s, opacity 0.3s;
+}
+.player.dead {
+  cursor: auto;
+  opacity: 0.4;
+  transform: translate(50px, -50%);
 }
 .player::before {
   content: '';
@@ -36,10 +42,7 @@ body {
   background: inherit;
   border-radius: 100%;
 }
-.player.dead {
-  opacity: 0.4;
-  transform: translate(50px, -50%);
-}
+
 .player .blood {
   display: block;
   position: absolute;
@@ -92,6 +95,7 @@ body {
   pointer-events: none;
   user-select: none;
   position: absolute;
+  z-index: 1;
   border: 2px solid black;
   background: red;
   box-sizing: border-box;

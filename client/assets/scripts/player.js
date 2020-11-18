@@ -61,6 +61,7 @@ export class Player {
   resurrect() {
     this.createNode()
     this.dead = false
+    return this.node
   }
 }
 

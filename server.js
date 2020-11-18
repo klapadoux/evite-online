@@ -46,6 +46,8 @@ const checkEnnemiesGestation = () => {
 
 const updateEnemies = (delta) => {
   enemies.forEach(enemy => {
+    
+    // Calculating next step.
     const nextStep = enemy.velocity * delta
     const remainingDistance = get2PosDistance(enemy.goalPos, {x: enemy.x, y: enemy.y})
     if (nextStep < remainingDistance) {
@@ -105,12 +107,16 @@ const getPlayerByColor = (playerColor) => {
   return null
 }
 
-const updatePlayer = (data) => {
+const updatePlayer = (data, isPlayerResurrecting = false) => {
   const {color} = data
   const player = getPlayerByColor(color)
   
   if (player) {
     Object.assign(player, data)
+    
+    if (isPlayerResurrecting) {
+      player.dead = false
+    }
   }
 } 
 
@@ -178,7 +184,7 @@ io.on('connection', socket => {
     io.emit('mousemove', playerParams)
   })
   
-  socket.on('disconnect', (reason) => {
+  socket.on('disconnect', reason => {
     const colorIndex = usedColors.indexOf(players[socket.id].color)
     if (-1 < colorIndex) {
       usedColors.splice(colorIndex, 1)
@@ -188,6 +194,10 @@ io.on('connection', socket => {
     delete players[socket.id]
 
     stopGameloopIfNeeded()
+  })
+  
+  socket.on('resurrect_player', playerParams => {
+    updatePlayer(playerParams, true)
   })
   
   startGameloopIfNeeded()
