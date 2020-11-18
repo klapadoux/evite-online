@@ -55,7 +55,7 @@ body {
 .player .blood--1 {
   width: 80%;
   height: 80%;
-  transform-origin: 100% 100%;
+  transform-origin: 50% 100%;
 }
 .player .blood--2 {
   width: 50%;
@@ -68,24 +68,24 @@ body {
   transform-origin: 50% 100%;
 }
 .player .blood--4 {
-  width: 30%;
-  height: 40%;
-  transform-origin: 0 0;
+  width: 40%;
+  height: 55%;
+  transform-origin: 65% 25%;
 }
 .player .blood--5 {
   width: 95%;
   height: 80%;
-  transform-origin: 50% 0;
+  transform-origin: 50% 75%;
 }
 .player .blood--6 {
   width: 95%;
   height: 95%;
-  transform-origin: 100% 50%;
+  transform-origin: 0 50%;
 }
 .player .blood--7 {
   width: 35%;
   height: 55%;
-  transform-origin: 100% 80%;
+  transform-origin: 25% 80%;
 }
 
 .enemy {
