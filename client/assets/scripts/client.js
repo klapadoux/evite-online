@@ -9,7 +9,11 @@ import Enemy from './enemy.js'
   const enemiesOnBoard = {}
   const playground = document.getElementById('playground')
   
-  const event_mousemove = event => {
+  const isThisOurPlayer = (player) => {
+    return thisPlayer.color === player.color
+  }
+  
+  const doEventMouseMove = (event) => {
     thisPlayer.x = event.pageX
     thisPlayer.y = event.pageY
     sock.emit('mousemove', {
@@ -23,12 +27,24 @@ import Enemy from './enemy.js'
     playground.append(player.node)
     playersOnBoard[player.color] = player
     
-    window.addEventListener('mousemove', event_mousemove)
+    window.addEventListener('mousemove', doEventMouseMove)
   }
   
   const killPlayer = (player) => {
     player.die()
-    window.removeEventListener('mousemove', event_mousemove)
+    window.removeEventListener('mousemove', doEventMouseMove)
+    
+    if (isThisOurPlayer(player)) {
+      setTimeout(() => {
+        window.addEventListener('click', resurrectPlayer)
+      }, 3000);
+    }
+  }
+  
+  const resurrectPlayer = (player) => {
+    player.resurrect()
+    window.removeEventListener('click', resurrectPlayer)
+    window.addEventListener('mousemove', doEventMouseMove)
   }
   
   const addEnemyToGame = (enemy) => {
