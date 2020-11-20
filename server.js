@@ -118,7 +118,21 @@ const updatePlayer = (data, isPlayerResurrecting = false) => {
       player.dead = false
     }
   }
-} 
+}
+
+const getPlayersEmitParams = () => {
+  const playersParams = []
+  for (player in players) {
+    const {x, y, color, dead} = players[player]
+    playersParams.push({
+      x: x,
+      y: y,
+      color: color,
+      dead: dead,
+    })
+  }
+  return playersParams
+}
 
 const updateGameboard = (delta) => {
   checkEnnemiesGestation()
@@ -131,6 +145,7 @@ const updateGameboard = (delta) => {
 const emitUpdateToClients = () => {
   io.emit('tick_update', {
     enemies: enemies,
+    players: getPlayersEmitParams(),
   })
 }
 
@@ -181,7 +196,7 @@ io.on('connection', socket => {
   
   socket.on('mousemove', playerParams => {
     updatePlayer(playerParams)
-    io.emit('mousemove', playerParams)
+    // io.emit('mousemove', playerParams)
   })
   
   socket.on('player_resurrect', playerParams => {

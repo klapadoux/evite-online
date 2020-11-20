@@ -44,8 +44,6 @@ import Enemy from './enemy.js'
   }
   
   const killPlayer = (player) => {
-    console.log( player );
-    
     if (! player) {
       // BAIL if that player no longer exist
       return false;
@@ -71,7 +69,6 @@ import Enemy from './enemy.js'
       return false;
     }
     
-    console.log( player );
     player.resurrect()
     addPlayerToGame(player)
     if (isThisOurPlayer(player)) {
@@ -105,6 +102,15 @@ import Enemy from './enemy.js'
     }
     
     return null
+  }
+  
+  const updatePlayer = (playerArgs) => {
+    const player = getPlayerByColor(playerArgs.color)
+    if (player) {
+      player.moveTo(playerArgs)
+    } else {
+      addPlayerToGame(new Player(playerArgs))
+    }
   }
   
   const getEnemyById = (id) => {
@@ -150,15 +156,6 @@ import Enemy from './enemy.js'
     killPlayer(getPlayerByColor(color))
   })
   
-  sock.on('mousemove', playerArgs => {
-    if ('undefined' !== typeof playersOnBoard[playerArgs.color] ) {
-      playersOnBoard[playerArgs.color].moveTo(playerArgs)
-    } else {
-      addPlayerToGame(new Player(playerArgs))
-      // playersOnBoard[playerArgs.color].moveTo(playerArgs)
-    }
-  })
-  
   sock.on('player_resurrect', playerColor => {
     resurrectPlayer(getPlayerByColor(playerColor))
   })
@@ -168,7 +165,14 @@ import Enemy from './enemy.js'
   })
   
   sock.on('tick_update', tickInfo => {
-    const {enemies} = tickInfo
+    const {enemies, players} = tickInfo
+    
+    console.log( players );
+    
+    players.forEach(playerData => {
+      updatePlayer(playerData)
+    })
+    
     enemies.forEach(enemyData => {
       if (enemyData.dead) {
         deleteEnemy(enemyData)
