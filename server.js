@@ -25,7 +25,7 @@ const checkEnnemiesGestation = () => {
   // Entamer la création d'ennemies si ce n'est pas déjà en cours.
   if (!enemiesAreGestating) {
     enemiesAreGestating = true
-    const size = Math.floor(Math.random() * 100) + 10
+    const size = Math.floor(Math.random() * 100) + 50
     setTimeout(() => {
       enemies.push({
         id: ++ennemiesBirthCount,
@@ -177,7 +177,7 @@ const emitUpdateToClients = () => {
 
 const startGameloopIfNeeded = () => {
   if (!gameLoopId) {
-    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 15)
+    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 22)
   }
 }
 

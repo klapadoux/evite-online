@@ -169,8 +169,6 @@ import Enemy from './enemy.js'
   sock.on('tick_update', tickInfo => {
     const {enemies, players} = tickInfo
     
-    console.log( players );
-    
     players.forEach(playerData => {
       updatePlayer(playerData)
     })
