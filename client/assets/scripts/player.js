@@ -1,10 +1,12 @@
 export class Player {
   constructor(args) {
-    const {color, x, y, size, dead} = args
+    const {color, x, y, goalPos, velocity, size, dead} = args
     
     this.color = color ? color : '#000'
     this.x = x ? x : 0
     this.y = y ? y : 0
+    this.goalPos = goalPos ? goalPos : {x: 0, y: 0}
+    this.velocity = velocity ? velocity : 10, // Pixels by ms
     this.size = size ? size : 30
     this.dead = dead ? dead : false
     
@@ -34,8 +36,7 @@ export class Player {
   getEmitParams() {
     return {
       color: this.color,
-      x: this.x,
-      y: this.y,
+      goalPos: this.goalPos,
     }
   }
   
