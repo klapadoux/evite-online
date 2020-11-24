@@ -17,6 +17,7 @@ const usedColors = []
 
 let gameLoopId = null
 
+let doGameLoopEnnemiesCheck = true
 let ennemiesBirthCount = 0
 let enemiesAreGestating = false
 
@@ -135,11 +136,19 @@ const getPlayersEmitParams = () => {
 }
 
 const updateGameboard = (delta) => {
-  checkEnnemiesGestation()
-  checkCollisions()
-  updateEnemies(delta)
+  if (doGameLoopEnnemiesCheck) {
+    checkEnnemiesGestation()
+    checkCollisions()
+    updateEnemies(delta)
+  }
+  
   emitUpdateToClients()
-  deleteDeadEnemies()
+  
+  if (doGameLoopEnnemiesCheck) {
+    deleteDeadEnemies()
+  }
+  
+  doGameLoopEnnemiesCheck =  ! doGameLoopEnnemiesCheck
 }
 
 const emitUpdateToClients = () => {
@@ -151,7 +160,7 @@ const emitUpdateToClients = () => {
 
 const startGameloopIfNeeded = () => {
   if (!gameLoopId) {
-    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 15)
+    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 30)
   }
 }
 
