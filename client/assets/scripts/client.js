@@ -38,6 +38,10 @@ import Enemy from './enemy.js'
     playground.append(player.node)
     playersOnBoard[player.color] = player
     
+    if (player.dead) {
+      killPlayer(player)
+    }
+    
     if (isThisOurPlayer(player)) {
       window.addEventListener('mousemove', doEventMouseMove)
     }
