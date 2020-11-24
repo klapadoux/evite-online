@@ -17,6 +17,7 @@ const usedColors = []
 
 let gameLoopId = null
 
+let doGameLoopEnnemiesCheck = true
 let ennemiesBirthCount = 0
 let enemiesAreGestating = false
 
@@ -24,7 +25,7 @@ const checkEnnemiesGestation = () => {
   // Entamer la création d'ennemies si ce n'est pas déjà en cours.
   if (!enemiesAreGestating) {
     enemiesAreGestating = true
-    const size = Math.floor(Math.random() * 100) + 10
+    const size = Math.floor(Math.random() * 100) + 50
     setTimeout(() => {
       enemies.push({
         id: ++ennemiesBirthCount,
@@ -46,21 +47,7 @@ const checkEnnemiesGestation = () => {
 
 const updateEnemies = (delta) => {
   enemies.forEach(enemy => {
-    
-    // Calculating next step.
-    const nextStep = enemy.velocity * delta
-    const remainingDistance = get2PosDistance(enemy.goalPos, {x: enemy.x, y: enemy.y})
-    if (nextStep < remainingDistance) {
-      const ratio = nextStep / remainingDistance
-      const stepX = (enemy.goalPos.x - enemy.x) * ratio
-      const stepY = (enemy.goalPos.y - enemy.y) * ratio
-      enemy.x = enemy.x + stepX
-      enemy.y = enemy.y + stepY
-    } else {
-      enemy.x = enemy.goalPos.x
-      enemy.y = enemy.goalPos.y
-      enemy.dead = true
-    }
+    enemy.dead = moveElement(enemy, delta)
   })
 }
 
@@ -91,9 +78,16 @@ const checkCollisions = () => {
       ) {
         players[playerId].dead = true
         io.emit('player_death', players[playerId].color)
-        // enemy.dead = true
       }
     })
+  }
+}
+
+const updatePlayers = (delta) => {
+  for (playerId in players) {
+    if (! players[playerId].dead) {
+      moveElement(players[playerId], delta)
+    }
   }
 }
 
@@ -112,31 +106,78 @@ const updatePlayer = (data, isPlayerResurrecting = false) => {
   const player = getPlayerByColor(color)
   
   if (player) {
-    Object.assign(player, data)
+    player.goalPos = data.goalPos
     
     if (isPlayerResurrecting) {
+      player.x = data.goalPos.x
+      player.y = data.goalPos.y
       player.dead = false
     }
   }
-} 
+}
+
+const getPlayersEmitParams = () => {
+  const playersParams = []
+  for (player in players) {
+    const {x, y, goalPos, velocity, color, dead} = players[player]
+    playersParams.push({
+      x: x,
+      y: y,
+      color: color,
+      goalPos: goalPos,
+      velocity: velocity, // Pixels by ms
+      dead: dead,
+    })
+  }
+  return playersParams
+}
+
+const moveElement = (element, delta = 1) => {
+  // Calculating next step.
+  const nextStep = element.velocity * delta
+  const remainingDistance = get2PosDistance(element.goalPos, {x: element.x, y: element.y})
+  let reachedGoal = false
+  if (nextStep < remainingDistance) {
+    const ratio = nextStep / remainingDistance
+    const stepX = (element.goalPos.x - element.x) * ratio
+    const stepY = (element.goalPos.y - element.y) * ratio
+    element.x = element.x + stepX
+    element.y = element.y + stepY
+  } else {
+    element.x = element.goalPos.x
+    element.y = element.goalPos.y
+    reachedGoal = true
+  }
+  
+  return reachedGoal
+}
 
 const updateGameboard = (delta) => {
   checkEnnemiesGestation()
   checkCollisions()
   updateEnemies(delta)
+  
+  updatePlayers(delta)
+  
   emitUpdateToClients()
+  
   deleteDeadEnemies()
+  
+  // if (doGameLoopEnnemiesCheck) {
+  // }
+  // doGameLoopEnnemiesCheck =  ! doGameLoopEnnemiesCheck
 }
 
 const emitUpdateToClients = () => {
   io.emit('tick_update', {
     enemies: enemies,
+    players: getPlayersEmitParams(),
   })
 }
 
 const startGameloopIfNeeded = () => {
   if (!gameLoopId) {
-    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 15)
+    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 22)
   }
 }
 
@@ -176,12 +217,16 @@ io.on('connection', socket => {
     x: 300,
     y: 300,
     size: 30,
+    goalPos: {
+      x: 300,
+      y: 300,
+    },
+    velocity: 2000,
   }
   socket.emit('init_player', players[socket.id])
   
   socket.on('mousemove', playerParams => {
     updatePlayer(playerParams)
-    io.emit('mousemove', playerParams)
   })
   
   socket.on('player_resurrect', playerParams => {
