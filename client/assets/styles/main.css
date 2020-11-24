@@ -26,7 +26,7 @@ body {
   border-radius: 30px;
   transform: translate(-50%, -50%);
   box-sizing: border-box;
-  transition: transform 0.3s, opacity 0.5s;
+  transition: left 0.15s, top 0.15s, transform 0.3s, opacity 0.5s;
 }
 .player.dead {
   cursor: auto;

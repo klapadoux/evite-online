@@ -29,8 +29,8 @@ import Enemy from './enemy.js'
   }
   
   const doEventMouseMove = (event) => {
-    thisPlayer.x = event.pageX
-    thisPlayer.y = event.pageY
+    thisPlayer.goalPos.x = event.pageX
+    thisPlayer.goalPos.y = event.pageY
     sock.emit('mousemove', thisPlayer.getEmitParams())
   }
   
@@ -80,6 +80,8 @@ import Enemy from './enemy.js'
   const resurrectThisPlayer = (event) => {
     thisPlayer.x = event.pageX
     thisPlayer.y = event.pageY
+    thisPlayer.goalPos.x = event.pageX
+    thisPlayer.goalPos.y = event.pageY
     sock.emit('player_resurrect', thisPlayer.getEmitParams())
   }
   
