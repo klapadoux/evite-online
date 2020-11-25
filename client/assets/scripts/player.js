@@ -1,3 +1,5 @@
+import Utils from './utils.js'
+
 export class Player {
   constructor(args) {
     const {color, x, y, goalPos, velocity, size, dead} = args
@@ -26,7 +28,7 @@ export class Player {
   }
   
   moveTo({x, y}) {
-    this.y = x
+    this.x = x
     this.y = y
     this.node.style.top = y + 'px'
     this.node.style.left = x + 'px'
@@ -42,20 +44,9 @@ export class Player {
   
   die() {
     this.node.classList.add('dead')
+    this.node.style.backgroundColor = Utils.changeColor( 0.75, this.color, '#acbcbf')
     this.deathCount++
-    this.addBlood()
-    this.addBlood()
-  }
-  
-  addBlood() {
-    let blood = document.createElement('span')
-    blood.style.top = (Math.floor(Math.random()*50) - 15) + '%'
-    blood.style.left = (Math.floor(Math.random()*50) - 15) + '%'
-    blood.style.width = (Math.floor(Math.random()*70) + 30) + '%'
-    blood.style.height = (Math.floor(Math.random()*70) + 30) + '%'
-    blood.classList.add('blood')
-    // blood.classList.add(`blood--${Math.floor(Math.random()*8)}`)
-    this.node.append(blood)
+    
   }
   
   resurrect() {

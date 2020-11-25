@@ -85,9 +85,7 @@ const checkCollisions = () => {
 
 const updatePlayers = (delta) => {
   for (playerId in players) {
-    if (!players[playerId].dead) {
-      moveElement(players[playerId], delta)
-    }
+    moveElement(players[playerId], delta)
   }
 }
 

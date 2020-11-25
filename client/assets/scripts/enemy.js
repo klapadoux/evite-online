@@ -40,7 +40,7 @@ export class Enemy {
   }
   
   moveTo({x, y}) {
-    this.y = x
+    this.x = x
     this.y = y
     this.node.style.transform = `translate3d(${x}px, ${y}px, 0)`
   }

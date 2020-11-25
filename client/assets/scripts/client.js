@@ -53,6 +53,10 @@ import Enemy from './enemy.js'
       return false;
     }
     
+    addBloodUnderElement(player, 'small')
+    addBloodUnderElement(player, 'medium', 100)
+    addBloodUnderElement(player, 'same', 500)
+    addBloodUnderElement(player, 'same', 1000)
     player.die()
     addNodeToCleanupList(player.node)
     
@@ -87,11 +91,6 @@ import Enemy from './enemy.js'
     thisPlayer.goalPos.x = event.pageX
     thisPlayer.goalPos.y = event.pageY
     sock.emit('player_resurrect', thisPlayer.getEmitParams())
-  }
-  
-  const addEnemyToGame = (enemy) => {
-    playground.append(enemy.node)
-    enemiesOnBoard[enemy.id] = enemy
   }
   
   const removePlayerFromGame = (player) => {
@@ -134,6 +133,11 @@ import Enemy from './enemy.js'
     }
   }
   
+  const addEnemyToGame = (enemy) => {
+    playground.append(enemy.node)
+    enemiesOnBoard[enemy.id] = enemy
+  }
+  
   /**
    * @param {object} enemyArgs - Contains the basic to create and/or move an enemy.
    */
@@ -152,6 +156,30 @@ import Enemy from './enemy.js'
       removeEnemyFromGame(getEnemyById(id))
     }
   }
+  
+  const addBloodUnderElement = (element, sizeType = 'same', delay = 0) => {
+    setTimeout(function () {
+      const {x, y} = this
+      let {size} = this
+      
+      switch (sizeType) {
+        case 'small':
+          size = size / 4
+          break
+      }
+      
+      let blood = document.createElement('span')
+      blood.style.left = x + 'px'
+      blood.style.top = y + 'px'
+      blood.style.width = (Math.floor(Math.random()*size) + size / 3) + 'px'
+      blood.style.height = (Math.floor(Math.random()*size) + size / 3) + 'px'
+      blood.classList.add('blood')
+      // blood.classList.add(`blood--${Math.floor(Math.random()*8)}`)
+      playground.append(blood)
+    }.bind(element), delay);
+  }
+  
+  
   
   sock.on('init_player', args => {
     thisPlayer = new Player(args)
