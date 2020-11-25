@@ -60,6 +60,7 @@ body {
   height: 100%;
   background-color: #c97a7c;
   border-radius: 100%;
+  transition: opacity 0.5s;
   animation: blood 4s 0s 1 forwards;
 }
 .blood--1 {

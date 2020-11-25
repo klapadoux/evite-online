@@ -159,19 +159,21 @@ const moveElement = (element, delta = 1) => {
 }
 
 const updateGameboard = (delta) => {
-  checkEnnemiesGestation()
-  checkCollisions()
-  updateEnemies(delta)
+  if (doGameLoopEnnemiesCheck) {
+    checkEnnemiesGestation()
+    checkCollisions()
+    updateEnemies(delta)
+  }
   
   updateAllPlayers(delta)
   
   emitUpdateToClients()
   
-  deleteDeadEnemies()
+  if (doGameLoopEnnemiesCheck) {
+    deleteDeadEnemies()
+  }
   
-  // if (doGameLoopEnnemiesCheck) {
-  // }
-  // doGameLoopEnnemiesCheck =  ! doGameLoopEnnemiesCheck
+  doGameLoopEnnemiesCheck =  ! doGameLoopEnnemiesCheck
 }
 
 const emitUpdateToClients = () => {
@@ -183,7 +185,7 @@ const emitUpdateToClients = () => {
 
 const startGameloopIfNeeded = () => {
   if (!gameLoopId) {
-    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 22)
+    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 30)
   }
 }
 

@@ -13,7 +13,7 @@ import Enemy from './enemy.js'
   
   const addNodeToCleanupList = (node) => {
     cleanupList.push(node)
-    if (100 < cleanupList.length) {
+    if (150 < cleanupList.length) {
       const nodeToBeCleaned = cleanupList.shift()
       if (nodeToBeCleaned) {
         nodeToBeCleaned.style.opacity = 0
@@ -54,9 +54,14 @@ import Enemy from './enemy.js'
       return false;
     }
     
-    addBloodUnderElement(player, 'small')
-    addBloodUnderElement(player, 'medium', 200)
-    addBloodUnderElement(player, 'same', 600)
+    const bloodCount = Math.floor(Math.random() * 5)
+    const bloodTypes = ['small', 'medium']
+    for (let i = 0; i <= bloodCount; i++) {
+      const type = bloodTypes[Math.floor(Math.random() * bloodTypes.length)]
+      const delay = Math.random() * 600
+      addBloodUnderElement(player, type, delay)
+    }
+    
     addBloodUnderElement(player, 'same', 650)
     player.die()
     addNodeToCleanupList(player.node)
@@ -171,7 +176,7 @@ import Enemy from './enemy.js'
           bloodSize = size / 5
           break
         case 'medium':
-          bloodSize = size / 2
+          bloodSize = size / 3
           sizeVariance = 0.2
           break
       }
@@ -194,8 +199,8 @@ import Enemy from './enemy.js'
       blood.style.width = bloodWidth + 'px'
       blood.style.height = bloodHeight + 'px'
       blood.classList.add('blood', `blood--${sizeType}`)
-      // blood.classList.add(`blood--${Math.floor(Math.random()*8)}`)
       playground.append(blood)
+      addNodeToCleanupList(blood)
     }.bind(element), delay);
   }
   
