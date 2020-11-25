@@ -34,8 +34,8 @@ body {
 .player.dead {
   border-color: #c97a7c;
   transition:
-    left 1s, 
-    top 1s, 
+    left 0.5s ease-out, 
+    top 0.5s ease-out, 
     border-color 1s, 
     background-color 1s, 
     opacity 0.5s;
@@ -116,4 +116,14 @@ body {
   100% {
     transform: scale(2);
   }
+}
+
+
+
+.test-center {
+  position: absolute;
+  z-index: 999;
+  width: 3px;
+  height: 3px;
+  background-color: white;
 }

@@ -165,20 +165,34 @@ import Enemy from './enemy.js'
       const {x, y} = node.getBoundingClientRect()
       
       let bloodSize = size
+      let sizeVariance = 0.33
       switch (sizeType) {
         case 'small':
-          bloodSize = size / 4
+          bloodSize = size / 5
           break
         case 'medium':
           bloodSize = size / 2
+          sizeVariance = 0.2
           break
       }
       
+      const bloodWidth = Math.floor(Math.random() * bloodSize + bloodSize * sizeVariance)
+      const bloodHeight = Math.floor(Math.random() * bloodSize + bloodSize * sizeVariance)
+      const bloodX = x - bloodWidth / 2 + size / 2 + Math.floor(Math.random() * size / 2) - size / 4
+      const bloodY = y - bloodHeight / 2 + size / 2 + Math.floor(Math.random() * size / 2) - size / 4
+      
+      // TEST POINT
+      // let point = document.createElement('div')
+      // point.classList.add('test-center')
+      // point.style.left = bloodX + 'px'
+      // point.style.top = bloodY + 'px'
+      // playground.append(point)
+      
       let blood = document.createElement('span')
-      blood.style.left = x + 'px'
-      blood.style.top = y + 'px'
-      blood.style.width = (Math.floor(Math.random()*bloodSize) + bloodSize / 3) + 'px'
-      blood.style.height = (Math.floor(Math.random()*bloodSize) + bloodSize / 3) + 'px'
+      blood.style.left = bloodX + 'px'
+      blood.style.top = bloodY + 'px'
+      blood.style.width = bloodWidth + 'px'
+      blood.style.height = bloodHeight + 'px'
       blood.classList.add('blood', `blood--${sizeType}`)
       // blood.classList.add(`blood--${Math.floor(Math.random()*8)}`)
       playground.append(blood)
