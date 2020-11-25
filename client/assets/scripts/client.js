@@ -1,3 +1,4 @@
+import Utils from './utils.js'
 import Player from './player.js'
 import Enemy from './enemy.js'
 
@@ -90,6 +91,7 @@ import Enemy from './enemy.js'
     thisPlayer.y = event.pageY
     thisPlayer.goalPos.x = event.pageX
     thisPlayer.goalPos.y = event.pageY
+    thisPlayer.velocity = thisPlayer.defaultVelocity
     sock.emit('player_resurrect', thisPlayer.getEmitParams())
   }
   
@@ -159,20 +161,24 @@ import Enemy from './enemy.js'
   
   const addBloodUnderElement = (element, sizeType = 'same', delay = 0) => {
     setTimeout(function () {
-      const {x, y} = this
-      let {size} = this
+      const {node, size} = this
+      const {x, y} = node.getBoundingClientRect()
       
+      let bloodSize = size
       switch (sizeType) {
         case 'small':
-          size = size / 4
+          bloodSize = size / 4
+          break
+        case 'medium':
+          bloodSize = size / 3
           break
       }
       
       let blood = document.createElement('span')
       blood.style.left = x + 'px'
       blood.style.top = y + 'px'
-      blood.style.width = (Math.floor(Math.random()*size) + size / 3) + 'px'
-      blood.style.height = (Math.floor(Math.random()*size) + size / 3) + 'px'
+      blood.style.width = (Math.floor(Math.random()*bloodSize) + bloodSize / 3) + 'px'
+      blood.style.height = (Math.floor(Math.random()*bloodSize) + bloodSize / 3) + 'px'
       blood.classList.add('blood')
       // blood.classList.add(`blood--${Math.floor(Math.random()*8)}`)
       playground.append(blood)

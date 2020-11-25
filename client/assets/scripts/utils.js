@@ -33,6 +33,12 @@ export const Utils = {
     a=f.a,t=t.a,f=a>=0||t>=0,a=f?a<0?t:t<0?a:a*P+t*p:0;
     if(h)return"rgb"+(f?"a(":"(")+r+","+g+","+b+(f?","+m(a*1000)/1000:"")+")";
     else return"#"+(4294967296+r*16777216+g*65536+b*256+(f?m(a*255):0)).toString(16).slice(1,f?undefined:-2)
+  },
+  
+  get2PosDistance(pos1, pos2) {
+    const dx = pos1.x - pos2.x
+    const dy = pos1.y - pos2.y
+    return Math.sqrt(dx * dx + dy * dy)
   }
 };
 

@@ -24,7 +24,7 @@ body {
   border-radius: 30px;
   transform: translate(-50%, -50%);
   box-sizing: border-box;
-  transition: 
+  transition:
     left 0.025s, 
     top 0.025s, 
     border-color 1s, 
@@ -32,8 +32,13 @@ body {
     opacity 0.5s;
 }
 .player.dead {
-  cursor: auto;
   border-color: #c97a7c;
+  transition:
+    left 1s, 
+    top 1s, 
+    border-color 1s, 
+    background-color 1s, 
+    opacity 0.5s;
 }
 .player::before {
   content: '';

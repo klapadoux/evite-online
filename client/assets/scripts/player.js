@@ -12,6 +12,7 @@ export class Player {
     this.size = size ? size : 30
     this.dead = dead ? dead : false
     
+    this.defaultVelocity = this.velocity
     this.deathCount = 0
     
     this.createNode()
@@ -39,13 +40,20 @@ export class Player {
     return {
       color: this.color,
       goalPos: this.goalPos,
+      velocity: this.velocity,
     }
   }
   
   die() {
+    console.log( Utils );
+    
     this.node.classList.add('dead')
     this.node.style.backgroundColor = Utils.changeColor( 0.75, this.color, '#acbcbf')
+    this.setDeathByVelocityPosition()
     this.deathCount++
+  }
+  
+  setDeathByVelocityPosition() {
     
   }
   

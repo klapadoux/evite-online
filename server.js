@@ -77,15 +77,22 @@ const checkCollisions = () => {
         enemy.x <= x + playerRadius
       ) {
         players[playerId].dead = true
+        players[playerId].velocity = enemy.velocity
+        players[playerId].goalPos = enemy.goalPos
+        
+        moveElement(players[playerId], 0.5)
+        
         io.emit('player_death', players[playerId].color)
       }
     })
   }
 }
 
-const updatePlayers = (delta) => {
+const updateAllPlayers = (delta) => {
   for (playerId in players) {
-    moveElement(players[playerId], delta)
+    if (!players[playerId].dead) {
+      moveElement(players[playerId], delta)
+    }
   }
 }
 
@@ -100,11 +107,12 @@ const getPlayerByColor = (playerColor) => {
 }
 
 const updatePlayer = (data, isPlayerResurrecting = false) => {
-  const {color} = data
+  const {color, velocity} = data
   const player = getPlayerByColor(color)
   
   if (player) {
     player.goalPos = data.goalPos
+    player.velocity = data.velocity
     
     if (isPlayerResurrecting) {
       player.x = data.goalPos.x
@@ -155,7 +163,7 @@ const updateGameboard = (delta) => {
   checkCollisions()
   updateEnemies(delta)
   
-  updatePlayers(delta)
+  updateAllPlayers(delta)
   
   emitUpdateToClients()
   
