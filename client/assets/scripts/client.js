@@ -15,7 +15,7 @@ import Objective from './objective.js'
   
   const addNodeToCleanupList = (node) => {
     cleanupList.push(node)
-    if (150 < cleanupList.length) {
+    if (200 < cleanupList.length) {
       const nodeToBeCleaned = cleanupList.shift()
       if (nodeToBeCleaned) {
         nodeToBeCleaned.style.opacity = 0
@@ -64,6 +64,7 @@ import Objective from './objective.js'
       addBloodUnderElement(player, type, delay)
     }
     
+    addBloodUnderElement(player, 'same', 625)
     addBloodUnderElement(player, 'same', 650)
     player.die()
     addNodeToCleanupList(player.node)
