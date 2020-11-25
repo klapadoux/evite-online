@@ -59,6 +59,9 @@ const deleteDeadEnemies = () => {
   })
 }
 
+/**
+ * @todo Corriger les collisions
+ */
 const checkCollisions = () => {
   // Players circle against enemies square.
   for (let playerId in players) {
@@ -77,15 +80,20 @@ const checkCollisions = () => {
         enemy.x <= x + playerRadius
       ) {
         players[playerId].dead = true
+        players[playerId].velocity = enemy.velocity
+        players[playerId].goalPos = enemy.goalPos
+        
+        moveElement(players[playerId], 0.5)
+        
         io.emit('player_death', players[playerId].color)
       }
     })
   }
 }
 
-const updatePlayers = (delta) => {
+const updateAllPlayers = (delta) => {
   for (playerId in players) {
-    if (! players[playerId].dead) {
+    if (!players[playerId].dead) {
       moveElement(players[playerId], delta)
     }
   }
@@ -102,11 +110,12 @@ const getPlayerByColor = (playerColor) => {
 }
 
 const updatePlayer = (data, isPlayerResurrecting = false) => {
-  const {color} = data
+  const {color, velocity} = data
   const player = getPlayerByColor(color)
   
   if (player) {
     player.goalPos = data.goalPos
+    player.velocity = data.velocity
     
     if (isPlayerResurrecting) {
       player.x = data.goalPos.x
@@ -153,19 +162,21 @@ const moveElement = (element, delta = 1) => {
 }
 
 const updateGameboard = (delta) => {
-  checkEnnemiesGestation()
-  checkCollisions()
-  updateEnemies(delta)
+  if (doGameLoopEnnemiesCheck) {
+    checkEnnemiesGestation()
+    checkCollisions()
+    updateEnemies(delta)
+  }
   
-  updatePlayers(delta)
+  updateAllPlayers(delta)
   
   emitUpdateToClients()
   
-  deleteDeadEnemies()
+  if (doGameLoopEnnemiesCheck) {
+    deleteDeadEnemies()
+  }
   
-  // if (doGameLoopEnnemiesCheck) {
-  // }
-  // doGameLoopEnnemiesCheck =  ! doGameLoopEnnemiesCheck
+  doGameLoopEnnemiesCheck =  ! doGameLoopEnnemiesCheck
 }
 
 const emitUpdateToClients = () => {
@@ -177,7 +188,7 @@ const emitUpdateToClients = () => {
 
 const startGameloopIfNeeded = () => {
   if (!gameLoopId) {
-    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 22)
+    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 30)
   }
 }
 

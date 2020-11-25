@@ -1,3 +1,4 @@
+import Utils from './utils.js'
 import Player from './player.js'
 import Enemy from './enemy.js'
 
@@ -12,7 +13,7 @@ import Enemy from './enemy.js'
   
   const addNodeToCleanupList = (node) => {
     cleanupList.push(node)
-    if (100 < cleanupList.length) {
+    if (150 < cleanupList.length) {
       const nodeToBeCleaned = cleanupList.shift()
       if (nodeToBeCleaned) {
         nodeToBeCleaned.style.opacity = 0
@@ -38,6 +39,10 @@ import Enemy from './enemy.js'
     playground.append(player.node)
     playersOnBoard[player.color] = player
     
+    if (player.dead) {
+      killPlayer(player)
+    }
+    
     if (isThisOurPlayer(player)) {
       window.addEventListener('mousemove', doEventMouseMove)
     }
@@ -49,6 +54,15 @@ import Enemy from './enemy.js'
       return false;
     }
     
+    const bloodCount = Math.floor(Math.random() * 5)
+    const bloodTypes = ['small', 'medium']
+    for (let i = 0; i <= bloodCount; i++) {
+      const type = bloodTypes[Math.floor(Math.random() * bloodTypes.length)]
+      const delay = Math.random() * 600
+      addBloodUnderElement(player, type, delay)
+    }
+    
+    addBloodUnderElement(player, 'same', 650)
     player.die()
     addNodeToCleanupList(player.node)
     
@@ -82,12 +96,8 @@ import Enemy from './enemy.js'
     thisPlayer.y = event.pageY
     thisPlayer.goalPos.x = event.pageX
     thisPlayer.goalPos.y = event.pageY
+    thisPlayer.velocity = thisPlayer.defaultVelocity
     sock.emit('player_resurrect', thisPlayer.getEmitParams())
-  }
-  
-  const addEnemyToGame = (enemy) => {
-    playground.append(enemy.node)
-    enemiesOnBoard[enemy.id] = enemy
   }
   
   const removePlayerFromGame = (player) => {
@@ -130,6 +140,11 @@ import Enemy from './enemy.js'
     }
   }
   
+  const addEnemyToGame = (enemy) => {
+    playground.append(enemy.node)
+    enemiesOnBoard[enemy.id] = enemy
+  }
+  
   /**
    * @param {object} enemyArgs - Contains the basic to create and/or move an enemy.
    */
@@ -148,6 +163,48 @@ import Enemy from './enemy.js'
       removeEnemyFromGame(getEnemyById(id))
     }
   }
+  
+  const addBloodUnderElement = (element, sizeType = 'same', delay = 0) => {
+    setTimeout(function () {
+      const {node, size} = this
+      const {x, y} = node.getBoundingClientRect()
+      
+      let bloodSize = size
+      let sizeVariance = 0.33
+      switch (sizeType) {
+        case 'small':
+          bloodSize = size / 5
+          break
+        case 'medium':
+          bloodSize = size / 3
+          sizeVariance = 0.2
+          break
+      }
+      
+      const bloodWidth = Math.floor(Math.random() * bloodSize + bloodSize * sizeVariance)
+      const bloodHeight = Math.floor(Math.random() * bloodSize + bloodSize * sizeVariance)
+      const bloodX = x - bloodWidth / 2 + size / 2 + Math.floor(Math.random() * size / 2) - size / 4
+      const bloodY = y - bloodHeight / 2 + size / 2 + Math.floor(Math.random() * size / 2) - size / 4
+      
+      // TEST POINT
+      // let point = document.createElement('div')
+      // point.classList.add('test-center')
+      // point.style.left = bloodX + 'px'
+      // point.style.top = bloodY + 'px'
+      // playground.append(point)
+      
+      let blood = document.createElement('span')
+      blood.style.left = bloodX + 'px'
+      blood.style.top = bloodY + 'px'
+      blood.style.width = bloodWidth + 'px'
+      blood.style.height = bloodHeight + 'px'
+      blood.classList.add('blood', `blood--${sizeType}`)
+      playground.append(blood)
+      addNodeToCleanupList(blood)
+    }.bind(element), delay);
+  }
+  
+  
   
   sock.on('init_player', args => {
     thisPlayer = new Player(args)
