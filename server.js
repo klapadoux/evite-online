@@ -4,6 +4,11 @@ const socketio = require('socket.io')
 const randomColor = require('randomcolor')
 const gameloop = require('node-gameloop')
 
+const Utils = require('./server/utils')
+const {createPlayer} = require('./server/player')
+const {createObjective, checkObjectivesGestation, getObjectives} = require('./server/objective')
+
+
 
 const app = express()
 app.use(express.static(`${__dirname}/client`))
@@ -20,6 +25,7 @@ let gameLoopId = null
 let doGameLoopEnnemiesCheck = true
 let ennemiesBirthCount = 0
 let enemiesAreGestating = false
+
 
 const checkEnnemiesGestation = () => {
   // Entamer la création d'ennemies si ce n'est pas déjà en cours.
@@ -144,7 +150,7 @@ const getPlayersEmitParams = () => {
 const moveElement = (element, delta = 1) => {
   // Calculating next step.
   const nextStep = element.velocity * delta
-  const remainingDistance = get2PosDistance(element.goalPos, {x: element.x, y: element.y})
+  const remainingDistance = Utils.get2PosDistance(element.goalPos, {x: element.x, y: element.y})
   let reachedGoal = false
   if (nextStep < remainingDistance) {
     const ratio = nextStep / remainingDistance
@@ -163,6 +169,8 @@ const moveElement = (element, delta = 1) => {
 
 const updateGameboard = (delta) => {
   if (doGameLoopEnnemiesCheck) {
+    checkObjectivesGestation()
+    
     checkEnnemiesGestation()
     checkCollisions()
     updateEnemies(delta)
@@ -183,6 +191,7 @@ const emitUpdateToClients = () => {
   io.emit('tick_update', {
     enemies: enemies,
     players: getPlayersEmitParams(),
+    objectives: getObjectives(),
   })
 }
 
@@ -197,12 +206,6 @@ const stopGameloopIfNeeded = () => {
     gameloop.clearGameLoop(gameLoopId)
     gameLoopId = null
   }
-}
-
-const get2PosDistance = (pos1, pos2) => {
-  const dx = pos1.x - pos2.x
-  const dy = pos1.y - pos2.y
-  return Math.sqrt(dx * dx + dy * dy)
 }
 
 const getRandomColor = (tries = 0) => {
@@ -223,17 +226,7 @@ const getRandomColor = (tries = 0) => {
 
 
 io.on('connection', socket => {
-  players[socket.id] = {
-    color: getRandomColor(),
-    x: 300,
-    y: 300,
-    size: 30,
-    goalPos: {
-      x: 300,
-      y: 300,
-    },
-    velocity: 2000,
-  }
+  players[socket.id] = createPlayer({ color: getRandomColor() })
   socket.emit('init_player', players[socket.id])
   
   socket.on('mousemove', playerParams => {

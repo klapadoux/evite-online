@@ -1,6 +1,7 @@
 import Utils from './utils.js'
 import Player from './player.js'
 import Enemy from './enemy.js'
+import Objective from './objective.js'
 
 (() => {
   const sock = io()
@@ -8,6 +9,7 @@ import Enemy from './enemy.js'
   let thisPlayer
   const playersOnBoard = {}
   const enemiesOnBoard = {}
+  const objectivesOnBoard = {}
   const cleanupList = []
   const playground = document.getElementById('playground')
   
@@ -145,9 +147,6 @@ import Enemy from './enemy.js'
     enemiesOnBoard[enemy.id] = enemy
   }
   
-  /**
-   * @param {object} enemyArgs - Contains the basic to create and/or move an enemy.
-   */
   const updateEnemy = (enemyArgs) => {
     const {id} = enemyArgs
     if ('undefined' === typeof enemiesOnBoard[id]) {
@@ -160,9 +159,51 @@ import Enemy from './enemy.js'
   const deleteEnemy = (enemyArgs) => {
     const {id} = enemyArgs
     if ('undefined' !== typeof enemiesOnBoard[id]) {
-      removeEnemyFromGame(getEnemyById(id))
+      removeObjectiveFromGame(getEnemyById(id))
     }
   }
+  
+  
+  
+  
+  const getObjectiveById = (id) => {
+    if ('undefined' !== typeof objectivesOnBoard[id]) {
+      return objectivesOnBoard[id]
+    }
+    
+    return null
+  }
+  
+  const removeObjectiveFromGame = (objective) => {
+    if (objective) {
+      objective.node.remove()
+      delete objectivesOnBoard[objective.id]
+    }
+  }
+  
+  const addObjectiveToGame = (objective) => {
+    playground.append(objective.node)
+    objectivesOnBoard[objective.id] = objective
+  }
+
+  const updateObjective = (objectiveArgs) => {
+    const {id} = objectiveArgs
+    if ('undefined' === typeof objectivesOnBoard[id]) {
+      addObjectiveToGame(new Objective(objectiveArgs))
+    } else {
+      objectivesOnBoard[id].update(objectiveArgs)
+    }
+  }
+  
+  const deleteObjective = (objectiveArgs) => {
+    const {id} = objectiveArgs
+    if ('undefined' !== typeof objectivesOnBoard[id]) {
+      removeObjectiveFromGame(getObjectiveById(id))
+    }
+  }
+  
+  
+  
   
   const addBloodUnderElement = (element, sizeType = 'same', delay = 0) => {
     setTimeout(function () {
@@ -224,8 +265,7 @@ import Enemy from './enemy.js'
   })
   
   sock.on('tick_update', tickInfo => {
-    const {enemies, players} = tickInfo
-    
+    const {enemies, players, objectives} = tickInfo
     players.forEach(playerData => {
       updatePlayer(playerData)
     })
@@ -235,6 +275,15 @@ import Enemy from './enemy.js'
         deleteEnemy(enemyData)
       } else {
         updateEnemy(enemyData)
+      }
+    })
+    
+    objectives.forEach(objectiveData => {
+      console.log( objectiveData );
+      if (objectiveData.dead) {
+        deleteObjective(objectiveData)
+      } else {
+        updateObjective(objectiveData)
       }
     })
   })
