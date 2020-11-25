@@ -59,6 +59,9 @@ const deleteDeadEnemies = () => {
   })
 }
 
+/**
+ * @todo Corriger les collisions
+ */
 const checkCollisions = () => {
   // Players circle against enemies square.
   for (let playerId in players) {
