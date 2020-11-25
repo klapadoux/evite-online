@@ -55,9 +55,9 @@ import Enemy from './enemy.js'
     }
     
     addBloodUnderElement(player, 'small')
-    addBloodUnderElement(player, 'medium', 100)
-    addBloodUnderElement(player, 'same', 500)
-    addBloodUnderElement(player, 'same', 1000)
+    addBloodUnderElement(player, 'medium', 200)
+    addBloodUnderElement(player, 'same', 600)
+    addBloodUnderElement(player, 'same', 650)
     player.die()
     addNodeToCleanupList(player.node)
     
@@ -170,7 +170,7 @@ import Enemy from './enemy.js'
           bloodSize = size / 4
           break
         case 'medium':
-          bloodSize = size / 3
+          bloodSize = size / 2
           break
       }
       
@@ -179,7 +179,7 @@ import Enemy from './enemy.js'
       blood.style.top = y + 'px'
       blood.style.width = (Math.floor(Math.random()*bloodSize) + bloodSize / 3) + 'px'
       blood.style.height = (Math.floor(Math.random()*bloodSize) + bloodSize / 3) + 'px'
-      blood.classList.add('blood')
+      blood.classList.add('blood', `blood--${sizeType}`)
       // blood.classList.add(`blood--${Math.floor(Math.random()*8)}`)
       playground.append(blood)
     }.bind(element), delay);
