@@ -12,6 +12,8 @@ import Objective from './objective.js'
   const objectivesOnBoard = {}
   const cleanupList = []
   const playground = document.getElementById('playground')
+  const scoreCounters = document.querySelectorAll('.score-counter')
+  let actualScore = 0
   
   const addNodeToCleanupList = (node) => {
     cleanupList.push(node)
@@ -204,7 +206,14 @@ import Objective from './objective.js'
   }
   
   
-  
+  const updateScoreCounters = (score) => {
+    if (actualScore === score ) {
+      return;
+    }
+    scoreCounters.forEach(counter => {
+      counter.innerHTML = score
+    })
+  }
   
   const addBloodUnderElement = (element, sizeType = 'same', delay = 0) => {
     setTimeout(function () {
@@ -266,7 +275,8 @@ import Objective from './objective.js'
   })
   
   sock.on('tick_update', tickInfo => {
-    const {enemies, players, objectives} = tickInfo
+    const {enemies, players, objectives, score} = tickInfo
+    
     players.forEach(playerData => {
       updatePlayer(playerData)
     })
@@ -286,5 +296,7 @@ import Objective from './objective.js'
         updateObjective(objectiveData)
       }
     })
+    
+    updateScoreCounters(score)
   })
 })()

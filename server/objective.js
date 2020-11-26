@@ -18,12 +18,12 @@ const createObjective = (data) => {
 
 const checkObjectivesGestation = () => {
   // Entamer la création d'ennemies si ce n'est pas déjà en cours.
-  if (!objectivesAreGestating) {
+  if (3 > objectives.length && !objectivesAreGestating) {
     objectivesAreGestating = true
     setTimeout(() => {
       objectives.push(createObjective())
       objectivesAreGestating = false
-    }, 5000);
+    }, 3000);
   }
 }
 
@@ -39,7 +39,6 @@ const deleteDeadObjectives = () => {
   })
 }
 
-module.exports.createObjective = createObjective
 module.exports.checkObjectivesGestation = checkObjectivesGestation
 module.exports.getObjectives = getObjectives
 module.exports.deleteDeadObjectives = deleteDeadObjectives

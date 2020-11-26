@@ -6,7 +6,7 @@ const gameloop = require('node-gameloop')
 
 const Utils = require('./server/utils')
 const {createPlayer} = require('./server/player')
-const {createObjective, checkObjectivesGestation, getObjectives, deleteDeadObjectives} = require('./server/objective')
+const {checkObjectivesGestation, getObjectives, deleteDeadObjectives} = require('./server/objective')
 
 
 
@@ -48,7 +48,7 @@ const checkEnnemiesGestation = () => {
       })
       
       enemiesAreGestating = false
-    }, 2000 / (Object.keys(players).length + 1));
+    }, 5000 / Math.max(score, 1));
   }
 }
 
