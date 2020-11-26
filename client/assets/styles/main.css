@@ -18,6 +18,8 @@ body {
 }
 
 .player {
+  /* pointer-events: none;
+  user-select: none; */
   position: absolute;
   z-index: 1;
   border: 2px solid white;
@@ -51,6 +53,8 @@ body {
 }
 
 .blood {
+  /* pointer-events: none;
+  user-select: none; */
   display: block;
   position: absolute;
   z-index: 0;
@@ -63,51 +67,9 @@ body {
   transition: opacity 0.5s;
   animation: blood 4s 0s 1 forwards;
 }
-.blood--1 {
-  width: 80%;
-  height: 80%;
-  transform-origin: 50% 100%;
-}
-.blood--2 {
-  width: 50%;
-  height: 70%;
-  transform-origin: 75% 25%;
-}
-.blood--3 {
-  width: 70%;
-  height: 65%;
-  transform-origin: 50% 100%;
-}
-.blood--4 {
-  width: 40%;
-  height: 55%;
-  transform-origin: 65% 25%;
-}
-.blood--5 {
-  width: 95%;
-  height: 80%;
-  transform-origin: 50% 75%;
-}
-.blood--6 {
-  width: 95%;
-  height: 95%;
-  transform-origin: 0 50%;
-}
-.blood--7 {
-  width: 35%;
-  height: 55%;
-  transform-origin: 25% 80%;
-}
-
-.enemy {
-  pointer-events: none;
-  user-select: none;
-  position: absolute;
-  z-index: 2;
-  border: 2px solid black;
-  background: red;
-  box-sizing: border-box;
-  transition: transform 0.15s;
+.blood--small,
+.blood--medium {
+  animation: none;
 }
 
 @keyframes blood {
@@ -119,6 +81,60 @@ body {
   }
 }
 
+
+.enemy {
+  /* pointer-events: none;
+  user-select: none; */
+  position: absolute;
+  z-index: 2;
+  border: 2px solid black;
+  background: red;
+  box-sizing: border-box;
+  transition: transform 0.15s;
+}
+
+.objective {
+  /* pointer-events: none;
+  user-select: none; */
+  position: absolute;
+  z-index: 3;
+  border: 2px solid #ffe62f;
+  background: #98faee;
+  box-sizing: border-box;
+  transform: rotate(45deg);
+  transition: opacity 0.3s, transform 0.3s;
+  animation: star-rotation linear 4s 0s infinite;
+}
+
+@keyframes star-rotation {
+  0% {
+    transform: scale(0.9) rotate(45deg);
+  }
+  25% {
+    transform: scale(1.1) rotate(135deg);
+  }
+  50% {
+    transform: scale(0.9) rotate(225deg);
+  }
+  75% {
+    transform: scale(1.1) rotate(315deg);
+  }
+  100% {
+    transform: scale(0.9) rotate(405deg);
+  }
+}
+
+
+.score-counter--overlay {
+  position: absolute;
+  z-index: 999;
+  bottom: 0;
+  left: 0;
+  padding: 10px;
+  font: bold 16px arial;
+  color: #fff;
+  background: #000;
+}
 
 
 .test-center {
