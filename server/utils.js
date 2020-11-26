@@ -1,9 +1,9 @@
 /**
- * SAME AS SERVER
+ * SAME AS CLIENT
  * 
  * @todo Avoir une compilation gulp et donner ce fichier aux 2 au lieu de l'avoir 2 fois.
  */
-export const Utils = {
+const Utils = {
   
   /**
    * Change color
@@ -47,4 +47,4 @@ export const Utils = {
   }
 };
 
-export default Utils
+module.exports = Utils

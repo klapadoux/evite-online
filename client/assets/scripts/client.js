@@ -1,6 +1,7 @@
 import Utils from './utils.js'
 import Player from './player.js'
 import Enemy from './enemy.js'
+import Objective from './objective.js'
 
 (() => {
   const sock = io()
@@ -8,12 +9,15 @@ import Enemy from './enemy.js'
   let thisPlayer
   const playersOnBoard = {}
   const enemiesOnBoard = {}
+  const objectivesOnBoard = {}
   const cleanupList = []
   const playground = document.getElementById('playground')
+  const scoreCounters = document.querySelectorAll('.score-counter')
+  let actualScore = 0
   
   const addNodeToCleanupList = (node) => {
     cleanupList.push(node)
-    if (150 < cleanupList.length) {
+    if (200 < cleanupList.length) {
       const nodeToBeCleaned = cleanupList.shift()
       if (nodeToBeCleaned) {
         nodeToBeCleaned.style.opacity = 0
@@ -62,6 +66,7 @@ import Enemy from './enemy.js'
       addBloodUnderElement(player, type, delay)
     }
     
+    addBloodUnderElement(player, 'same', 625)
     addBloodUnderElement(player, 'same', 650)
     player.die()
     addNodeToCleanupList(player.node)
@@ -145,9 +150,6 @@ import Enemy from './enemy.js'
     enemiesOnBoard[enemy.id] = enemy
   }
   
-  /**
-   * @param {object} enemyArgs - Contains the basic to create and/or move an enemy.
-   */
   const updateEnemy = (enemyArgs) => {
     const {id} = enemyArgs
     if ('undefined' === typeof enemiesOnBoard[id]) {
@@ -160,8 +162,57 @@ import Enemy from './enemy.js'
   const deleteEnemy = (enemyArgs) => {
     const {id} = enemyArgs
     if ('undefined' !== typeof enemiesOnBoard[id]) {
-      removeEnemyFromGame(getEnemyById(id))
+      removeObjectiveFromGame(getEnemyById(id))
     }
+  }
+  
+  
+  
+  
+  const getObjectiveById = (id) => {
+    if ('undefined' !== typeof objectivesOnBoard[id]) {
+      return objectivesOnBoard[id]
+    }
+    
+    return null
+  }
+  
+  const removeObjectiveFromGame = (objective) => {
+    if (objective) {
+      objective.node.remove()
+      delete objectivesOnBoard[objective.id]
+    }
+  }
+  
+  const addObjectiveToGame = (objective) => {
+    playground.append(objective.node)
+    objectivesOnBoard[objective.id] = objective
+  }
+
+  const updateObjective = (objectiveArgs) => {
+    const {id} = objectiveArgs
+    if ('undefined' === typeof objectivesOnBoard[id]) {
+      addObjectiveToGame(new Objective(objectiveArgs))
+    } else {
+      objectivesOnBoard[id].update(objectiveArgs)
+    }
+  }
+  
+  const deleteObjective = (objectiveArgs) => {
+    const {id} = objectiveArgs
+    if ('undefined' !== typeof objectivesOnBoard[id]) {
+      removeObjectiveFromGame(getObjectiveById(id))
+    }
+  }
+  
+  
+  const updateScoreCounters = (score) => {
+    if (actualScore === score ) {
+      return;
+    }
+    scoreCounters.forEach(counter => {
+      counter.innerHTML = score
+    })
   }
   
   const addBloodUnderElement = (element, sizeType = 'same', delay = 0) => {
@@ -224,7 +275,7 @@ import Enemy from './enemy.js'
   })
   
   sock.on('tick_update', tickInfo => {
-    const {enemies, players} = tickInfo
+    const {enemies, players, objectives, score} = tickInfo
     
     players.forEach(playerData => {
       updatePlayer(playerData)
@@ -237,5 +288,15 @@ import Enemy from './enemy.js'
         updateEnemy(enemyData)
       }
     })
+    
+    objectives.forEach(objectiveData => {
+      if (objectiveData.dead) {
+        deleteObjective(objectiveData)
+      } else {
+        updateObjective(objectiveData)
+      }
+    })
+    
+    updateScoreCounters(score)
   })
 })()
