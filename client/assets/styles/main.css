@@ -72,6 +72,16 @@ body {
   animation: none;
 }
 
+@keyframes blood {
+  0% {
+    transform: scale(0.7);
+  }
+  100% {
+    transform: scale(2);
+  }
+}
+
+
 .enemy {
   /* pointer-events: none;
   user-select: none; */
@@ -93,14 +103,24 @@ body {
   box-sizing: border-box;
   transform: rotate(45deg);
   transition: opacity 0.3s, transform 0.3s;
+  animation: star-rotation linear 4s 0s infinite;
 }
 
-@keyframes blood {
+@keyframes star-rotation {
   0% {
-    transform: scale(0.7);
+    transform: scale(0.9) rotate(45deg);
+  }
+  25% {
+    transform: scale(1.1) rotate(135deg);
+  }
+  50% {
+    transform: scale(0.9) rotate(225deg);
+  }
+  75% {
+    transform: scale(1.1) rotate(315deg);
   }
   100% {
-    transform: scale(2);
+    transform: scale(0.9) rotate(405deg);
   }
 }
 

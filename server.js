@@ -6,7 +6,7 @@ const gameloop = require('node-gameloop')
 
 const Utils = require('./server/utils')
 const {createPlayer} = require('./server/player')
-const {createObjective, checkObjectivesGestation, getObjectives} = require('./server/objective')
+const {createObjective, checkObjectivesGestation, getObjectives, deleteDeadObjectives} = require('./server/objective')
 
 
 
@@ -19,6 +19,7 @@ const io = socketio(server)
 const players = {}
 const enemies = []
 const usedColors = []
+let score = 0
 
 let gameLoopId = null
 
@@ -75,10 +76,10 @@ const checkCollisions = () => {
       continue
     }
     
+    const {x, y, size} = players[playerId]
+    const playerRadius = size / 2
+    
     enemies.forEach(enemy => {
-      const {x, y, size} = players[playerId]
-      const playerRadius = size / 2
-
       if (
         enemy.y <= y + playerRadius &&
         enemy.x + enemy.size >= x - playerRadius &&
@@ -91,7 +92,26 @@ const checkCollisions = () => {
         
         moveElement(players[playerId], 0.5)
         
+        score -= 1
+        
         io.emit('player_death', players[playerId].color)
+      }
+    })
+    
+    // Check again for player death.
+    if (players[playerId].dead) {
+      continue
+    }
+    
+    const objectives = getObjectives()
+    objectives.forEach(objective => {
+      const distance = Utils.get2PosDistance(
+        {x: x, y: y},
+        {x: objective.x + objective.size / 2, y: objective.y + objective.size / 2}
+      )
+      if ( distance <= objective.size / 2 + playerRadius ) {
+        score += 1
+        objective.dead = true
       }
     })
   }
@@ -182,6 +202,7 @@ const updateGameboard = (delta) => {
   
   if (doGameLoopEnnemiesCheck) {
     deleteDeadEnemies()
+    deleteDeadObjectives()
   }
   
   doGameLoopEnnemiesCheck =  ! doGameLoopEnnemiesCheck
@@ -192,6 +213,7 @@ const emitUpdateToClients = () => {
     enemies: enemies,
     players: getPlayersEmitParams(),
     objectives: getObjectives(),
+    score: score,
   })
 }
 

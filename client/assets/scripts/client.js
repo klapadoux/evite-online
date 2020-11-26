@@ -280,7 +280,6 @@ import Objective from './objective.js'
     })
     
     objectives.forEach(objectiveData => {
-      console.log( objectiveData );
       if (objectiveData.dead) {
         deleteObjective(objectiveData)
       } else {
