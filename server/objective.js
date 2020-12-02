@@ -7,10 +7,8 @@ const createObjective = (data) => {
   
   return {
     id: ++objectivesBirthCount,
-    x: Math.floor(Math.random() * (500 - size * 2)) + size,
-    y: Math.floor(Math.random() * (500 - size * 2)) + size,
-    // x: Math.floor(Math.random() * (1920 - size * 2)) + size,
-    // y: Math.floor(Math.random() * (1080 - size * 2)) + size,
+    x: Math.floor(Math.random() * (1920 - size * 2)) + size,
+    y: Math.floor(Math.random() * (1080 - size * 2)) + size,
     size: size,
     dead: false,
   }
@@ -18,12 +16,12 @@ const createObjective = (data) => {
 
 const checkObjectivesGestation = () => {
   // Entamer la création d'ennemies si ce n'est pas déjà en cours.
-  if (3 > objectives.length && !objectivesAreGestating) {
+  if (5 > objectives.length && !objectivesAreGestating) {
     objectivesAreGestating = true
     setTimeout(() => {
       objectives.push(createObjective())
       objectivesAreGestating = false
-    }, 3000);
+    }, 2500);
   }
 }
 
