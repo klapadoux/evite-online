@@ -88,7 +88,7 @@ body {
   /* border: 2px solid black; */
   background: #e91b53;
   box-sizing: border-box;
-  transition: transform 0.15s;
+  transition: transform 0.15s, background-color 5s linear;
   /* animation: colors 10s 0s infinite forwards; */
 }
 @keyframes colors {

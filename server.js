@@ -38,7 +38,7 @@ const checkEnnemiesGestation = () => {
       const goalY = (100 > score) ? y : Math.floor(Math.random() * 1080) - size
       enemies.push({
         id: ++ennemiesBirthCount,
-        x: size * -1.25,
+        x: size * -1.25 - 250,
         y: y,
         goalPos: {
           x: 1920,
@@ -112,7 +112,7 @@ const checkCollisions = () => {
         {x: objective.x + objective.size / 2, y: objective.y + objective.size / 2}
       )
       if ( distance <= objective.size / 2 + playerRadius ) {
-        score += 10
+        score += 2
         objective.dead = true
       }
     })
