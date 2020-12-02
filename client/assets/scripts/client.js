@@ -15,6 +15,14 @@ import Objective from './objective.js'
   const scoreCounters = document.querySelectorAll('.score-counter')
   let actualScore = 0
   
+  const colors = [
+    '#e91b53',
+    '#be40d9',
+    '#e9ad54',
+  ]
+  let activeColorIndex = colors.length - 1
+  
+  
   const addNodeToCleanupList = (node) => {
     cleanupList.push(node)
     if (200 < cleanupList.length) {
@@ -147,6 +155,7 @@ import Objective from './objective.js'
   const updateEnemy = (enemyArgs) => {
     const {id} = enemyArgs
     if ('undefined' === typeof enemiesOnBoard[id]) {
+      enemyArgs.color = colors[activeColorIndex]
       addEnemyToGame(new Enemy(enemyArgs))
     } else {
       enemiesOnBoard[id].update(enemyArgs)
@@ -253,6 +262,29 @@ import Objective from './objective.js'
       addNodeToCleanupList(blood)
     }.bind(element), delay);
   }
+  
+  const getNextColor = () => {
+    activeColorIndex--
+    let i = (0 <= activeColorIndex) ? activeColorIndex : activeColorIndex = colors.length - 1
+    return colors[activeColorIndex]
+  }
+  
+  /**
+   * For now, it's a simple loop.
+   * What it does :
+   *   - Each 5s, change color of enemies.
+   */
+  const doAnimationLoop = () => {
+    const newColor = getNextColor()
+    for (const enemy in enemiesOnBoard) {
+      enemiesOnBoard[enemy].node.style.backgroundColor = newColor
+    }
+    
+    setTimeout(() => {
+      window.requestAnimationFrame(doAnimationLoop)
+    }, 5000);
+  }
+  window.requestAnimationFrame(doAnimationLoop)
   
   
   

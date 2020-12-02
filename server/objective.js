@@ -7,8 +7,8 @@ const createObjective = (data) => {
   
   return {
     id: ++objectivesBirthCount,
-    x: Math.floor(Math.random() * (1920 - size * 3)) + size,
-    y: Math.floor(Math.random() * (1080 - size * 3)) + size,
+    x: Math.floor(Math.random() * (1920 - size * 4)) + size,
+    y: Math.floor(Math.random() * (1080 - size * 4)) + size,
     size: size,
     dead: false,
   }
@@ -21,7 +21,7 @@ const checkObjectivesGestation = () => {
     setTimeout(() => {
       objectives.push(createObjective())
       objectivesAreGestating = false
-    }, 2500);
+    }, 1500);
   }
 }
 
