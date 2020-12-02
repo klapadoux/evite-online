@@ -9,7 +9,6 @@ import Objective from './objective.js'
   let thisPlayer
   const playersOnBoard = {}
   const enemiesOnBoard = {}
-  const enemiesShadowOnBoard = {}
   const objectivesOnBoard = {}
   const cleanupList = []
   const playground = document.getElementById('playground')
