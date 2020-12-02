@@ -7,8 +7,8 @@ const createObjective = (data) => {
   
   return {
     id: ++objectivesBirthCount,
-    x: Math.floor(Math.random() * (1920 - size * 2)) + size,
-    y: Math.floor(Math.random() * (1080 - size * 2)) + size,
+    x: Math.floor(Math.random() * (1920 - size * 3)) + size,
+    y: Math.floor(Math.random() * (1080 - size * 3)) + size,
     size: size,
     dead: false,
   }
