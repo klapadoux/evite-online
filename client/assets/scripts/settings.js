@@ -1,0 +1,1 @@
+const HAS_SHADOW = true;

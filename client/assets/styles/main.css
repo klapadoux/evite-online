@@ -18,10 +18,9 @@ body {
 }
 
 .player {
-  /* pointer-events: none;
-  user-select: none; */
+  user-select: none;
   position: absolute;
-  z-index: 1;
+  z-index: 10;
   border: 2px solid white;
   border-radius: 30px;
   transform: translate(-50%, -50%);
@@ -34,6 +33,7 @@ body {
     opacity 0.5s;
 }
 .player.dead {
+  z-index: 9;
   border-color: #c97a7c;
   transition:
     left 0.5s ease-out, 
@@ -53,8 +53,7 @@ body {
 }
 
 .blood {
-  /* pointer-events: none;
-  user-select: none; */
+  user-select: none;
   display: block;
   position: absolute;
   z-index: 0;
@@ -83,12 +82,35 @@ body {
 
 
 .enemy {
-  /* pointer-events: none;
-  user-select: none; */
+  user-select: none;
   position: absolute;
-  z-index: 2;
-  border: 2px solid black;
-  background: red;
+  z-index: 21;
+  /* border: 2px solid black; */
+  background: #e91b53;
+  box-sizing: border-box;
+  transition: transform 0.15s, background-color 5s linear;
+  /* animation: colors 10s 0s infinite forwards; */
+}
+@keyframes colors {
+  0% {
+    background:  #e91b53;
+  }
+  33.33% {
+    background:  #be40d9;
+  }
+  66.66% {
+    background: #e9ad54
+  }
+  100% {
+    background:  #e91b53;
+  }
+}
+.enemy-shadow {
+  user-select: none;
+  position: absolute;
+  z-index: 20;
+  /* border: 2px solid black; */
+  background: black;
   box-sizing: border-box;
   transition: transform 0.15s;
 }
@@ -97,7 +119,7 @@ body {
   /* pointer-events: none;
   user-select: none; */
   position: absolute;
-  z-index: 3;
+  z-index: 50;
   border: 2px solid #ffe62f;
   background: #98faee;
   box-sizing: border-box;

@@ -15,6 +15,14 @@ import Objective from './objective.js'
   const scoreCounters = document.querySelectorAll('.score-counter')
   let actualScore = 0
   
+  const colors = [
+    '#e91b53',
+    '#be40d9',
+    '#e9ad54',
+  ]
+  let activeColorIndex = colors.length - 1
+  
+  
   const addNodeToCleanupList = (node) => {
     cleanupList.push(node)
     if (200 < cleanupList.length) {
@@ -65,9 +73,9 @@ import Objective from './objective.js'
       const delay = Math.random() * 600
       addBloodUnderElement(player, type, delay)
     }
-    
     addBloodUnderElement(player, 'same', 625)
     addBloodUnderElement(player, 'same', 650)
+    
     player.die()
     addNodeToCleanupList(player.node)
     
@@ -138,21 +146,16 @@ import Objective from './objective.js'
     return null
   }
   
-  const removeEnemyFromGame = (enemy) => {
-    if (enemy) {
-      enemy.node.remove()
-      delete enemiesOnBoard[enemy.id]
-    }
-  }
-  
   const addEnemyToGame = (enemy) => {
     playground.append(enemy.node)
+    playground.append(enemy.shadowNode)
     enemiesOnBoard[enemy.id] = enemy
   }
   
   const updateEnemy = (enemyArgs) => {
     const {id} = enemyArgs
     if ('undefined' === typeof enemiesOnBoard[id]) {
+      enemyArgs.color = colors[activeColorIndex]
       addEnemyToGame(new Enemy(enemyArgs))
     } else {
       enemiesOnBoard[id].update(enemyArgs)
@@ -162,11 +165,16 @@ import Objective from './objective.js'
   const deleteEnemy = (enemyArgs) => {
     const {id} = enemyArgs
     if ('undefined' !== typeof enemiesOnBoard[id]) {
-      removeObjectiveFromGame(getEnemyById(id))
+      removeEnemyFromGame(getEnemyById(id))
     }
   }
   
-  
+  const removeEnemyFromGame = (enemy) => {
+    if (enemy) {
+      enemy.die()
+      delete enemiesOnBoard[enemy.id]
+    }
+  }
   
   
   const getObjectiveById = (id) => {
@@ -175,13 +183,6 @@ import Objective from './objective.js'
     }
     
     return null
-  }
-  
-  const removeObjectiveFromGame = (objective) => {
-    if (objective) {
-      objective.node.remove()
-      delete objectivesOnBoard[objective.id]
-    }
   }
   
   const addObjectiveToGame = (objective) => {
@@ -202,6 +203,13 @@ import Objective from './objective.js'
     const {id} = objectiveArgs
     if ('undefined' !== typeof objectivesOnBoard[id]) {
       removeObjectiveFromGame(getObjectiveById(id))
+    }
+  }
+  
+  const removeObjectiveFromGame = (objective) => {
+    if (objective) {
+      objective.node.remove()
+      delete objectivesOnBoard[objective.id]
     }
   }
   
@@ -254,6 +262,29 @@ import Objective from './objective.js'
       addNodeToCleanupList(blood)
     }.bind(element), delay);
   }
+  
+  const getNextColor = () => {
+    activeColorIndex--
+    let i = (0 <= activeColorIndex) ? activeColorIndex : activeColorIndex = colors.length - 1
+    return colors[activeColorIndex]
+  }
+  
+  /**
+   * For now, it's a simple loop.
+   * What it does :
+   *   - Each 5s, change color of enemies.
+   */
+  const doAnimationLoop = () => {
+    const newColor = getNextColor()
+    for (const enemy in enemiesOnBoard) {
+      enemiesOnBoard[enemy].node.style.backgroundColor = newColor
+    }
+    
+    setTimeout(() => {
+      window.requestAnimationFrame(doAnimationLoop)
+    }, 5000);
+  }
+  window.requestAnimationFrame(doAnimationLoop)
   
   
   
