@@ -33,7 +33,7 @@ const checkEnnemiesGestation = () => {
   if (!enemiesAreGestating) {
     enemiesAreGestating = true
     setTimeout(() => {
-      const size = Math.min(350, Math.floor(Math.random() * 100) + 50 + score)
+      const size = Math.min(275, Math.floor(Math.random() * 100) + 40 + score)
       const y = Math.floor(Math.random() * 1080) - size
       const goalY = (100 > score) ? y : Math.floor(Math.random() * 1080) - size
       enemies.push({
@@ -44,7 +44,7 @@ const checkEnnemiesGestation = () => {
           x: 1920,
           y: goalY,
         },
-        velocity: Math.floor(Math.random() * 500) + 100, // Pixels by ms
+        velocity: Math.floor(Math.random() * 475) + 100, // Pixels by ms
         size: size,
         dead: false,
       })
