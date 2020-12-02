@@ -32,15 +32,16 @@ const checkEnnemiesGestation = () => {
   // Entamer la création d'ennemies si ce n'est pas déjà en cours.
   if (!enemiesAreGestating) {
     enemiesAreGestating = true
-    const size = Math.floor(Math.random() * 100) + 50
     setTimeout(() => {
+      const size = Math.floor(Math.random() * 100) + 50
+      const y = Math.floor(Math.random() * 1080) - size * 2
       enemies.push({
         id: ++ennemiesBirthCount,
         x: size * -1,
-        y: Math.floor(Math.random() * 1080) - 50,
+        y: y,
         goalPos: {
           x: 1920,
-          y: Math.floor(Math.random() * 1080),
+          y: y,
         },
         velocity: Math.floor(Math.random() * 500) + 100, // Pixels by ms
         size: size,
@@ -90,7 +91,7 @@ const checkCollisions = () => {
         players[playerId].velocity = enemy.velocity
         players[playerId].goalPos = enemy.goalPos
         
-        moveElement(players[playerId], 0.5)
+        moveElement(players[playerId], 0.33)
         
         score -= 1
         

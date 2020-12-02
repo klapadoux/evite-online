@@ -45,16 +45,9 @@ export class Player {
   }
   
   die() {
-    console.log( Utils );
-    
     this.node.classList.add('dead')
     this.node.style.backgroundColor = Utils.changeColor( 0.75, this.color, '#acbcbf')
-    this.setDeathByVelocityPosition()
     this.deathCount++
-  }
-  
-  setDeathByVelocityPosition() {
-    
   }
   
   resurrect() {

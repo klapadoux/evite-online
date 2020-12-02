@@ -18,6 +18,12 @@ export class Enemy {
     this.node.classList.add('enemy')
     this.node.style.width = this.size + 'px'
     this.node.style.height = this.size + 'px'
+    
+    this.shadowNode = document.createElement('div')
+    this.shadowNode.classList.add('enemy-shadow')
+    this.shadowNode.style.width = this.size + 4 + 'px'
+    this.shadowNode.style.height = this.size + 4 + 'px'
+    
     this.moveTowardsGoal()
   }
   
@@ -35,6 +41,11 @@ export class Enemy {
     return this.dead
   }
   
+  die() {
+    this.node.remove()
+    this.shadowNode.remove()
+  }
+  
   moveTowardsGoal() {
     this.moveTo({x: this.x, y: this.y})
   }
@@ -43,6 +54,7 @@ export class Enemy {
     this.x = x
     this.y = y
     this.node.style.transform = `translate3d(${x}px, ${y}px, 0)`
+    this.shadowNode.style.transform = `translate3d(${x - 2}px, ${y - 2}px, 0)`
   }
 }
 

@@ -9,6 +9,7 @@ import Objective from './objective.js'
   let thisPlayer
   const playersOnBoard = {}
   const enemiesOnBoard = {}
+  const enemiesShadowOnBoard = {}
   const objectivesOnBoard = {}
   const cleanupList = []
   const playground = document.getElementById('playground')
@@ -65,9 +66,9 @@ import Objective from './objective.js'
       const delay = Math.random() * 600
       addBloodUnderElement(player, type, delay)
     }
-    
     addBloodUnderElement(player, 'same', 625)
     addBloodUnderElement(player, 'same', 650)
+    
     player.die()
     addNodeToCleanupList(player.node)
     
@@ -138,15 +139,9 @@ import Objective from './objective.js'
     return null
   }
   
-  const removeEnemyFromGame = (enemy) => {
-    if (enemy) {
-      enemy.node.remove()
-      delete enemiesOnBoard[enemy.id]
-    }
-  }
-  
   const addEnemyToGame = (enemy) => {
     playground.append(enemy.node)
+    playground.append(enemy.shadowNode)
     enemiesOnBoard[enemy.id] = enemy
   }
   
@@ -162,11 +157,16 @@ import Objective from './objective.js'
   const deleteEnemy = (enemyArgs) => {
     const {id} = enemyArgs
     if ('undefined' !== typeof enemiesOnBoard[id]) {
-      removeObjectiveFromGame(getEnemyById(id))
+      removeEnemyFromGame(getEnemyById(id))
     }
   }
   
-  
+  const removeEnemyFromGame = (enemy) => {
+    if (enemy) {
+      enemy.die()
+      delete enemiesOnBoard[enemy.id]
+    }
+  }
   
   
   const getObjectiveById = (id) => {
@@ -175,13 +175,6 @@ import Objective from './objective.js'
     }
     
     return null
-  }
-  
-  const removeObjectiveFromGame = (objective) => {
-    if (objective) {
-      objective.node.remove()
-      delete objectivesOnBoard[objective.id]
-    }
   }
   
   const addObjectiveToGame = (objective) => {
@@ -202,6 +195,13 @@ import Objective from './objective.js'
     const {id} = objectiveArgs
     if ('undefined' !== typeof objectivesOnBoard[id]) {
       removeObjectiveFromGame(getObjectiveById(id))
+    }
+  }
+  
+  const removeObjectiveFromGame = (objective) => {
+    if (objective) {
+      objective.node.remove()
+      delete objectivesOnBoard[objective.id]
     }
   }
   
