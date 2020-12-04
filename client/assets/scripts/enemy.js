@@ -10,35 +10,32 @@ export class Enemy {
     this.size = size ? size : 20,
     this.dead = dead ? dead : false
     this.color = color ? color : 'red'
-    this.node = node ? node : this.getNode()
+    this.node = node ? node : null
     
     this.initNode()
-  }
-  
-  getNode() {
-    if ('undefined' !== this.node) {
-      return this.node
-    }
-    
-    this.createNode()
-  }
-  
-  createNode() {
-    this.node = document.createElement('div')
+    this.initShadowNode()
+
+    this.moveTowardsGoal()
   }
   
   initNode() {
-    this.node.classList.add('enemy')
-    this.node.style.width = this.size + 'px'
-    this.node.style.height = this.size + 'px'
-    this.node.style.backgroundColor = this.color
+    if (! this.node) {
+      this.node = Enemy.createNode()
+    }
     
+    if (! this.node.classList.contains('body-initiated')) {
+      this.node.classList.add('body-initiated')
+      this.node.style.width = this.size + 'px'
+      this.node.style.height = this.size + 'px'
+      this.node.style.backgroundColor = this.color
+    }
+  }
+  
+  initShadowNode() {
     this.shadowNode = document.createElement('div')
     this.shadowNode.classList.add('enemy-shadow')
     this.shadowNode.style.width = this.size + 4 + 'px'
     this.shadowNode.style.height = this.size + 4 + 'px'
-    
-    this.moveTowardsGoal()
   }
   
   /**
@@ -69,6 +66,12 @@ export class Enemy {
     this.y = y
     this.node.style.transform = `translate3d(${x}px, ${y}px, 0)`
     this.shadowNode.style.transform = `translate3d(${x - 2}px, ${y - 2}px, 0)`
+  }
+  
+  static createNode() {
+    const node = document.createElement('div')
+    node.classList.add('enemy')
+    return node
   }
 }
 

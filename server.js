@@ -38,7 +38,8 @@ const checkEnnemiesGestation = () => {
       const goalY = (100 > score) ? y : Math.floor(Math.random() * 1080) - size
       enemies.push({
         id: ++ennemiesBirthCount,
-        x: size * -1.25 - 250,
+        x: 0,
+        // x: size * -1.25 - 250,
         y: y,
         goalPos: {
           x: 1920,
@@ -251,7 +252,7 @@ const getRandomColor = (tries = 0) => {
 
 io.on('connection', socket => {
   players[socket.id] = createPlayer({ color: getRandomColor() })
-  socket.emit('init_player', players[socket.id])
+  socket.emit('init_this_connection', players[socket.id])
   
   socket.on('mousemove', playerParams => {
     updatePlayer(playerParams)
