@@ -1,6 +1,6 @@
 export class Enemy {
   constructor(args) {
-    const {id, x, y, goalPos, velocity, size, dead, color} = args
+    const {id, x, y, goalPos, velocity, size, dead, node} = args
     
     this.id = id
     this.x = x ? x : 0
@@ -9,24 +9,33 @@ export class Enemy {
     this.velocity = velocity ? velocity : 10, // Pixels by ms
     this.size = size ? size : 20,
     this.dead = dead ? dead : false
-    this.color = color ? color : 'red'
+    this.node = node ? node : null
+    this.needToAppendMainNode = ! node
     
-    this.createNode()
+    this.initNode()
+    this.initShadowNode()
+
+    this.moveTowardsGoal()
+    
+    setTimeout(() => {
+      window.requestAnimationFrame(() => {this.node.classList.add('initiated')})
+    }, 10);
   }
   
-  createNode() {
-    this.node = document.createElement('div')
-    this.node.classList.add('enemy')
+  initNode() {
+    if (! this.node) {
+      this.node = Enemy.createNode()
+    }
+    
     this.node.style.width = this.size + 'px'
     this.node.style.height = this.size + 'px'
-    this.node.style.backgroundColor = this.color
-    
+  }
+  
+  initShadowNode() {
     this.shadowNode = document.createElement('div')
     this.shadowNode.classList.add('enemy-shadow')
     this.shadowNode.style.width = this.size + 4 + 'px'
     this.shadowNode.style.height = this.size + 4 + 'px'
-    
-    this.moveTowardsGoal()
   }
   
   /**
@@ -57,6 +66,12 @@ export class Enemy {
     this.y = y
     this.node.style.transform = `translate3d(${x}px, ${y}px, 0)`
     this.shadowNode.style.transform = `translate3d(${x - 2}px, ${y - 2}px, 0)`
+  }
+  
+  static createNode() {
+    const newNode = document.createElement('div')
+    newNode.classList.add('enemy')
+    return newNode
   }
 }
 

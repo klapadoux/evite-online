@@ -88,23 +88,13 @@ body {
   /* border: 2px solid black; */
   background: #e91b53;
   box-sizing: border-box;
-  transition: transform 0.15s, background-color 5s linear;
+  transition: background-color 5s linear;
   /* animation: colors 10s 0s infinite forwards; */
 }
-@keyframes colors {
-  0% {
-    background:  #e91b53;
-  }
-  33.33% {
-    background:  #be40d9;
-  }
-  66.66% {
-    background: #e9ad54
-  }
-  100% {
-    background:  #e91b53;
-  }
+.enemy.initiated {
+  transition: transform 0.15s, background-color 5s linear;
 }
+
 .enemy-shadow {
   user-select: none;
   position: absolute;
@@ -116,8 +106,7 @@ body {
 }
 
 .objective {
-  /* pointer-events: none;
-  user-select: none; */
+  user-select: none;
   position: absolute;
   z-index: 50;
   border: 2px solid #ffe62f;
@@ -165,4 +154,23 @@ body {
   width: 3px;
   height: 3px;
   background-color: white;
+}
+
+
+
+
+
+@keyframes colors {
+  0% {
+    background:  #e91b53;
+  }
+  33.33% {
+    background:  #be40d9;
+  }
+  66.66% {
+    background: #e9ad54
+  }
+  100% {
+    background:  #e91b53;
+  }
 }
