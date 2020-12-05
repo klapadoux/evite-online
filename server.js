@@ -38,8 +38,7 @@ const checkEnnemiesGestation = () => {
       const goalY = (100 > score) ? y : Math.floor(Math.random() * 1080) - size
       enemies.push({
         id: ++ennemiesBirthCount,
-        x: 0,
-        // x: size * -1.25 - 250,
+        x: size * -1.25,
         y: y,
         goalPos: {
           x: 1920,

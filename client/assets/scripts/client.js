@@ -166,7 +166,6 @@ import * as Settings from './settings.js'
     if ('undefined' === typeof enemiesOnBoard[id]) {
       if (enemiesBodyOnHold.length) {
         enemyArgs.node = enemiesBodyOnHold.shift()
-        console.log( enemyArgs.node.innerHTML );
       }
       addEnemyToGame(new Enemy(enemyArgs))
     } else {
@@ -202,8 +201,6 @@ import * as Settings from './settings.js'
     const newNode = Enemy.createNode()
     enemiesBodyOnHold.push(newNode)
     newNode.style.backgroundColor = getActiveColor()
-    newNode.innerHTML = bodyId
-    newNode.setAttribute('id', bodyId)
     playground.append(newNode)
   }
   

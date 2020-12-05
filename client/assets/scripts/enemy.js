@@ -11,12 +11,15 @@ export class Enemy {
     this.dead = dead ? dead : false
     this.node = node ? node : null
     this.needToAppendMainNode = ! node
-    console.log( this.node, this.needToAppendMainNode );
     
     this.initNode()
     this.initShadowNode()
 
     this.moveTowardsGoal()
+    
+    setTimeout(() => {
+      window.requestAnimationFrame(() => {this.node.classList.add('initiated')})
+    }, 10);
   }
   
   initNode() {
@@ -24,11 +27,8 @@ export class Enemy {
       this.node = Enemy.createNode()
     }
     
-    if (! this.node.classList.contains('body-initiated')) {
-      this.node.classList.add('body-initiated')
-      this.node.style.width = this.size + 'px'
-      this.node.style.height = this.size + 'px'
-    }
+    this.node.style.width = this.size + 'px'
+    this.node.style.height = this.size + 'px'
   }
   
   initShadowNode() {
