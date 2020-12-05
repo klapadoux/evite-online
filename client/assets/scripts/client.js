@@ -14,7 +14,10 @@ import Objective from './objective.js'
   const cleanupList = []
   const playground = document.getElementById('playground')
   const scoreCounters = document.querySelectorAll('.score-counter')
-  const PREPARED_ENEMIES_BODY_MAX_COUNT = 5
+  const PREPARED_ENEMIES_BODY_MAX_COUNT = 10
+  
+  let bodyId = 0
+  
   let actualScore = 0
   
   const colors = [
@@ -149,7 +152,9 @@ import Objective from './objective.js'
   }
   
   const addEnemyToGame = (enemy) => {
-    playground.append(enemy.node)
+    if (enemy.needToAppendMainNode) {
+      playground.append(enemy.node)
+    }
     playground.append(enemy.shadowNode)
     enemiesOnBoard[enemy.id] = enemy
     prepareNewEnemyBody()
@@ -158,9 +163,9 @@ import Objective from './objective.js'
   const updateEnemy = (enemyArgs) => {
     const {id} = enemyArgs
     if ('undefined' === typeof enemiesOnBoard[id]) {
-      enemyArgs.color = colors[activeColorIndex]
       if (enemiesBodyOnHold.length) {
         enemyArgs.node = enemiesBodyOnHold.shift()
+        console.log( enemyArgs.node.innerHTML );
       }
       addEnemyToGame(new Enemy(enemyArgs))
     } else {
@@ -184,19 +189,20 @@ import Objective from './objective.js'
   
   const refillWithprepareEnemiesBody = () => {
     if (PREPARED_ENEMIES_BODY_MAX_COUNT > enemiesBodyOnHold.length) {
-      console.log( `Creating ${PREPARED_ENEMIES_BODY_MAX_COUNT - enemiesBodyOnHold.length} bodies.` );
-      
       for (let i = PREPARED_ENEMIES_BODY_MAX_COUNT - enemiesBodyOnHold.length; 0 < i; i--) {
         prepareNewEnemyBody()
       }
-      
-      console.log( 'Wich result as ', enemiesBodyOnHold );
     }
   }
   
   const prepareNewEnemyBody = () => {
+    bodyId++
+    
     const newNode = Enemy.createNode()
-    enemiesBodyOnHold.push(Enemy.createNode())
+    enemiesBodyOnHold.push(newNode)
+    newNode.style.backgroundColor = getActiveColor()
+    newNode.innerHTML = bodyId
+    newNode.setAttribute('id', bodyId)
     playground.append(newNode)
   }
   
@@ -286,11 +292,14 @@ import Objective from './objective.js'
     }.bind(element), delay);
   }
   
-  const getNextColor = () => {
+  const changeActiveColor = () => {
     activeColorIndex--
     if (0 > activeColorIndex) {
       activeColorIndex = colors.length - 1
     }
+  }
+  
+  const getActiveColor = () => {
     return colors[activeColorIndex]
   }
   
@@ -300,15 +309,20 @@ import Objective from './objective.js'
    *   - Each 5s, change color of enemies.
    */
   const doAnimationLoop = () => {
-    const newColor = getNextColor()
+    changeActiveColor()
     
     // Change color for enemies
     for (const enemy in enemiesOnBoard) {
-      enemiesOnBoard[enemy].node.style.backgroundColor = newColor
+      enemiesOnBoard[enemy].node.style.backgroundColor = getActiveColor()
     }
     
     // Also change color for prepred bodies.
-    enemiesBodyOnHold.forEach(enemyBody => enemyBody.style.backgroundColor = newColor )
+    enemiesBodyOnHold.forEach((enemyBody, index) => {
+      enemyBody.style.backgroundColor = getActiveColor()
+      enemyBody.style.transform = `translate3d(${index * 101}px, 0, 0)`
+      enemyBody.style.width = '100px'
+      enemyBody.style.height = '100px'
+    })
     
     // Do this again later.
     setTimeout(() => {

@@ -1,6 +1,6 @@
 export class Enemy {
   constructor(args) {
-    const {id, x, y, goalPos, velocity, size, dead, color, node} = args
+    const {id, x, y, goalPos, velocity, size, dead, node} = args
     
     this.id = id
     this.x = x ? x : 0
@@ -9,8 +9,9 @@ export class Enemy {
     this.velocity = velocity ? velocity : 10, // Pixels by ms
     this.size = size ? size : 20,
     this.dead = dead ? dead : false
-    this.color = color ? color : 'red'
     this.node = node ? node : null
+    this.needToAppendMainNode = ! node
+    console.log( this.node, this.needToAppendMainNode );
     
     this.initNode()
     this.initShadowNode()
@@ -27,7 +28,6 @@ export class Enemy {
       this.node.classList.add('body-initiated')
       this.node.style.width = this.size + 'px'
       this.node.style.height = this.size + 'px'
-      this.node.style.backgroundColor = this.color
     }
   }
   
@@ -69,9 +69,9 @@ export class Enemy {
   }
   
   static createNode() {
-    const node = document.createElement('div')
-    node.classList.add('enemy')
-    return node
+    const newNode = document.createElement('div')
+    newNode.classList.add('enemy')
+    return newNode
   }
 }
 
