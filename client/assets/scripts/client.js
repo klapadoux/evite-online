@@ -2,6 +2,7 @@ import Utils from './utils.js'
 import Player from './player.js'
 import Enemy from './enemy.js'
 import Objective from './objective.js'
+import * as Settings from './settings.js'
 
 (() => {
   const sock = io()
@@ -319,9 +320,12 @@ import Objective from './objective.js'
     // Also change color for prepred bodies.
     enemiesBodyOnHold.forEach((enemyBody, index) => {
       enemyBody.style.backgroundColor = getActiveColor()
-      enemyBody.style.transform = `translate3d(${index * 101}px, 0, 0)`
-      enemyBody.style.width = '100px'
-      enemyBody.style.height = '100px'
+      
+      if (Settings.SHOW_PREPARED_ENEMIES_BODY) {
+        enemyBody.style.transform = `translate3d(${index * 101}px, 0, 0)`
+        enemyBody.style.width = '100px'
+        enemyBody.style.height = '100px'
+      }
     })
     
     // Do this again later.
