@@ -1,4 +1,4 @@
-const Game = require('./game')
+const game = require('./game')
 const Settings = require('./settings')
 
 /**
@@ -54,7 +54,7 @@ const Utils = {
     const y = Math.floor(Math.random() * rectHeight + rectY)
     
     if (Settings.SHOW_SPAWN_RECT) {
-      io.emit('display_spawning_rect', {
+      game.io.emit('display_spawning_rect', {
         x,
         y,
         label,
