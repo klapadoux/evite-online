@@ -18,44 +18,7 @@ const io = socketio(server)
 
 const game = new Game(io)
 
-
-const players = {}
-const enemies = []
 const usedColors = []
-let score = 0
-
-let gameLoopId = null
-
-let doGameLoopEnnemiesCheck = true
-let ennemiesBirthCount = 0
-let enemiesAreGestating = false
-
-
-const checkEnnemiesGestation = () => {
-  // Entamer la création d'ennemies si ce n'est pas déjà en cours.
-  if (!enemiesAreGestating) {
-    enemiesAreGestating = true
-    setTimeout(() => {
-      const size = Math.min(275, Math.floor(Math.random() * 100) + 40 + score)
-      const y = Math.floor(Math.random() * 1080) - size
-      const goalY = (100 > score) ? y : Math.floor(Math.random() * 1080) - size
-      enemies.push({
-        id: ++ennemiesBirthCount,
-        x: size * -1.25,
-        y: y,
-        goalPos: {
-          x: 1920,
-          y: goalY,
-        },
-        velocity: Math.floor(Math.random() * 475) + 100, // Pixels by ms
-        size: size,
-        dead: false,
-      })
-      
-      enemiesAreGestating = false
-    }, Math.max(500, 5000 / (Math.max(score, 1) / 2)));
-  }
-}
 
 const updateEnemies = (delta) => {
   enemies.forEach(enemy => {
@@ -172,26 +135,6 @@ const getPlayersEmitParams = () => {
   return playersParams
 }
 
-const moveElement = (element, delta = 1) => {
-  // Calculating next step.
-  const nextStep = element.velocity * delta
-  const remainingDistance = Utils.get2PosDistance(element.goalPos, {x: element.x, y: element.y})
-  let reachedGoal = false
-  if (nextStep < remainingDistance) {
-    const ratio = nextStep / remainingDistance
-    const stepX = (element.goalPos.x - element.x) * ratio
-    const stepY = (element.goalPos.y - element.y) * ratio
-    element.x = element.x + stepX
-    element.y = element.y + stepY
-  } else {
-    element.x = element.goalPos.x
-    element.y = element.goalPos.y
-    reachedGoal = true
-  }
-  
-  return reachedGoal
-}
-
 const updateGameboard = (delta) => {
   if (doGameLoopEnnemiesCheck) {
     checkObjectivesGestation()
@@ -220,19 +163,6 @@ const emitUpdateToClients = () => {
     objectives: getObjectives(),
     score: score,
   })
-}
-
-const startGameloopIfNeeded = () => {
-  if (!gameLoopId) {
-    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 30)
-  }
-}
-
-const stopGameloopIfNeeded = () => {
-  if (!Object.keys(players).length) {
-    gameloop.clearGameLoop(gameLoopId)
-    gameLoopId = null
-  }
 }
 
 const getRandomColor = (tries = 0) => {
