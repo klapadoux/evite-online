@@ -1,9 +1,13 @@
+const Utils = require('./utils')
+
 let objectivesAreGestating = false
 let objectivesBirthCount = 0
 const objectives = []
 
 const createObjective = (data) => {
   const size = 30
+  
+  const {x, y} = Utils.getRandomCoordInRect()
   
   return {
     id: ++objectivesBirthCount,

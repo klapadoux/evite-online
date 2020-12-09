@@ -1,3 +1,6 @@
+const Game = require('./game')
+const Settings = require('./settings')
+
 /**
  * SAME AS CLIENT
  * 
@@ -44,6 +47,23 @@ const Utils = {
     const dx = pos1.x - pos2.x
     const dy = pos1.y - pos2.y
     return Math.sqrt(dx * dx + dy * dy)
+  },
+  
+  getRandomCoordInRect(rectX, rectY, rectWidth, rectHeight, label = '') {
+    const x = Math.floor(Math.random() * rectWidth + rectX)
+    const y = Math.floor(Math.random() * rectHeight + rectY)
+    
+    if (Settings.SHOW_SPAWN_RECT) {
+      io.emit('display_spawning_rect', {
+        x,
+        y,
+        label,
+        width: rectWidth,
+        height: rectHeight,
+      })
+    }
+    
+    return {x, y}
   }
 };
 

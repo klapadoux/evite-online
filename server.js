@@ -2,8 +2,9 @@ const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
 const randomColor = require('randomcolor')
-const gameloop = require('node-gameloop')
 
+const Game = require('./server/game')
+const Settings = require('./server/settings')
 const Utils = require('./server/utils')
 const {createPlayer} = require('./server/player')
 const {checkObjectivesGestation, getObjectives, deleteDeadObjectives} = require('./server/objective')
@@ -14,6 +15,8 @@ const app = express()
 app.use(express.static(`${__dirname}/client`))
 const server = http.createServer(app)
 const io = socketio(server)
+
+const game = new Game(io)
 
 
 const players = {}
@@ -108,7 +111,7 @@ const checkCollisions = () => {
     const objectives = getObjectives()
     objectives.forEach(objective => {
       const distance = Utils.get2PosDistance(
-        {x: x, y: y},
+        {x, y},
         {x: objective.x + objective.size / 2, y: objective.y + objective.size / 2}
       )
       if ( distance <= objective.size / 2 + playerRadius ) {
@@ -246,7 +249,6 @@ const getRandomColor = (tries = 0) => {
   usedColors.push(newColor)
   return newColor
 }
-
 
 
 io.on('connection', socket => {

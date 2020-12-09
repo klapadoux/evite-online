@@ -1,4 +1,5 @@
 import Utils from './utils.js'
+import DebugCanvas from './debug-canvas.js'
 import Player from './player.js'
 import Enemy from './enemy.js'
 import Objective from './objective.js'
@@ -378,5 +379,9 @@ import * as Settings from './settings.js'
     })
     
     updateScoreCounters(score)
+  })
+  
+  sock.on('display_spawning_rect', rect => {
+    DebugCanvas.drawRect(rect)
   })
 })()
