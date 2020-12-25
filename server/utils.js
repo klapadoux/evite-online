@@ -49,11 +49,11 @@ const Utils = {
     return Math.sqrt(dx * dx + dy * dy)
   },
   
-  getRandomCoordInRect(rectX, rectY, rectWidth, rectHeight, io = {}, debugLabel = '') {
+  getRandomCoordInRect(rectX, rectY, rectWidth, rectHeight, debugLabel = '') {
     const x = Math.floor(Math.random() * rectWidth + rectX)
     const y = Math.floor(Math.random() * rectHeight + rectY)
     
-    if (Settings.SHOW_SPAWN_RECT && io) {
+    if (Settings.SHOW_SPAWN_RECT) {
       global.io.emit('display_spawning_rect', {
         x: rectX,
         y: rectY,

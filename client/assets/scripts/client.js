@@ -272,9 +272,12 @@ import * as Settings from './settings.js'
       
       const bloodWidth = Math.floor(Math.random() * bloodSize + bloodSize * sizeVariance)
       const bloodHeight = Math.floor(Math.random() * bloodSize + bloodSize * sizeVariance)
-      const bloodX = x - bloodWidth / 2 + size / 2 + Math.floor(Math.random() * size / 2) - size / 4
-      const bloodY = y - bloodHeight / 2 + size / 2 + Math.floor(Math.random() * size / 2) - size / 4
       
+      // const bloodX = x - bloodWidth / 2 + size / 2 + Math.floor(Math.random() * size / 2) - size / 4
+      // const bloodY = y - bloodHeight / 2 + size / 2 + Math.floor(Math.random() * size / 2) - size / 4
+      
+      const bloodCoord = Utils.getRandomCoordInRect(x - bloodWidth / 2, y - bloodHeight / 2, x + bloodWidth / 2, y + bloodHeight / 2)
+      console.log( bloodCoord );
       // TEST POINT
       // let point = document.createElement('div')
       // point.classList.add('test-center')
@@ -283,8 +286,8 @@ import * as Settings from './settings.js'
       // playground.append(point)
       
       let blood = document.createElement('span')
-      blood.style.left = bloodX + 'px'
-      blood.style.top = bloodY + 'px'
+      blood.style.left = bloodCoord.x + 'px'
+      blood.style.top = bloodCoord.y + 'px'
       blood.style.width = bloodWidth + 'px'
       blood.style.height = bloodHeight + 'px'
       blood.classList.add('blood', `blood--${sizeType}`)
