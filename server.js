@@ -11,7 +11,8 @@ const {createPlayer} = require('./server/player')
 const app = express()
 app.use(express.static(`${__dirname}/client`))
 const server = http.createServer(app)
-const io = socketio(server)
+
+global.io = socketio(server)
 
 const usedColors = []
 

@@ -3,18 +3,16 @@ const Utils = require('./utils.js')
 const {checkObjectivesGestation, getObjectives, deleteDeadObjectives} = require('./objective')
 
 class Game {
-  constructor(socketIo) {
-    this.io = socketIo
-    
+  constructor() {
     this.score = 0
       
     this.players = {}
     
     this.enemies = []
-    this.ennemiesBirthCount = 0
+    this.enemiesBirthCount = 0
     this.enemiesAreGestating = false
     
-    this.doGameLoopEnnemiesCheck = true
+    this.doGameLoopEnemiesCheck = true
   }
   
   ////////// GENERAL
@@ -62,11 +60,11 @@ class Game {
           this.players[playerId].velocity = enemy.velocity
           this.players[playerId].goalPos = enemy.goalPos
           
-          moveElement(this.players[playerId], 0.33)
+          this.moveElement(this.players[playerId], 0.33)
           
           this.score -= 1
           
-          this.io.emit('player_death', this.players[playerId].color)
+          global.io.emit('player_death', this.players[playerId].color)
         }
       })
       
@@ -90,10 +88,10 @@ class Game {
   }
   
   updateGameboard(delta) {
-    if (this.doGameLoopEnnemiesCheck) {
+    if (this.doGameLoopEnemiesCheck) {
       checkObjectivesGestation()
       
-      this.checkEnnemiesGestation()
+      this.checkEnemiesGestation()
       this.checkCollisions()
       this.updateEnemies(delta)
     }
@@ -102,18 +100,18 @@ class Game {
     
     this.emitUpdateToClients()
     
-    if (this.doGameLoopEnnemiesCheck) {
+    if (this.doGameLoopEnemiesCheck) {
       this.deleteDeadEnemies()
       deleteDeadObjectives()
     }
     
-    this.doGameLoopEnnemiesCheck =  ! this.doGameLoopEnnemiesCheck
+    this.doGameLoopEnemiesCheck =  ! this.doGameLoopEnemiesCheck
   }
   
   emitUpdateToClients() {
-    this.io.emit('tick_update', {
+    global.io.emit('tick_update', {
       score: this.score,
-      enemies: this.ennemies,
+      enemies: this.enemies,
       players: this.getPlayersEmitParams(),
       objectives: getObjectives(),
     })
@@ -188,17 +186,17 @@ class Game {
   }
   
   
-  ////////// ENNEMIES
-  checkEnnemiesGestation() {
-    // Entamer la création d'ennemies si ce n'est pas déjà en cours.
+  ////////// ENEMIES
+  checkEnemiesGestation() {
+    // Entamer la création d'enemies si ce n'est pas déjà en cours.
     if (! this.enemiesAreGestating) {
       this.enemiesAreGestating = true
       setTimeout(() => {
-        const size = Math.min(275, Math.floor(Math.random() * 100) + 40 + score)
+        const size = Math.min(275, Math.floor(Math.random() * 100) + 40 + this.score)
         const y = Math.floor(Math.random() * 1080) - size
-        const goalY = (100 > score) ? y : Math.floor(Math.random() * 1080) - size
+        const goalY = (100 > this.score) ? y : Math.floor(Math.random() * 1080) - size
         this.enemies.push({
-          id: ++this.ennemiesBirthCount,
+          id: ++this.enemiesBirthCount,
           x: size * -1.25,
           y: y,
           goalPos: {

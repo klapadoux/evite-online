@@ -7,19 +7,19 @@ const objectives = []
 const createObjective = (data) => {
   const size = 30
   
-  const {x, y} = Utils.getRandomCoordInRect()
+  const {x, y} = Utils.getRandomCoordInRect(50 + size, 50 + size, 1600, 800)
   
   return {
+    x,
+    y,
+    size,
     id: ++objectivesBirthCount,
-    x: Math.floor(Math.random() * (1920 - size * 4)) + size,
-    y: Math.floor(Math.random() * (1080 - size * 4)) + size,
-    size: size,
     dead: false,
   }
 }
 
 const checkObjectivesGestation = () => {
-  // Entamer la création d'ennemies si ce n'est pas déjà en cours.
+  // Entamer la création d'enemies si ce n'est pas déjà en cours.
   if (5 > objectives.length && !objectivesAreGestating) {
     objectivesAreGestating = true
     setTimeout(() => {

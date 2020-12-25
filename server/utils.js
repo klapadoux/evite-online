@@ -49,17 +49,17 @@ const Utils = {
     return Math.sqrt(dx * dx + dy * dy)
   },
   
-  getRandomCoordInRect(rectX, rectY, rectWidth, rectHeight, label = '') {
+  getRandomCoordInRect(rectX, rectY, rectWidth, rectHeight, io = {}, debugLabel = '') {
     const x = Math.floor(Math.random() * rectWidth + rectX)
     const y = Math.floor(Math.random() * rectHeight + rectY)
     
-    if (Settings.SHOW_SPAWN_RECT) {
-      game.io.emit('display_spawning_rect', {
-        x,
-        y,
-        label,
+    if (Settings.SHOW_SPAWN_RECT && io) {
+      global.io.emit('display_spawning_rect', {
+        x: rectX,
+        y: rectY,
         width: rectWidth,
         height: rectHeight,
+        label: debugLabel,
       })
     }
     

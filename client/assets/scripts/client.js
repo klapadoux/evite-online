@@ -8,6 +8,8 @@ import * as Settings from './settings.js'
 (() => {
   const sock = io()
   
+  const debugCanvas = new DebugCanvas()
+  
   let thisPlayer
   const playersOnBoard = {}
   const enemiesOnBoard = {}
@@ -382,6 +384,6 @@ import * as Settings from './settings.js'
   })
   
   sock.on('display_spawning_rect', rect => {
-    DebugCanvas.drawRect(rect)
+    debugCanvas.drawRect(rect)
   })
 })()
