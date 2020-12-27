@@ -5,7 +5,7 @@ const createPlayer = (data) => {
     y: data.y ? data.y : 300,
     size: data.size ? data.size : 26,
     goalPos: data.goalPos ? data.goalPos : {x: 300, y: 300},
-    velocity: data.velocity ? data.velocity : 2000, // Pixels by ms
+    velocity: data.velocity ? data.velocity : 2500, // Pixels by ms
     dead: data.dead ? data.dead : false,
   }
 }

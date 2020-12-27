@@ -1,25 +1,33 @@
 class DebugCanvas {
-  constructor() {
+  static node
+  static context
+  
+  static init() {
+    const node = document.createElement('canvas')
+    node.setAttribute('width', '1920')
+    node.setAttribute('height', '1080')
+    node.style.position = 'absolute'
+    node.style.top = '0'
+    node.style.left = '0'
     
+    const context = node.getContext('2d')
     
-    this.node = document.createElement('canvas')
-    this.node.setAttribute('width', '1920')
-    this.node.setAttribute('height', '1080')
-    this.node.style.position = 'absolute'
-    this.node.style.top = '0'
-    this.node.style.left = '0'
-    this.context = this.node.getContext('2d')
-    document.getElementById('playground').append(this.node)
+    document.getElementById('playground').append(node)
+    
+    DebugCanvas.node = node
+    DebugCanvas.context = context
   }
   
-  drawRect(rect) {
+  static drawRect(rect) {
     const {x, y, width, height, label} = rect
     
-    this.context.beginPath()
-    this.context.rect(x, y, width, height)
-    this.context.strokeStyle = 'deeppink'
-    this.context.stroke()
+    DebugCanvas.context.beginPath()
+    DebugCanvas.context.rect(x, y, width, height)
+    DebugCanvas.context.strokeStyle = 'deeppink'
+    DebugCanvas.context.stroke()
   }
 }
+
+DebugCanvas.init()
 
 export default DebugCanvas

@@ -8,8 +8,6 @@ import * as Settings from './settings.js'
 (() => {
   const sock = io()
   
-  const debugCanvas = new DebugCanvas()
-  
   let thisPlayer
   const playersOnBoard = {}
   const enemiesOnBoard = {}
@@ -272,12 +270,12 @@ import * as Settings from './settings.js'
       
       const bloodWidth = Math.floor(Math.random() * bloodSize + bloodSize * sizeVariance)
       const bloodHeight = Math.floor(Math.random() * bloodSize + bloodSize * sizeVariance)
-      
-      // const bloodX = x - bloodWidth / 2 + size / 2 + Math.floor(Math.random() * size / 2) - size / 4
-      // const bloodY = y - bloodHeight / 2 + size / 2 + Math.floor(Math.random() * size / 2) - size / 4
-      
-      const bloodCoord = Utils.getRandomCoordInRect(x - bloodWidth / 2, y - bloodHeight / 2, x + bloodWidth / 2, y + bloodHeight / 2)
-      console.log( bloodCoord );
+      const bloodCoord = Utils.getRandomCoordInRect(
+        x + bloodWidth / 2,
+        y + bloodHeight / 2,
+        size - bloodWidth / 2,
+        size - bloodHeight / 2
+      )
       // TEST POINT
       // let point = document.createElement('div')
       // point.classList.add('test-center')
@@ -387,6 +385,6 @@ import * as Settings from './settings.js'
   })
   
   sock.on('display_spawning_rect', rect => {
-    debugCanvas.drawRect(rect)
+    DebugCanvas.drawRect(rect)
   })
 })()

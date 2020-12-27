@@ -63,6 +63,8 @@ body {
   height: 100%;
   background-color: #c97a7c;
   border-radius: 100%;
+  transform: translate(-50%, -50%);
+  transform-origin: 0 0;
   transition: opacity 0.5s;
   animation: blood 4s 0s 1 forwards;
 }
@@ -73,10 +75,10 @@ body {
 
 @keyframes blood {
   0% {
-    transform: scale(0.7);
+    transform: scale(0.7) translate(-50%, -50%);
   }
   100% {
-    transform: scale(2);
+    transform: scale(2) translate(-50%, -50%);
   }
 }
 
