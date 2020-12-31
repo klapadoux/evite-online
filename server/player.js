@@ -1,6 +1,7 @@
 const createPlayer = (data) => {
   return {
-    color: data.color ? data.color : '#000',
+    pseudo: data.pseudo ? data.pseudo : 'undefined',
+    color: data.color ? data.color : '#000000',
     x: data.x ? data.x : 300,
     y: data.y ? data.y : 300,
     size: data.size ? data.size : 26,

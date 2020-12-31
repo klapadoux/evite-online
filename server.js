@@ -3,10 +3,9 @@ const express = require('express')
 const socketio = require('socket.io')
 const randomColor = require('randomcolor')
 
+const db = require('./server/database')
 const Game = require('./server/game')
-const {createPlayer} = require('./server/player')
-
-
+const { createPlayer } = require('./server/player')
 
 const app = express()
 app.use(express.static(`${__dirname}/client`))
@@ -16,7 +15,7 @@ global.io = socketio(server)
 
 const usedColors = []
 
-const game = new Game(io)
+const game = new Game()
 
 
 const getRandomColor = (tries = 0) => {
@@ -37,7 +36,14 @@ const getRandomColor = (tries = 0) => {
 
 io.on('connection', socket => {
   game.players[socket.id] = createPlayer({ color: getRandomColor() })
+  
+  // const { pseudo, color } = game.players[socket.id]
+  // db.promise().query(`INSERT INTO players (pseudo, color) VALUES ('${color}', '${color}')`)
+  
   socket.emit('init_this_connection', game.players[socket.id])
+  
+  
+  ///// Socket ON events
   
   socket.on('mousemove', playerParams => {
     game.updatePlayer(playerParams)
