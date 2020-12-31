@@ -4,6 +4,7 @@ const socketio = require('socket.io')
 const randomColor = require('randomcolor')
 
 const db = require('./server/database')
+const { checkSocketState } = require('./server/login')
 const Game = require('./server/game')
 const { createPlayer } = require('./server/player')
 
@@ -33,6 +34,14 @@ const getUniqueRandomColor = (tries = 0) => {
   return newColor
 }
 
+
+/**
+ * @todo Séparer le "Connection" du "Ajout joueur au jeu"
+ */
+global.io.on('connection', socket => {
+  const state = checkSocketState(socket)
+  console.log( state );
+})
 
 global.io.on('connection', socket => {
   game.players[socket.id] = createPlayer({ color: getUniqueRandomColor() })
