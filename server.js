@@ -18,12 +18,12 @@ const usedColors = []
 const game = new Game()
 
 
-const getRandomColor = (tries = 0) => {
+const getUniqueRandomColor = (tries = 0) => {
   const newColor = randomColor()
   if (usedColors.some(testColor => testColor === newColor)) {
     if (10 > tries) {
       tries++
-      return getRandomColor(tries)
+      return getUniqueRandomColor(tries)
     }
     
     return '#000'
@@ -34,8 +34,8 @@ const getRandomColor = (tries = 0) => {
 }
 
 
-io.on('connection', socket => {
-  game.players[socket.id] = createPlayer({ color: getRandomColor() })
+global.io.on('connection', socket => {
+  game.players[socket.id] = createPlayer({ color: getUniqueRandomColor() })
   
   // const { pseudo, color } = game.players[socket.id]
   // db.promise().query(`INSERT INTO players (pseudo, color) VALUES ('${color}', '${color}')`)
@@ -51,7 +51,7 @@ io.on('connection', socket => {
   
   socket.on('player_resurrect', playerParams => {
     game.updatePlayer(playerParams, true)
-    io.emit('player_resurrect', playerParams.color)
+    global.io.emit('player_resurrect', playerParams.color)
   })
   
   socket.on('disconnect', reason => {
@@ -60,7 +60,7 @@ io.on('connection', socket => {
       usedColors.splice(colorIndex, 1)
     }
     console.log(`Player ${game.players[socket.id].color} (${socket.id}) has disconnected. Reason:`, reason, usedColors);
-    io.emit('player_disconnect', game.players[socket.id].color)
+    global.io.emit('player_disconnect', game.players[socket.id].color)
     delete game.players[socket.id]
 
     game.stopGameloopIfNeeded()
@@ -68,6 +68,7 @@ io.on('connection', socket => {
   
   game.startGameloopIfNeeded()
 })
+
 
 server.on('error', error => {
   console.log(error);
