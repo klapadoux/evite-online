@@ -1,6 +1,6 @@
 const gameloop = require('node-gameloop')
 const Utils = require('./utils.js')
-const {checkObjectivesGestation, getObjectives, deleteDeadObjectives} = require('./objective')
+const { checkObjectivesGestation, getObjectives, deleteDeadObjectives } = require('./objective')
 
 class Game {
   constructor() {
