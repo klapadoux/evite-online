@@ -40,15 +40,17 @@ class Gameroom {
     console.log( `Adding user ID "${user.id}" to game` );
     
     // Register the User as a new player
-    this.game.addPlayer(createPlayer({
+    const player = createPlayer({
       id: user.id,
       pseudo: user.pseudo,
       color: this.getUniqueRandomColor(),
-    }))
+    })
+    
+    this.game.addPlayer(player)
     
     
     // Tell this user that it has now become a player.
-    user.socket.emit('init_this_connection', user.id)
+    user.socket.emit('init_this_connection', player)
   
   
     ///// Socket ON events for the game.
@@ -59,7 +61,7 @@ class Gameroom {
     
     user.socket.on('player_resurrect', playerParams => {
       this.game.updatePlayer(playerParams, true)
-      global.io.emit('player_resurrect', playerParams.color)
+      global.io.emit('player_resurrect', playerParams.id)
     })
 
     /**
@@ -78,17 +80,19 @@ class Gameroom {
       // BAILL as this user is not.
       return
     }
-    
-    console.log( user.gameroom.game );
-    
+
     const colorIndex = user.gameroom.usedColors.indexOf(user.color)
     if (-1 < colorIndex) {
       user.gameroom.usedColors.splice(colorIndex, 1)
     }
-    console.log(`Player ${user.gameroom.game.players[socketID].color} (${socketID}) has disconnected. Reason:`, reason, user.gameroom.usedColors);
-    global.io.emit('player_disconnect', user.gameroom.game.players[socketID].color)
-    delete user.gameroom.game.players[socketID]
-
+    
+    global.io.emit('player_disconnect', user.id)
+    
+    delete user.gameroom.users[user.id]
+    delete user.gameroom.game.players[user.id]
+    
+    console.log(`Player ${user.id} has disconnected. Reason:`, reason, 'Users left count:', Object.keys(user.gameroom.users).length, 'Players left count:', Object.keys(user.gameroom.game.players).length);
+    
     user.gameroom.game.stopGameloopIfNeeded()
   }
   

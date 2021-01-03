@@ -2,9 +2,10 @@ import Utils from './utils.js'
 
 export class Player {
   constructor(args) {
-    const { color, x, y, goalPos, velocity, size, dead } = args
+    const { id, color, x, y, goalPos, velocity, size, dead } = args
     
-    this.color = color ? color : '#000'
+    this.id = id
+    this.color = color ? color : '#000000'
     this.x = x ? x : 0
     this.y = y ? y : 0
     this.goalPos = goalPos ? goalPos : {x: 0, y: 0}
@@ -38,7 +39,7 @@ export class Player {
   
   getEmitParams() {
     return {
-      color: this.color,
+      id: this.id,
       goalPos: this.goalPos,
       velocity: this.velocity,
     }

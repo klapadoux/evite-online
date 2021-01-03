@@ -6,9 +6,7 @@ import Objective from './objective.js'
 import * as Settings from './settings.js'
 
 (() => {
-  const socket = io()
-  console.log( socket );
-  
+  const socket = io()  
   
   let thisPlayer
   const playersOnBoard = {}
@@ -47,7 +45,7 @@ import * as Settings from './settings.js'
   }
   
   const isThisOurPlayer = (player) => {
-    return thisPlayer.color === player.color
+    return thisPlayer.id === player.id
   }
   
   const doEventMouseMove = (event) => {
@@ -58,7 +56,7 @@ import * as Settings from './settings.js'
   
   const addPlayerToGame = (player) => {
     playground.append(player.node)
-    playersOnBoard[player.color] = player
+    playersOnBoard[player.id] = player
     
     if (player.dead) {
       killPlayer(player)
@@ -124,9 +122,9 @@ import * as Settings from './settings.js'
   
   const removePlayerFromGame = (player) => {
     if (player) {
-      console.log( `Player with color ${player.color} has been removed.`, playersOnBoard )
+      console.log( `Player with id ${player.id} has been removed.`, playersOnBoard )
       player.node.remove()
-      delete playersOnBoard[player.color]
+      delete playersOnBoard[player.id]
     }
   }
   
@@ -138,8 +136,16 @@ import * as Settings from './settings.js'
     return null
   }
   
+  const getPlayerByID = (playerID) => {
+    if ( 'undefined' !== typeof playersOnBoard[playerID] ) {
+      return playersOnBoard[playerID]
+    }
+    
+    return null
+  }
+  
   const updatePlayer = (playerArgs) => {
-    const player = getPlayerByColor(playerArgs.color)
+    const player = getPlayerByID(playerArgs.id)
     if (player) {
       player.moveTo(playerArgs)
     } else {
@@ -348,16 +354,16 @@ import * as Settings from './settings.js'
     refillWithprepareEnemiesBody()
   })
   
-  socket.on('player_death', color => {
-    killPlayer(getPlayerByColor(color))
+  socket.on('player_death', playerID => {
+    killPlayer(getPlayerByID(playerID))
   })
   
-  socket.on('player_resurrect', playerColor => {
-    resurrectPlayer(getPlayerByColor(playerColor))
+  socket.on('player_resurrect', playerID => {
+    resurrectPlayer(getPlayerByID(playerID))
   })
   
-  socket.on('player_disconnect', playerColor => {
-    removePlayerFromGame(getPlayerByColor(playerColor))
+  socket.on('player_disconnect', playerID => {
+    removePlayerFromGame(getPlayerByID(playerID))
   })
   
   socket.on('tick_update', tickInfo => {

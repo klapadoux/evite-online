@@ -64,7 +64,7 @@ class Game {
           
           this.score -= 1
           
-          global.io.emit('player_death', this.players[playerId].color)
+          global.io.emit('player_death', this.players[playerId].id)
         }
       })
       
@@ -152,29 +152,27 @@ class Game {
   }
   
   updatePlayer(data, isPlayerResurrecting = false) {
-    const {color, velocity} = data
-    const player = this.getPlayerByColor(color)
-    
+    const { id, velocity, goalPos } = data
+    const player = this.getPlayerByID(id)
+
     if (player) {
-      player.goalPos = data.goalPos
-      player.velocity = data.velocity
+      player.goalPos = goalPos
+      player.velocity = velocity
       
       if (isPlayerResurrecting) {
-        player.x = data.goalPos.x
-        player.y = data.goalPos.y
+        player.x = goalPos.x
+        player.y = goalPos.y
         player.dead = false
       }
     }
   }
   
-  getPlayerByColor(playerColor) {
-    for(const playerId in this.players) {
-      if ('undefined' !== typeof this.players[playerId].color && playerColor === this.players[playerId].color) {
-        return this.players[playerId]
-      }
+  getPlayerByID(playerID) {
+    if ('undefined' !== typeof this.players[playerID]) {
+      return this.players[playerID]
     }
     
-    return null
+    return false
   }
   
   getPlayersEmitParams() {
