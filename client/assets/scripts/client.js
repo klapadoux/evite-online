@@ -128,14 +128,6 @@ import * as Settings from './settings.js'
     }
   }
   
-  const getPlayerByColor = (playerColor) => {
-    if ( 'undefined' !== typeof playersOnBoard[playerColor] ) {
-      return playersOnBoard[playerColor]
-    }
-    
-    return null
-  }
-  
   const getPlayerByID = (playerID) => {
     if ( 'undefined' !== typeof playersOnBoard[playerID] ) {
       return playersOnBoard[playerID]
@@ -350,6 +342,7 @@ import * as Settings from './settings.js'
    */
   socket.on('init_this_connection', args => {
     thisPlayer = new Player(args)
+    console.log( 'This is you:', thisPlayer );
     addPlayerToGame(thisPlayer)
     refillWithprepareEnemiesBody()
   })
