@@ -2,7 +2,7 @@ import Utils from './utils.js'
 
 export class Player {
   constructor(args) {
-    const {color, x, y, goalPos, velocity, size, dead} = args
+    const { color, x, y, goalPos, velocity, size, dead } = args
     
     this.color = color ? color : '#000'
     this.x = x ? x : 0

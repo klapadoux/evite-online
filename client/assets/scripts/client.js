@@ -6,7 +6,9 @@ import Objective from './objective.js'
 import * as Settings from './settings.js'
 
 (() => {
-  const sock = io()
+  const socket = io()
+  console.log( socket );
+  
   
   let thisPlayer
   const playersOnBoard = {}
@@ -51,7 +53,7 @@ import * as Settings from './settings.js'
   const doEventMouseMove = (event) => {
     thisPlayer.goalPos.x = event.pageX
     thisPlayer.goalPos.y = event.pageY
-    sock.emit('mousemove', thisPlayer.getEmitParams())
+    socket.emit('mousemove', thisPlayer.getEmitParams())
   }
   
   const addPlayerToGame = (player) => {
@@ -117,7 +119,7 @@ import * as Settings from './settings.js'
     thisPlayer.goalPos.x = event.pageX
     thisPlayer.goalPos.y = event.pageY
     thisPlayer.velocity = thisPlayer.defaultVelocity
-    sock.emit('player_resurrect', thisPlayer.getEmitParams())
+    socket.emit('player_resurrect', thisPlayer.getEmitParams())
   }
   
   const removePlayerFromGame = (player) => {
@@ -340,25 +342,25 @@ import * as Settings from './settings.js'
   /**
    * This actual connection initialization.
    */
-  sock.on('init_this_connection', args => {
+  socket.on('init_this_connection', args => {
     thisPlayer = new Player(args)
     addPlayerToGame(thisPlayer)
     refillWithprepareEnemiesBody()
   })
   
-  sock.on('player_death', color => {
+  socket.on('player_death', color => {
     killPlayer(getPlayerByColor(color))
   })
   
-  sock.on('player_resurrect', playerColor => {
+  socket.on('player_resurrect', playerColor => {
     resurrectPlayer(getPlayerByColor(playerColor))
   })
   
-  sock.on('player_disconnect', playerColor => {
+  socket.on('player_disconnect', playerColor => {
     removePlayerFromGame(getPlayerByColor(playerColor))
   })
   
-  sock.on('tick_update', tickInfo => {
+  socket.on('tick_update', tickInfo => {
     const {enemies, players, objectives, score} = tickInfo
     
     players.forEach(playerData => {
@@ -384,7 +386,7 @@ import * as Settings from './settings.js'
     updateScoreCounters(score)
   })
   
-  sock.on('display_spawning_rect', rect => {
+  socket.on('display_spawning_rect', rect => {
     DebugCanvas.drawRect(rect)
   })
 })()

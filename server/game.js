@@ -122,12 +122,16 @@ class Game {
   ////////// GAMELOOP
   startGameloopIfNeeded() {
     if (! this.gameLoopId) {
+      console.log( 'START GAME' );
+      
       this.gameLoopId = gameloop.setGameLoop(this.updateGameboard.bind(this), 1000 / 30)
     }
   }
   
   stopGameloopIfNeeded() {
     if (! Object.keys(this.players).length) {
+      console.log( 'STOP GAME' );
+      
       gameloop.clearGameLoop(this.gameLoopId)
       this.gameLoopId = null
     }
@@ -135,6 +139,10 @@ class Game {
   
   
   ////////// PLAYERS
+  addPlayer(player) {
+    this.players[player.id] = player
+  }
+  
   updateAllPlayers(delta) {
     for (const playerId in this.players) {
       if (! this.players[playerId].dead) {
