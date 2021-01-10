@@ -153,7 +153,7 @@ class Game {
   
   updatePlayer(data, isPlayerResurrecting = false) {
     const { id, velocity, goalPos } = data
-    const player = this.getPlayerByID(id)
+    const player = this.getPlayerById(id)
 
     if (player) {
       player.goalPos = goalPos
@@ -167,9 +167,9 @@ class Game {
     }
   }
   
-  getPlayerByID(playerID) {
-    if ('undefined' !== typeof this.players[playerID]) {
-      return this.players[playerID]
+  getPlayerById(playerId) {
+    if ('undefined' !== typeof this.players[playerId]) {
+      return this.players[playerId]
     }
     
     return false
@@ -178,8 +178,9 @@ class Game {
   getPlayersEmitParams() {
     const playersParams = []
     for (const player in this.players) {
-      const {x, y, goalPos, velocity, color, dead} = this.players[player]
+      const { id, x, y, goalPos, velocity, color, dead } = this.players[player]
       playersParams.push({
+        id,
         x,
         y,
         color,

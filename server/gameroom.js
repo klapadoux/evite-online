@@ -16,13 +16,13 @@ class Gameroom {
     this.game = new Game()
   }
   
-  addUserByID(userID) {
-    if ('undefined' !== typeof this.users[userID]) {
+  addUserById(userId) {    
+    if ('undefined' !== typeof this.users[userId]) {
       // BAIL if this user already exist.
       return
     }
     
-    const user = global.getUserByID(userID)
+    const user = global.getUserById(userId)
     
     if (! user) {
       // BAIL if this user doesn't exist.
@@ -30,14 +30,14 @@ class Gameroom {
     }
     
     // Register this gameroom for the user.
-    this.users[userID] = user
+    this.users[userId] = user
     user.setGameroom(this)
     
     this.addUserToGame(user)
   }
   
   addUserToGame(user) {
-    console.log( `Adding user ID "${user.id}" to game` );
+    console.log( `Adding user Id "${user.id}" to game` );
     
     // Register the User as a new player
     const player = createPlayer({
@@ -64,17 +64,18 @@ class Gameroom {
       global.io.emit('player_resurrect', playerParams.id)
     })
 
-    /**
-     * "THIS" represent the active socket.
-     */
+    
     user.socket.on('disconnect', this.removeDisconnectedUser)
     
     this.game.startGameloopIfNeeded()
   }
   
+  /**
+   * "THIS" represent the active socket.
+   */
   removeDisconnectedUser(reason) {
-    const socketID = this.id
-    const user = global.getUserByID(socketID)
+    const socketId = this.id
+    const user = global.getUserById(socketId)
     
     if (! user || ! user.gameroom) {
       // BAILL as this user is not.

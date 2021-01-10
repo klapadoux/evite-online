@@ -58,12 +58,16 @@ import * as Settings from './settings.js'
     playground.append(player.node)
     playersOnBoard[player.id] = player
     
+    console.log( 'playersOnBoard', playersOnBoard );
+    
     if (player.dead) {
       killPlayer(player)
     }
     
     if (isThisOurPlayer(player)) {
       window.addEventListener('mousemove', doEventMouseMove)
+    } else {
+      console.log( thisPlayer );
     }
   }
   
@@ -128,19 +132,20 @@ import * as Settings from './settings.js'
     }
   }
   
-  const getPlayerByID = (playerID) => {
-    if ( 'undefined' !== typeof playersOnBoard[playerID] ) {
-      return playersOnBoard[playerID]
+  const getPlayerById = (playerId) => {
+    if ( 'undefined' !== typeof playersOnBoard[playerId] ) {
+      return playersOnBoard[playerId]
     }
     
     return null
   }
   
   const updatePlayer = (playerArgs) => {
-    const player = getPlayerByID(playerArgs.id)
+    const player = getPlayerById(playerArgs.id)
     if (player) {
       player.moveTo(playerArgs)
     } else {
+      console.log( 'Update an Unknown player', playerArgs );
       addPlayerToGame(new Player(playerArgs))
     }
   }
@@ -188,7 +193,7 @@ import * as Settings from './settings.js'
     }
   }
   
-  const refillWithprepareEnemiesBody = () => {
+  const refillWithPreparedEnemiesBody = () => {
     if (PREPARED_ENEMIES_BODY_MAX_COUNT > enemiesBodyOnHold.length) {
       for (let i = PREPARED_ENEMIES_BODY_MAX_COUNT - enemiesBodyOnHold.length; 0 < i; i--) {
         prepareNewEnemyBody()
@@ -344,23 +349,23 @@ import * as Settings from './settings.js'
     thisPlayer = new Player(args)
     console.log( 'This is you:', thisPlayer );
     addPlayerToGame(thisPlayer)
-    refillWithprepareEnemiesBody()
+    refillWithPreparedEnemiesBody()
   })
   
-  socket.on('player_death', playerID => {
-    killPlayer(getPlayerByID(playerID))
+  socket.on('player_death', playerId => {
+    killPlayer(getPlayerById(playerId))
   })
   
-  socket.on('player_resurrect', playerID => {
-    resurrectPlayer(getPlayerByID(playerID))
+  socket.on('player_resurrect', playerId => {
+    resurrectPlayer(getPlayerById(playerId))
   })
   
-  socket.on('player_disconnect', playerID => {
-    removePlayerFromGame(getPlayerByID(playerID))
+  socket.on('player_disconnect', playerId => {
+    removePlayerFromGame(getPlayerById(playerId))
   })
   
   socket.on('tick_update', tickInfo => {
-    const {enemies, players, objectives, score} = tickInfo
+    const { enemies, players, objectives, score } = tickInfo
     
     players.forEach(playerData => {
       updatePlayer(playerData)

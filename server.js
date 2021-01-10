@@ -31,10 +31,10 @@ const createUserFromSocket = (socket) => {
   /**
    * @todo Ajouter l'utilisateur dans une game seulement avec son input contrairement à là.
    */
-  gameroom.addUserByID(socket.id)
+  gameroom.addUserById(socket.id)
 }
 
-global.getUserByID = (id) => {
+global.getUserById = (id) => {
   if ('undefined' !== typeof users[id]) {
     return users[id]
   }
