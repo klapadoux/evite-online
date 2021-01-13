@@ -28,10 +28,12 @@ const gameroom = new Gameroom()
 const createUserFromSocket = (socket) => {
   users[socket.id] = new User(socket)
   
-  /**
-   * @todo Ajouter l'utilisateur dans une game seulement avec son input contrairement à là.
-   */
   gameroom.addUserById(socket.id)
+  
+  // socket.on('user_enter_game', function () {
+  //   console.log( 'USER ENTER GAME', this );
+  //   gameroom.addUserById(this.id)
+  // })
 }
 
 global.getUserById = (id) => {
