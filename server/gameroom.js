@@ -44,6 +44,7 @@ class Gameroom {
       id: user.id,
       pseudo: user.pseudo,
       color: this.getUniqueRandomColor(),
+      invincible: true,
     })
     
     this.game.addPlayer(player)

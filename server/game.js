@@ -42,43 +42,52 @@ class Game {
   checkCollisions() {
     // Players circle against enemies square.
     for (const playerId in this.players) {
-      if (this.players[playerId].dead) {
+      const player = this.players[playerId]
+      
+      if (player.dead) {
         continue
       }
       
-      const {x, y, size} = this.players[playerId]
+      const { x, y, size } = player
       const playerRadius = size / 2
       
-      this.enemies.forEach(enemy => {
-        if (
-          enemy.y <= y + playerRadius &&
-          enemy.x + enemy.size >= x - playerRadius &&
-          enemy.y + enemy.size >= y - playerRadius &&
-          enemy.x <= x + playerRadius
-        ) {
-          this.players[playerId].dead = true
-          this.players[playerId].velocity = enemy.velocity
-          this.players[playerId].goalPos = enemy.goalPos
-          
-          this.moveElement(this.players[playerId], 0.33)
-          
-          this.score -= 1
-          
-          global.io.emit('player_death', this.players[playerId].id)
+      if (! player.invincible) {
+        this.enemies.forEach(enemy => {
+          if (
+            enemy.y <= y + playerRadius &&
+            enemy.x + enemy.size >= x - playerRadius &&
+            enemy.y + enemy.size >= y - playerRadius &&
+            enemy.x <= x + playerRadius
+          ) {
+            player.dead = true
+            player.velocity = enemy.velocity
+            player.goalPos = enemy.goalPos
+            
+            this.moveElement(player, 0.33)
+            
+            this.score -= 5
+            
+            global.io.emit('player_death', player.id)
+          }
+        })
+        
+        // Check again for player death.
+        if (player.dead) {
+          continue
         }
-      })
-      
-      // Check again for player death.
-      if (this.players[playerId].dead) {
-        continue
       }
+      
       
       const objectives = getObjectives()
       objectives.forEach(objective => {
         const distance = Utils.get2PosDistance(
-          {x, y},
-          {x: objective.x + objective.size / 2, y: objective.y + objective.size / 2}
+          { x, y },
+          {
+            x: objective.x + objective.size / 2,
+            y: objective.y + objective.size / 2,
+          }
         )
+        
         if (distance <= objective.size / 2 + playerRadius) {
           this.score += 2
           objective.dead = true
