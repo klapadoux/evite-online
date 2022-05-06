@@ -108,128 +108,89 @@ body {
   transition: transform 0.15s;
 }
 
-/* .objective {
-  border: 2px solid #ffe62f;
-  background: #98faee;
-} */
-
 .objective {
   box-sizing: border-box;
   user-select: none;
   position: absolute;
   z-index: 50;
-  
-  display: inline-block;
-  width: 0;
-  height: 0;
-  
-  margin-left: .9em;
-  margin-right: .9em;
-  margin-bottom: 1.2em;
-  
-  border-right:  .3em solid transparent;
-  border-bottom: .7em  solid #ffe62f;
-  border-left:   .3em solid transparent;
-
-  font-size: 24px;
-  
-  transform: translate3d(-100%, -100%, 0);
-  transform-origin: -45% 36%;
-  
+  background: white;
+  border-radius: 100%;
+  box-shadow: 0 0 0.5em 5px white;
   transition: opacity 0.3s, transform 0.3s;
   animation: star-rotation linear 4s 0s infinite;
 }
-  
-.objective::before,
-.objective::after {
-  content: '';
-  
-  display: block;
-  width: 0;
-  height: 0;
-  
-  position: absolute;
-  top: .6em;
-  left: -1em;
 
-  border-right:  1em solid transparent;
-  border-bottom: .7em  solid #ffe62f;
-  border-left:   1em solid transparent;
-
-  transform: rotate(-35deg);
-}
-
-.objective::after {
-  transform: rotate(35deg);
-}
-
-.objective__inner {
-  box-sizing: border-box;
-  user-select: none;
-  position: absolute;
+.objective__star {
+  position: absolute;  
   top: 0;
-  left: 0;
-  z-index: -1;
-  
-  display: inline-block;
-  width: 0;
-  height: 0;
-  
-  margin-left: .9em;
-  margin-right: .9em;
-  margin-bottom: 1.2em;
-  
-  border-right:  .3em solid transparent;
-  border-bottom: .7em  solid #98faee;
-  border-left:   .3em solid transparent;
-  
-  font-size: 1.1em;
-  
-  transform: translate3d(-25%, -25%, 0);
-}
-
-.objective__inner::before,
-.objective__inner::after {
-  content: '';
-  
+  left: 50%;
   display: block;
   width: 0;
   height: 0;
+  border-right:  0.3em solid transparent;
+  border-bottom: 1em  solid transparent;
+  border-left:   0.3em solid transparent;
+}
   
+.objective__star::before,
+.objective__star::after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
   position: absolute;
   top: .6em;
   left: -1em;
-
   border-right:  1em solid transparent;
-  border-bottom: .7em  solid #98faee;
+  border-bottom: 0.7em  solid transparent;
   border-left:   1em solid transparent;
-
+}
+.objective__star::before {
   transform: rotate(-35deg);
 }
-
-.objective__inner::after {
+.objective__star::after {
   transform: rotate(35deg);
+}
+
+.objective__star--front {
+  border-bottom-color:#62cdff;
+  font-size: 0.65em;
+  transform: translate3d(-50%, -21%, 0);
+}
+.objective__star--front::before,
+.objective__star--front::after {
+  border-bottom-color: #62cdff;
+}
+
+.objective__star--back {
+  border-bottom-color:#38f8ff;
+  font-size: calc(0.65em + 8px);
+  transform: translate3d(-50%, calc(-21% - 6px), 0);
+}
+.objective__star--back::before,
+.objective__star--back::after {
+  border-bottom-color: #38f8ff;
 }
 
 @keyframes star-rotation {
   0% {
-    transform: scale(0.9) rotate(45deg) translate3d(-100%, -100%, 0);
-    /* transform: scale(1) rotate(45deg) translate3d(-100%, -100%, 0); */
+    transform: scale(0.9) rotate(45deg);
+    /* transform: scale(1) rotate(45deg); */
   }
   25% {
-    transform: scale(1.1) rotate(135deg) translate3d(-100%, -100%, 0);
-    /* transform: scale(1) rotate(135deg) translate3d(-100%, -100%, 0); */
+    transform: scale(1.1) rotate(135deg);
+    /* transform: scale(1) rotate(135deg); */
   }
   50% {
-    transform: scale(0.9) rotate(225deg) translate3d(-100%, -100%, 0);
-    /* transform: scale(1) rotate(225deg) translate3d(-100%, -100%, 0); */
+    transform: scale(0.9) rotate(225deg);
+    /* transform: scale(1) rotate(225deg); */
   }
   75% {
-    transform: scale(1.1) rotate(315deg) translate3d(-100%, -100%, 0);
-    /* transform: scale(1) rotate(315deg) translate3d(-100%, -100%, 0); */
+    transform: scale(1.1) rotate(315deg);
+    /* transform: scale(1) rotate(315deg); */
   }
   100% {
-    transform: scale(0.9) rotate(405deg) translate3d(-100%, -100%, 0);
+    transform: scale(0.9) rotate(405deg);
     /* transform: scale(1) rotate(405deg) translate3d(-100%, -100%, 0); */
   }
 }

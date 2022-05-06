@@ -15,13 +15,18 @@ export class Objective {
     this.node = document.createElement('div')
     this.node.classList.add('objective')
     this.node.style.fontSize = this.size + 'px' // Size is controlled by font size
+    this.node.style.width = this.size + 'px' // Size is controlled by font size
+    this.node.style.height = this.size + 'px' // Size is controlled by font size
     this.node.style.top = this.y + 'px'
     this.node.style.left = this.x + 'px'
     
-    const innerNode = document.createElement('div')
-    innerNode.classList.add('objective__inner')
+    const backStar = document.createElement('div')
+    backStar.classList.add('objective__star', 'objective__star--back')
+    this.node.append(backStar)
     
-    this.node.append(innerNode)
+    const frontStar = document.createElement('div')
+    frontStar.classList.add('objective__star', 'objective__star--front')
+    this.node.append(frontStar)
   }
 
   update(data) {
