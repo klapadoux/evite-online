@@ -1,4 +1,5 @@
 const Game = require('./game')
+const settings = require('./settings')
 const { createPlayer } = require('./player')
 const randomColor = require('randomcolor')
 
@@ -16,7 +17,7 @@ class Gameroom {
     this.game = new Game()
   }
   
-  addUserById(userId) {    
+  addUserById(userId) {
     if ('undefined' !== typeof this.users[userId]) {
       // BAIL if this user already exist.
       return
@@ -44,7 +45,6 @@ class Gameroom {
       id: user.id,
       pseudo: user.pseudo,
       color: this.getUniqueRandomColor(),
-      invincible: true,
     })
     
     this.game.addPlayer(player)

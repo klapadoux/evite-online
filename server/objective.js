@@ -1,5 +1,5 @@
 const Utils = require('./utils')
-const Settings = require('./settings')
+const settings = require('./settings')
 
 let objectivesAreGestating = false
 let objectivesBirthCount = 0
@@ -21,7 +21,7 @@ const createObjective = (data) => {
 
 const checkObjectivesGestation = () => {
   // Entamer la création d'enemies si ce n'est pas déjà en cours.
-  if (Settings.MAX_OBJECTIVES_AT_ONCE > objectives.length && ! objectivesAreGestating) {
+  if (settings.MAX_OBJECTIVES_AT_ONCE > objectives.length && ! objectivesAreGestating) {
     objectivesAreGestating = true
     setTimeout(() => {
       objectives.push(createObjective())

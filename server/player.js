@@ -1,4 +1,4 @@
-const Settings = require('./settings')
+const settings = require('./settings')
 
 const createPlayer = (data) => {
   return {
@@ -11,7 +11,7 @@ const createPlayer = (data) => {
     goalPos: data.goalPos ? data.goalPos : {x: 300, y: 300},
     velocity: data.velocity ? data.velocity : 2500, // Pixels by ms
     dead: data.dead ? data.dead : false,
-    invincible: data.invincible ? data.invincible : Settings.SHOW_SPAWN_RECT,
+    invincible: data.invincible ? data.invincible : settings.INVINCIBLE_PLAYERS,
   }
 }
 
