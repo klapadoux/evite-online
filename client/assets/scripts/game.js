@@ -159,13 +159,12 @@ class Game {
     ///////////////////////////////////////////////
     ///////////////////////////////////////////////
     ///////////////////////////////////////////////
-    
-    
+
     console.log( 'BLOOD IN', delay );
-    setTimeout(((bloodiedElement) => {
-      console.log( bloodiedElement );
+    setTimeout(() => {
+      console.log( {element} );
       
-      const { node, size } = bloodiedElement
+      const { node, size } = element
       const { x, y } = node.getBoundingClientRect()
       
       let bloodSize = size
@@ -203,7 +202,7 @@ class Game {
       blood.classList.add('blood', `blood--${sizeType}`)
       this.playground.append(blood)
       this.addNodeToCleanupList(blood)
-    })(element), delay)
+    }, delay)
   }
   
   
