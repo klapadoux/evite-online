@@ -4,6 +4,7 @@ class DebugCanvas {
   
   static init() {
     const node = document.createElement('canvas')
+    node.classList.add('debug-canvas')
     node.setAttribute('width', '1920')
     node.setAttribute('height', '1080')
     node.style.position = 'absolute'

@@ -26,7 +26,7 @@ const checkObjectivesGestation = () => {
     setTimeout(() => {
       objectives.push(createObjective())
       objectivesAreGestating = false
-    }, 1500);
+    }, 1250);
   }
 }
 

@@ -65,7 +65,11 @@ class Game {
             
             this.moveElement(player, 0.33)
             
-            this.score -= 5
+            this.score -= 2
+            
+            if (0 > this.score) {
+              this.score = 0
+            }
             
             global.io.emit('player_death', player.id)
           }
@@ -89,7 +93,7 @@ class Game {
         )
         
         if (distance <= objective.size / 2 + playerRadius) {
-          this.score += 2
+          this.score += 1
           objective.dead = true
         }
       })

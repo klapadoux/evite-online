@@ -152,20 +152,12 @@ class Game {
   }
   
   addBloodUnderElement(element, sizeType = 'same', delay = 0) {
-    ///////////////////////////////////////////////
-    ///////////////////////////////////////////////
-    ///////////////////////////////////////////////
-    // ICICICIICICICIICICICIICICI
-    ///////////////////////////////////////////////
-    ///////////////////////////////////////////////
-    ///////////////////////////////////////////////
-
-    console.log( 'BLOOD IN', delay );
     setTimeout(() => {
       console.log( {element} );
       
       const { node, size } = element
       const { x, y } = node.getBoundingClientRect()
+      console.log('Element pos', x, y, 'Element size', size);
       
       let bloodSize = size
       let sizeVariance = 0.33
@@ -184,15 +176,16 @@ class Game {
       const bloodCoord = Utils.getRandomCoordInRect(
         x + bloodWidth / 2,
         y + bloodHeight / 2,
-        size - bloodWidth / 2,
-        size - bloodHeight / 2
+        size - bloodWidth,
+        size - bloodHeight
       )
+
       // TEST POINT
       // let point = document.createElement('div')
       // point.classList.add('test-center')
-      // point.style.left = bloodX + 'px'
-      // point.style.top = bloodY + 'px'
-      // playground.append(point)
+      // point.style.left = bloodCoord.x + 'px'
+      // point.style.top = bloodCoord.y + 'px'
+      // this.playground.append(point)
       
       let blood = document.createElement('span')
       blood.style.left = bloodCoord.x + 'px'
@@ -239,6 +232,7 @@ class Game {
       const delay = Math.random() * 600
       this.addBloodUnderElement(player, type, delay)
     }
+    
     this.addBloodUnderElement(player, 'same', 625)
     this.addBloodUnderElement(player, 'same', 650)
     
