@@ -168,16 +168,35 @@ class Game {
     const { id, velocity, goalPos } = data
     const player = this.getPlayerById(id)
 
-    if (player) {
-      player.goalPos = goalPos
-      player.velocity = velocity
-      
-      if (isPlayerResurrecting) {
-        player.x = goalPos.x
-        player.y = goalPos.y
-        player.dead = false
-      }
+    if (! player) {
+      // BAIL, not a player.
+      return
     }
+    
+    player.goalPos = goalPos
+    player.velocity = velocity
+    
+    if (isPlayerResurrecting) {
+      player.x = goalPos.x
+      player.y = goalPos.y
+      player.dead = false
+    }
+  }
+  
+  setPlayerPos(data) {
+    const { id, goalPos } = data
+    const player = this.getPlayerById(id)
+    
+    if (! player) {
+      // BAIL, not a player.
+      return
+    }
+    
+    const { x, y } = goalPos
+    
+    player.x = x
+    player.y = y
+    player.goalPos = goalPos
   }
   
   getPlayerById(playerId) {

@@ -60,6 +60,14 @@ class Gameroom {
       this.game.updatePlayer(playerParams)
     })
     
+    user.socket.on('start_teleport', playerParams => {
+      this.game.updatePlayer(playerParams)
+    })
+    
+    user.socket.on('teleport_player_to', playerParams => {
+      this.game.setPlayerPos(playerParams)
+    })
+    
     user.socket.on('player_resurrect', playerParams => {
       this.game.updatePlayer(playerParams, true)
       global.io.emit('player_resurrect', playerParams.id)

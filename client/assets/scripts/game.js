@@ -87,9 +87,13 @@ class Game {
     }
   }
   initHandlers() {
-  
     this.resurrectOurPlayerHandler = this.resurrectOurPlayer.bind(this)
+    
     this.doEventMouseMoveHandler = this.doEventMouseMove.bind(this)
+    this.doEventMouseDownHandler = this.doEventMouseDown.bind(this)
+    
+    this.teleportAtMouseUpHandler = this.teleportAtMouseUp.bind(this)
+    
     this.doAnimationLoopHandler = this.doAnimationLoop.bind(this)
   }
   
@@ -137,9 +141,37 @@ class Game {
   }
   
   doEventMouseMove(event) {
+    if ('teleport' === this.ourPlayer.currentAction) {
+      // BAIL. Teleporting, no need to report movement.
+      return;
+    }
+    
     this.ourPlayer.goalPos.x = event.pageX
     this.ourPlayer.goalPos.y = event.pageY
     this.socket.emit('mousemove', this.ourPlayer.getEmitParams())
+  }
+  
+  doEventMouseDown(event) {
+    this.ourPlayer.setCurrentAction('teleport')
+    window.addEventListener('mouseup', this.teleportAtMouseUpHandler)
+    
+    this.socket.emit('start_teleport', this.ourPlayer.getEmitParams())
+  }
+  
+  teleportAtMouseUp(event) {
+    const pos = {
+      x: event.pageX,
+      y: event.pageY,
+    }
+    
+    this.ourPlayer.setPos(pos)
+    
+    this.socket.emit('teleport_player_to', this.ourPlayer.getEmitParams())
+    
+    setTimeout(() => {
+      this.ourPlayer.setCurrentAction()
+      window.removeEventListener('mouseup', this.teleportAtMouseUpHandler)
+    }, 100)
   }
   
   updateScoreCounters(score) {
@@ -213,7 +245,7 @@ class Game {
     }
     
     if (this.isThisOurPlayer(player)) {
-      window.addEventListener('mousemove', this.doEventMouseMove.bind(this))
+      this.addOurPlayerEvents()
     } else {
       console.log( player );
     }
@@ -240,7 +272,7 @@ class Game {
     this.addNodeToCleanupList(player.node)
     
     if (this.isThisOurPlayer(player)) {
-      window.removeEventListener('mousemove', this.doEventMouseMoveHandler)
+      this.removeOurPlayerEvents()
 
       setTimeout(() => {
         window.addEventListener('click', this.resurrectOurPlayerHandler)
@@ -258,7 +290,7 @@ class Game {
     this.addPlayerToGame(player)
     if (this.isThisOurPlayer(player)) {
       window.removeEventListener('click', this.resurrectOurPlayerHandler)
-      window.addEventListener('mousemove', this.doEventMouseMoveHandler)
+      this.addOurPlayerEvents()
     }
   }
   
@@ -277,6 +309,16 @@ class Game {
       player.node.remove()
       delete this.players[player.id]
     }
+  }
+  
+  addOurPlayerEvents() {
+    window.addEventListener('mousemove', this.doEventMouseMoveHandler)
+    window.addEventListener('mousedown', this.doEventMouseDownHandler)
+  }
+  
+  removeOurPlayerEvents() {
+    window.removeEventListener('mousemove', this.doEventMouseMoveHandler)
+    window.removeEventListener('mousedown', this.doEventMouseDownHandler)
   }
   
   getPlayerById(playerId) {

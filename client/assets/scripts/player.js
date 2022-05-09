@@ -15,8 +15,15 @@ export class Player {
     
     this.defaultVelocity = this.velocity
     this.deathCount = 0
+    this.currentAction = 'none'
     
+    
+    this.init()
+  }
+  
+  init() {
     this.createNode()
+    this.setCurrentAction(this.currentAction);
   }
   
   createNode() {
@@ -29,24 +36,34 @@ export class Player {
     this.node.style.left = this.x + 'px'
   }
   
-  moveTo({x, y}) {
+  moveTo({ x, y }) {
     this.x = x
     this.y = y
     this.node.style.top = y + 'px'
     this.node.style.left = x + 'px'
   }
   
+  setPos(pos) {
+    const { x, y } = pos
+    
+    this.x = x
+    this.y = y
+    this.node.style.top = y + 'px'
+    this.node.style.left = x + 'px'
+    this.goalPos = pos
+  }
   
   getEmitParams() {
     return {
       id: this.id,
       goalPos: this.goalPos,
       velocity: this.velocity,
+      currentAction: this.currentAction,
     }
   }
   
   die() {
-    this.node.classList.add('dead')
+    this.node.classList.add('player--dead')
     this.node.style.backgroundColor = Utils.changeColor( 0.75, this.color, '#acbcbf')
     this.deathCount++
   }
@@ -55,6 +72,13 @@ export class Player {
     this.createNode()
     this.dead = false
     return this.node
+  }
+  
+  setCurrentAction(action = 'none') {
+    this.node.classList.remove(`player--${this.currentAction}`)
+    
+    this.node.classList.add(`player--${action}`)
+    this.currentAction = action
   }
 }
 
