@@ -19,14 +19,22 @@ const createObjective = (data) => {
   }
 }
 
-const checkObjectivesGestation = () => {
+/**
+ * @param {int} modifier Higher the number, faster the spawning. 0 and lower means no spawning.
+ */
+const checkObjectivesGestation = (modifier = 1) => {
+  if (0 >= modifier) {
+    // BAIL. No spawning.
+    return
+  }
+  
   // Entamer la création d'enemies si ce n'est pas déjà en cours.
   if (settings.MAX_OBJECTIVES_AT_ONCE > objectives.length && ! objectivesAreGestating) {
     objectivesAreGestating = true
     setTimeout(() => {
       objectives.push(createObjective())
       objectivesAreGestating = false
-    }, 1250);
+    }, 1250 * (1 / modifier));
   }
 }
 

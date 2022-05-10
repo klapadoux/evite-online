@@ -143,7 +143,7 @@ class Game {
   doEventMouseMove(event) {
     if ('charge_teleport' === this.ourPlayer.currentAction) {
       // BAIL. Teleporting, no need to report movement.
-      return;
+      return
     }
     
     this.ourPlayer.goalPos.x = event.pageX
@@ -176,7 +176,7 @@ class Game {
   
   updateScoreCounters(score) {
     if (this.actualScore === score) {
-      return;
+      return
     }
     this.scoreCounters.forEach(counter => {
       counter.innerHTML = score
@@ -269,13 +269,15 @@ class Game {
     this.addBloodUnderElement(player, 'same', 650)
     
     player.die()
+
     this.addNodeToCleanupList(player.node)
     
     if (this.isThisOurPlayer(player)) {
+      this.ourPlayer.setCurrentAction()
       this.removeOurPlayerEvents()
 
       setTimeout(() => {
-        window.addEventListener('click', this.resurrectOurPlayerHandler)
+        window.addEventListener('mousedown', this.resurrectOurPlayerHandler)
       }, 1000)
     }
   }
@@ -289,7 +291,7 @@ class Game {
     player.resurrect()
     this.addPlayerToGame(player)
     if (this.isThisOurPlayer(player)) {
-      window.removeEventListener('click', this.resurrectOurPlayerHandler)
+      window.removeEventListener('mousedown', this.resurrectOurPlayerHandler)
       this.addOurPlayerEvents()
     }
   }
@@ -319,6 +321,9 @@ class Game {
   removeOurPlayerEvents() {
     window.removeEventListener('mousemove', this.doEventMouseMoveHandler)
     window.removeEventListener('mousedown', this.doEventMouseDownHandler)
+    
+    // Disable events that might not be added just in case
+    window.removeEventListener('mouseup', this.teleportAtMouseUpHandler)
   }
   
   getPlayerById(playerId) {

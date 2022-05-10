@@ -99,7 +99,8 @@ class Gameroom {
     global.io.emit('player_disconnect', user.id)
     
     delete user.gameroom.users[user.id]
-    delete user.gameroom.game.players[user.id]
+    
+    user.gameroom.game.removePlayerById(user.id)
     
     console.log(`Player ${user.id} has disconnected. Reason:`, reason, 'Users left count:', Object.keys(user.gameroom.users).length, 'Players left count:', Object.keys(user.gameroom.game.players).length);
     

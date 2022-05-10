@@ -8,6 +8,7 @@ class Game {
       
     this.players = {}
     
+    this.playerCount = 0
     this.enemies = []
     this.enemiesBirthCount = 0
     this.enemiesAreGestating = false
@@ -102,7 +103,7 @@ class Game {
   
   updateGameboard(delta) {
     if (this.doGameLoopEnemiesCheck) {
-      checkObjectivesGestation()
+      checkObjectivesGestation(this.playerCount)
       
       this.checkEnemiesGestation()
       this.checkCollisions()
@@ -154,6 +155,17 @@ class Game {
   ////////// PLAYERS
   addPlayer(player) {
     this.players[player.id] = player
+    this.playerCount++
+  }
+  
+  removePlayerById(playerId) {
+    if ('undefined' === typeof this.players[playerId]) {
+      // BAIL, already removed.
+      return
+    }
+    
+    delete this.players[playerId]
+    this.playerCount--
   }
   
   updateAllPlayers(delta) {
