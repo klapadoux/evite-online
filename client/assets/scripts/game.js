@@ -141,7 +141,7 @@ class Game {
   }
   
   doEventMouseMove(event) {
-    if ('teleport' === this.ourPlayer.currentAction) {
+    if ('charge_teleport' === this.ourPlayer.currentAction) {
       // BAIL. Teleporting, no need to report movement.
       return;
     }
@@ -152,10 +152,10 @@ class Game {
   }
   
   doEventMouseDown(event) {
-    this.ourPlayer.setCurrentAction('teleport')
+    this.ourPlayer.setCurrentAction('charge_teleport')
     window.addEventListener('mouseup', this.teleportAtMouseUpHandler)
     
-    this.socket.emit('start_teleport', this.ourPlayer.getEmitParams())
+    this.socket.emit('charge_teleport', this.ourPlayer.getEmitParams())
   }
   
   teleportAtMouseUp(event) {
@@ -164,7 +164,7 @@ class Game {
       y: event.pageY,
     }
     
-    this.ourPlayer.setPos(pos)
+    this.ourPlayer.teleportTo(pos)
     
     this.socket.emit('teleport_player_to', this.ourPlayer.getEmitParams())
     

@@ -60,7 +60,7 @@ class Gameroom {
       this.game.updatePlayer(playerParams)
     })
     
-    user.socket.on('start_teleport', playerParams => {
+    user.socket.on('charge_teleport', playerParams => {
       this.game.updatePlayer(playerParams)
     })
     

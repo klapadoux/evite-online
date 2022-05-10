@@ -38,8 +38,10 @@ body {
     background-color 1s, 
     opacity 0.5s;
 }
-.player--teleport {
+.player--charge_teleport {
   animation: shake-player 1s 0s infinite forwards;
+}
+.player--teleport {
   transition:
     border-color 1s,
     background-color 1s,

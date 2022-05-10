@@ -17,7 +17,6 @@ export class Player {
     this.deathCount = 0
     this.currentAction = 'none'
     
-    
     this.init()
   }
   
@@ -41,6 +40,11 @@ export class Player {
     this.y = y
     this.node.style.top = y + 'px'
     this.node.style.left = x + 'px'
+  }
+  
+  teleportTo(pos) {
+    this.setCurrentAction('teleport')
+    this.setPos(pos)
   }
   
   setPos(pos) {
