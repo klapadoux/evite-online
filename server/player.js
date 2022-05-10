@@ -11,6 +11,7 @@ const createPlayer = (data) => {
     goalPos: data.goalPos ? data.goalPos : {x: 300, y: 300},
     velocity: data.velocity ? data.velocity : 2500, // Pixels by ms
     dead: data.dead ? data.dead : false,
+    currentAction: data.currentAction ? data.currentAction : 'none',
     invincible: data.invincible ? data.invincible : settings.INVINCIBLE_PLAYERS,
   }
 }

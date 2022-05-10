@@ -151,7 +151,7 @@ class Game {
     this.socket.emit('mousemove', this.ourPlayer.getEmitParams())
   }
   
-  doEventMouseDown(event) {
+  doEventMouseDown() {
     this.ourPlayer.setCurrentAction('charge_teleport')
     window.addEventListener('mouseup', this.teleportAtMouseUpHandler)
     
@@ -336,8 +336,9 @@ class Game {
   
   updatePlayer(playerArgs) {
     const player = this.getPlayerById(playerArgs.id)
+    
     if (player) {
-      player.moveTo(playerArgs)
+      player.update(playerArgs)
     } else {
       console.log( 'Update an Unknown player', playerArgs );
       this.addPlayerToGame(new Player(playerArgs))

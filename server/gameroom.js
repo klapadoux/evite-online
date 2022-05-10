@@ -66,6 +66,7 @@ class Gameroom {
     
     user.socket.on('teleport_player_to', playerParams => {
       this.game.setPlayerPos(playerParams)
+      this.game.updatePlayer(playerParams)
     })
     
     user.socket.on('player_resurrect', playerParams => {

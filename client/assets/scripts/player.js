@@ -25,6 +25,14 @@ export class Player {
     this.setCurrentAction(this.currentAction);
   }
   
+  update(args) {
+    const { currentAction } = args
+    
+    this.moveTo(args)
+
+    this.setCurrentAction(currentAction)
+  }
+  
   createNode() {
     this.node = document.createElement('div')
     this.node.classList.add('player')
@@ -79,6 +87,11 @@ export class Player {
   }
   
   setCurrentAction(action = 'none') {
+    if (action === this.currentAction) {
+      // BAIL. No change here.
+      return
+    }
+    
     this.node.classList.remove(`player--${this.currentAction}`)
     
     this.node.classList.add(`player--${action}`)

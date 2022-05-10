@@ -177,7 +177,7 @@ class Game {
   }
   
   updatePlayer(data, isPlayerResurrecting = false) {
-    const { id, velocity, goalPos } = data
+    const { id, velocity, goalPos, currentAction } = data
     const player = this.getPlayerById(id)
 
     if (! player) {
@@ -187,6 +187,7 @@ class Game {
     
     player.goalPos = goalPos
     player.velocity = velocity
+    player.currentAction = currentAction
     
     if (isPlayerResurrecting) {
       player.x = goalPos.x
@@ -222,7 +223,7 @@ class Game {
   getPlayersEmitParams() {
     const playersParams = []
     for (const player in this.players) {
-      const { id, x, y, goalPos, velocity, color, dead } = this.players[player]
+      const { id, x, y, goalPos, velocity, color, dead, currentAction } = this.players[player]
       playersParams.push({
         id,
         x,
@@ -231,6 +232,7 @@ class Game {
         goalPos,
         velocity, // Pixels by ms
         dead,
+        currentAction,
       })
     }
     return playersParams
