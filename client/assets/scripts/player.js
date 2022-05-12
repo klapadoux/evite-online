@@ -75,9 +75,15 @@ export class Player {
   }
   
   die() {
+    this.node.classList.remove(`player--${this.currentAction}`)
+    this.currentAction = 'none'
+    
     this.node.classList.add('player--dead')
+    this.dead = true
+    
     this.node.style.backgroundColor = Utils.changeColor( 0.75, this.color, '#acbcbf')
     this.deathCount++
+    console.log(this);
   }
   
   resurrect() {
@@ -87,10 +93,12 @@ export class Player {
   }
   
   setCurrentAction(action = 'none') {
-    if (action === this.currentAction) {
+    if (this.dead || action === this.currentAction) {
       // BAIL. No change here.
       return
     }
+    
+    console.log('Set action', action);
     
     this.node.classList.remove(`player--${this.currentAction}`)
     

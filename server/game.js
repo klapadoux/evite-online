@@ -1,4 +1,5 @@
 const gameloop = require('node-gameloop')
+const settings = require('./settings.js')
 const Utils = require('./utils.js')
 const { checkObjectivesGestation, getObjectives, deleteDeadObjectives } = require('./objective')
 
@@ -14,6 +15,8 @@ class Game {
     this.enemiesAreGestating = false
     
     this.doGameLoopEnemiesCheck = true
+    
+    this.fpms = settings.FPMS
   }
   
   ////////// GENERAL
@@ -138,7 +141,7 @@ class Game {
     if (! this.gameLoopId) {
       console.log( 'START GAME' );
       
-      this.gameLoopId = gameloop.setGameLoop(this.updateGameboard.bind(this), 1000 / 30)
+      this.gameLoopId = gameloop.setGameLoop(this.updateGameboard.bind(this), this.fpms)
     }
   }
   
@@ -192,7 +195,7 @@ class Game {
     if (isPlayerResurrecting) {
       player.x = goalPos.x
       player.y = goalPos.y
-      player.dead = false
+      goalPos.dead = false
     }
   }
   

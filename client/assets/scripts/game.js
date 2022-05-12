@@ -183,13 +183,23 @@ class Game {
     })
   }
   
+  addPlayerDeathBlood(player) {
+    const bloodCount = Math.floor(Math.random() * 5)
+    const bloodTypes = ['small', 'medium']
+    for (let i = 0; i <= bloodCount; i++) {
+      const type = bloodTypes[Math.floor(Math.random() * bloodTypes.length)]
+      const delay = Math.random() * 600
+      this.addBloodUnderElement(player, type, delay)
+    }
+    this.addBloodUnderElement(player, 'same', 625)
+    this.addBloodUnderElement(player, 'same', 650)
+  }
+  
   addBloodUnderElement(element, sizeType = 'same', delay = 0) {
     setTimeout(() => {
-      console.log( {element} );
       
       const { node, size } = element
       const { x, y } = node.getBoundingClientRect()
-      console.log('Element pos', x, y, 'Element size', size);
       
       let bloodSize = size
       let sizeVariance = 0.33
@@ -257,20 +267,10 @@ class Game {
       return false;
     }
     
-    const bloodCount = Math.floor(Math.random() * 5)
-    const bloodTypes = ['small', 'medium']
-    for (let i = 0; i <= bloodCount; i++) {
-      const type = bloodTypes[Math.floor(Math.random() * bloodTypes.length)]
-      const delay = Math.random() * 600
-      this.addBloodUnderElement(player, type, delay)
-    }
-    
-    this.addBloodUnderElement(player, 'same', 625)
-    this.addBloodUnderElement(player, 'same', 650)
-    
     player.die()
-
     this.addNodeToCleanupList(player.node)
+    
+    this.addPlayerDeathBlood(player)
     
     if (this.isThisOurPlayer(player)) {
       this.ourPlayer.setCurrentAction()
@@ -290,6 +290,7 @@ class Game {
     
     player.resurrect()
     this.addPlayerToGame(player)
+    
     if (this.isThisOurPlayer(player)) {
       window.removeEventListener('mousedown', this.resurrectOurPlayerHandler)
       this.addOurPlayerEvents()

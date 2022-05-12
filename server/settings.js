@@ -5,4 +5,7 @@ module.exports = {
   
   // GAME CONTROL
   MAX_OBJECTIVES_AT_ONCE: 6,
+  
+  // SERVER CONTROL
+  FPMS: 1000 / 30,
 }
