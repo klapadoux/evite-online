@@ -195,7 +195,7 @@ class Game {
     if (isPlayerResurrecting) {
       player.x = goalPos.x
       player.y = goalPos.y
-      goalPos.dead = false
+      player.dead = false
     }
   }
   
