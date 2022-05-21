@@ -16,6 +16,9 @@ class Game {
     
     this.doGameLoopEnemiesCheck = true
     
+    this.playgroundWidth = settings.PLAYGROUND_WIDTH
+    this.playgroundHeight = settings.PLAYGROUND_HEIGHT
+    
     this.fpms = settings.FPMS
   }
   

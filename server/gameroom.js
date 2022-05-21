@@ -51,7 +51,13 @@ class Gameroom {
     
     
     // Tell this user that it has now become a player.
-    user.socket.emit('init_this_connection', player)
+    user.socket.emit('init_this_connection', {
+      game: {
+        playgroundWidth: this.game.playgroundWidth,
+        playgroundHeight: this.game.playgroundHeight,
+      },
+      player,
+    })
   
   
     ///// Socket ON events for the game.

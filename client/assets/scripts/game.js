@@ -1,5 +1,6 @@
 import Utils from './utils.js'
 import DebugCanvas from './debug-canvas.js'
+import Playground from './playground.js'
 import Player from './player.js'
 import Enemy from './enemy.js'
 import Objective from './objective.js'
@@ -13,7 +14,7 @@ const COLORS = [
 ]
 
 class Game {
-  constructor(socket, ourPlayer) {
+  constructor(socket, gameArgs, ourPlayer) {
     this.socket = socket
     this.ourPlayer = ourPlayer
     
@@ -22,14 +23,14 @@ class Game {
     this.objectives = {}
     this.enemiesBodyOnHold = []
     this.cleanupList = []
-    this.playground = document.getElementById('playground')
+    this.playground = new Playground(gameArgs)
     this.scoreCounters = document.querySelectorAll('.score-counter')
     
     this.enemyBodyBirthCount = 0
     this.actualScore = 0
     
     this.activeColorIndex = COLORS.length - 1
-    
+
     this.initHandlers()
     this.initSocketEvents()
     this.addPlayerToGame(this.ourPlayer)
@@ -86,6 +87,7 @@ class Game {
       })
     }
   }
+  
   initHandlers() {
     this.resurrectOurPlayerHandler = this.resurrectOurPlayer.bind(this)
     
