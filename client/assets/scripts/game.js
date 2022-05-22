@@ -178,6 +178,8 @@ class Game {
     
     const { innerWidth:windowWidth, innerHeight:windowHeight } = window
     
+    console.log(windowWidth, windowHeight);
+    
     const windowCenterX = windowWidth / 2
     const windowCenterY = windowHeight / 2
     
@@ -192,26 +194,35 @@ class Game {
     
     console.log( {ratioWidth, ratioHeight} );
     
-    x = x * ratioWidth
-    y = y * ratioHeight
+    // x = x * (1 + this.playground.scale)
+    // y = y * (1 + this.playground.scale)
+    
+    x = x * (0.36 + ratioWidth) // windowWidth 1413px
+    y = y * (0.52 + ratioHeight) // windowHeight 937px
+    
+    // x = x * (-0.25 + ratioWidth + this.playground.scale)
+    // y = y * (-0.25 + ratioHeight + this.playground.scale)
+    
+    // x = x * (1 + ratioWidth) * (this.playground.scale)
+    // y = y * (1 + ratioHeight) * (this.playground.scale)
     
     // x -= this.playground.x
     // y -= this.playground.y
     
-    const playgroundCenterX = this.playground.width / 2
-    const playgroundCenterY = this.playground.height / 2
+    // const playgroundCenterX = this.playground.width / 2
+    // const playgroundCenterY = this.playground.height / 2
     
-    const centeredX = x - playgroundCenterX
-    const centeredY = y - playgroundCenterY
+    // const centeredX = x - playgroundCenterX
+    // const centeredY = y - playgroundCenterY
     
-    const adjustX = windowCenterX * this.playground.scale
-    const adjustY = windowCenterY * this.playground.scale
+    // const adjustX = windowCenterX * this.playground.scale
+    // const adjustY = windowCenterY * this.playground.scale
     
-    console.log({x, y, adjustX, adjustY});
+    // console.log({x, y, adjustX, adjustY});
     
     return {
-      x: x + adjustX,
-      y: y + adjustY,
+      x: x,
+      y: y,
     }
     
     // return {
