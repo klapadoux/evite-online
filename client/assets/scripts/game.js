@@ -148,16 +148,112 @@ class Game {
       return
     }
     
-    this.ourPlayer.goalPos.x = event.pageX
-    this.ourPlayer.goalPos.y = event.pageY
-    this.socket.emit('mousemove', this.ourPlayer.getEmitParams())
+    console.log({mouseX: event.pageX, mouseY: event.pageY});
+ 
+    this.ourPlayer.goalPos = this.translatePosToServer({ x: event.pageX, y: event.pageY })
+    
+    // this.ourPlayer.goalPos.x = event.pageX
+    // this.ourPlayer.goalPos.y = event.pageY
+
+    this.socket.emit('mousemove', this.getOurPlayerEmitParams())
   }
   
   doEventMouseDown() {
     this.ourPlayer.setCurrentAction('charge_teleport')
     window.addEventListener('mouseup', this.teleportAtMouseUpHandler)
     
-    this.socket.emit('charge_teleport', this.ourPlayer.getEmitParams())
+    this.socket.emit('charge_teleport', this.getOurPlayerEmitParams())
+  }
+  
+  getOurPlayerEmitParams() {
+    const params = this.ourPlayer.getEmitParams()
+    // params.goalPos = this.translatePosToServer(params.goalPos)
+    
+    // Utils.addTestPoint(this.playground, params.goalPos)
+    
+    return params
+  }
+  
+  translatePosToServer({ x, y }) {
+    
+    const { innerWidth:windowWidth, innerHeight:windowHeight } = window
+    
+    const windowCenterX = windowWidth / 2
+    const windowCenterY = windowHeight / 2
+    
+    // const centeredX = x - playgroundCenterX
+    // const centeredY = y - playgroundCenterY
+    
+    x -= this.playground.x
+    y -= this.playground.y
+    
+    const ratioWidth = (this.playground.width / windowWidth)
+    const ratioHeight = (this.playground.height / windowHeight)
+    
+    console.log( {ratioWidth, ratioHeight} );
+    
+    x = x * ratioWidth
+    y = y * ratioHeight
+    
+    // x -= this.playground.x
+    // y -= this.playground.y
+    
+    const playgroundCenterX = this.playground.width / 2
+    const playgroundCenterY = this.playground.height / 2
+    
+    const centeredX = x - playgroundCenterX
+    const centeredY = y - playgroundCenterY
+    
+    const adjustX = windowCenterX * this.playground.scale
+    const adjustY = windowCenterY * this.playground.scale
+    
+    console.log({x, y, adjustX, adjustY});
+    
+    return {
+      x: x + adjustX,
+      y: y + adjustY,
+    }
+    
+    // return {
+    //   x: x * this.playground.scale - this.playground.x,
+    //   y: y * this.playground.scale - this.playground.y,
+    // }
+    
+    // return {
+    //   x: x - this.playground.x,
+    //   y: y - this.playground.y,
+    // }
+    
+    // return {
+    //   x: centeredX * this.playground.scale,
+    //   y: centeredY * this.playground.scale,
+    // }
+    
+    return { x, y }
+  }
+  
+  translatePosFromServer({ x, y }) {
+    
+    // Utils.addTestPoint(this.playground, {x, y})
+    
+    // const pos = {
+    //   x: x * (2 - this.playground.scale) + this.playground.x,
+    //   y: y * (2 - this.playground.scale) + this.playground.y,
+    // }
+    
+    // const pos = {
+    //   x: x * (2 - this.playground.scale),
+    //   y: y * (2 - this.playground.scale),
+    // }
+    
+    const pos = {
+      x: x,
+      y: y,
+    }
+    
+    // Utils.addTestPoint(this.playground, pos)
+    
+    return pos
   }
   
   teleportAtMouseUp(event) {
@@ -168,7 +264,7 @@ class Game {
     
     this.ourPlayer.teleportTo(pos)
     
-    this.socket.emit('teleport_player_to', this.ourPlayer.getEmitParams())
+    this.socket.emit('teleport_player_to', this.getOurPlayerEmitParams())
     
     setTimeout(() => {
       this.ourPlayer.setCurrentAction()
@@ -225,11 +321,7 @@ class Game {
       )
 
       // TEST POINT
-      // let point = document.createElement('div')
-      // point.classList.add('test-center')
-      // point.style.left = bloodCoord.x + 'px'
-      // point.style.top = bloodCoord.y + 'px'
-      // this.playground.append(point)
+      // Utils.addTestPoint(this.playground, bloodCoord)
       
       let blood = document.createElement('span')
       blood.style.left = bloodCoord.x + 'px'
@@ -305,7 +397,7 @@ class Game {
     this.ourPlayer.goalPos.x = event.pageX
     this.ourPlayer.goalPos.y = event.pageY
     this.ourPlayer.velocity = this.ourPlayer.defaultVelocity
-    this.socket.emit('player_resurrect', this.ourPlayer.getEmitParams())
+    this.socket.emit('player_resurrect', this.getOurPlayerEmitParams())
   }
   
   removePlayerFromGame(player) {
@@ -340,7 +432,7 @@ class Game {
   updatePlayer(playerArgs) {
     const player = this.getPlayerById(playerArgs.id)
     
-    if (player) {
+    if (player) { 
       player.update(playerArgs)
     } else {
       console.log( 'Update an Unknown player', playerArgs );

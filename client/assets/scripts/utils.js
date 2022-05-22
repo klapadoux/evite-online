@@ -64,7 +64,15 @@ export const Utils = {
     }
     
     return {x, y}
-  }
+  },
+  
+  addTestPoint(node, {x, y}) {
+    const point = document.createElement('div')
+    point.classList.add('test-center')
+    point.style.left = `${x}px`
+    point.style.top = `${y}px`
+    node.append(point)
+  },
 };
 
 export default Utils
