@@ -11,6 +11,7 @@ class Playground {
     this.width = this.serverWidth
     this.height = this.serverHeight
     this.scale = 1
+    this.reverseScale = 1
     this.x = 0
     this.y = 0
     
@@ -42,16 +43,24 @@ class Playground {
     const ratioHeight = windowHeight / this.serverHeight
     const newScale = Math.min(ratioWidth, ratioHeight)
     
+    const reverseRatioWidth = this.serverWidth / windowWidth
+    const reverseRatioHeight = this.serverHeight / windowHeight
+    const reverseNewScale = Math.max(reverseRatioWidth, reverseRatioHeight)
+    
     console.log({
       ratioWidth,
       ratioHeight,
       newScale,
+      reverseRatioWidth,
+      reverseRatioHeight,
+      reverseNewScale,
     });
 
     
     ///// Save
     
     this.scale = newScale
+    this.reverseScale = reverseNewScale
     this.width = this.serverWidth * newScale
     this.height = this.serverHeight * newScale
     

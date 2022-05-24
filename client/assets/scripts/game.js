@@ -186,29 +186,60 @@ class Game {
     // const centeredX = x - playgroundCenterX
     // const centeredY = y - playgroundCenterY
     
-    x -= this.playground.x
-    y -= this.playground.y
+    // x -= this.playground.x
+    // y -= this.playground.y
     
     const ratioWidth = (this.playground.width / windowWidth)
     const ratioHeight = (this.playground.height / windowHeight)
     
-    console.log( {ratioWidth, ratioHeight} );
+    // console.log( {ratioWidth, ratioHeight} );
+    /**
+     * ratioWidth: 1
+     * ratioHeight: 0.848252401280683
+     * windowWidth: 1413px
+     * windowHeight: 937px
+     * playgroundScale: 0.7354166666666667
+     */
+    // x = x * (0.36 + ratioWidth) // windowWidth 1413px
+    // y = y * (0.52 + ratioHeight) // windowHeight 937px
     
-    // x = x * (1 + this.playground.scale)
-    // y = y * (1 + this.playground.scale)
     
-    x = x * (0.36 + ratioWidth) // windowWidth 1413px
-    y = y * (0.52 + ratioHeight) // windowHeight 937px
+    // console.log( {ratioWidth: windowWidth / this.playground.width, ratioHeight: windowHeight / this.playground.height} );
+    // x = (x - this.playground.x) * (windowWidth / this.playground.width)
+    // y = (y - this.playground.y) * (windowHeight / this.playground.height)
+    
+    /**
+     * windowWidth: 1413px
+     * windowHeight: 937px
+     * playgroundScale: 0.7354166666666667
+     */
+    // x = (x - this.playground.x) * (1,365)
+    // y = (y - this.playground.y) * (1,365)
+    
+    /**
+     * windowWidth: 1269px
+     * windowHeight: 937px
+     * playgroundScale: 0.6609375
+     */
+    // x = (x - this.playground.x) * (1.516)
+    // y = (y - this.playground.y) * (1.516)
+    
+    /**
+     * windowWidth: 1269px
+     * windowHeight: 937px
+     * playgroundScale: 0.6609375
+     */
+    x = (x - this.playground.x) * this.playground.reverseScale
+    y = (y - this.playground.y) * this.playground.reverseScale
+    
+    
     
     // x = x * (-0.25 + ratioWidth + this.playground.scale)
     // y = y * (-0.25 + ratioHeight + this.playground.scale)
     
     // x = x * (1 + ratioWidth) * (this.playground.scale)
     // y = y * (1 + ratioHeight) * (this.playground.scale)
-    
-    // x -= this.playground.x
-    // y -= this.playground.y
-    
+
     // const playgroundCenterX = this.playground.width / 2
     // const playgroundCenterY = this.playground.height / 2
     
@@ -241,30 +272,6 @@ class Game {
     // }
     
     return { x, y }
-  }
-  
-  translatePosFromServer({ x, y }) {
-    
-    // Utils.addTestPoint(this.playground, {x, y})
-    
-    // const pos = {
-    //   x: x * (2 - this.playground.scale) + this.playground.x,
-    //   y: y * (2 - this.playground.scale) + this.playground.y,
-    // }
-    
-    // const pos = {
-    //   x: x * (2 - this.playground.scale),
-    //   y: y * (2 - this.playground.scale),
-    // }
-    
-    const pos = {
-      x: x,
-      y: y,
-    }
-    
-    // Utils.addTestPoint(this.playground, pos)
-    
-    return pos
   }
   
   teleportAtMouseUp(event) {
