@@ -150,7 +150,7 @@ class Game {
     
     console.log({mouseX: event.pageX, mouseY: event.pageY});
  
-    this.ourPlayer.goalPos = this.translatePosToServer({ x: event.pageX, y: event.pageY })
+    this.ourPlayer.goalPos = this.convertPosToPlaygroundScale({ x: event.pageX, y: event.pageY })
     
     // this.ourPlayer.goalPos.x = event.pageX
     // this.ourPlayer.goalPos.y = event.pageY
@@ -167,14 +167,14 @@ class Game {
   
   getOurPlayerEmitParams() {
     const params = this.ourPlayer.getEmitParams()
-    // params.goalPos = this.translatePosToServer(params.goalPos)
+    // params.goalPos = this.convertPosToPlaygroundScale(params.goalPos)
     
     // Utils.addTestPoint(this.playground, params.goalPos)
     
     return params
   }
   
-  translatePosToServer({ x, y }) {
+  convertPosToPlaygroundScale({ x, y }) {
     
     const { innerWidth:windowWidth, innerHeight:windowHeight } = window
     
@@ -308,7 +308,8 @@ class Game {
     setTimeout(() => {
       
       const { node, size } = element
-      const { x, y } = node.getBoundingClientRect()
+      const { x, y } = this.convertPosToPlaygroundScale(node.getBoundingClientRect())
+      
       
       let bloodSize = size
       let sizeVariance = 0.33
