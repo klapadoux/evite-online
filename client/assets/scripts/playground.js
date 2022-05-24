@@ -46,15 +46,6 @@ class Playground {
     const reverseRatioWidth = this.serverWidth / windowWidth
     const reverseRatioHeight = this.serverHeight / windowHeight
     const reverseNewScale = Math.max(reverseRatioWidth, reverseRatioHeight)
-    
-    console.log({
-      ratioWidth,
-      ratioHeight,
-      newScale,
-      reverseRatioWidth,
-      reverseRatioHeight,
-      reverseNewScale,
-    });
 
     
     ///// Save

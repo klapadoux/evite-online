@@ -147,14 +147,9 @@ class Game {
       // BAIL. Teleporting, no need to report movement.
       return
     }
-    
-    console.log({mouseX: event.pageX, mouseY: event.pageY});
- 
+
     this.ourPlayer.goalPos = this.convertPosToPlaygroundScale({ x: event.pageX, y: event.pageY })
     
-    // this.ourPlayer.goalPos.x = event.pageX
-    // this.ourPlayer.goalPos.y = event.pageY
-
     this.socket.emit('mousemove', this.getOurPlayerEmitParams())
   }
   
@@ -166,111 +161,13 @@ class Game {
   }
   
   getOurPlayerEmitParams() {
-    const params = this.ourPlayer.getEmitParams()
-    // params.goalPos = this.convertPosToPlaygroundScale(params.goalPos)
-    
-    // Utils.addTestPoint(this.playground, params.goalPos)
-    
-    return params
+    return this.ourPlayer.getEmitParams()
   }
   
   convertPosToPlaygroundScale({ x, y }) {
-    
-    const { innerWidth:windowWidth, innerHeight:windowHeight } = window
-    
-    console.log(windowWidth, windowHeight);
-    
-    const windowCenterX = windowWidth / 2
-    const windowCenterY = windowHeight / 2
-    
-    // const centeredX = x - playgroundCenterX
-    // const centeredY = y - playgroundCenterY
-    
-    // x -= this.playground.x
-    // y -= this.playground.y
-    
-    const ratioWidth = (this.playground.width / windowWidth)
-    const ratioHeight = (this.playground.height / windowHeight)
-    
-    // console.log( {ratioWidth, ratioHeight} );
-    /**
-     * ratioWidth: 1
-     * ratioHeight: 0.848252401280683
-     * windowWidth: 1413px
-     * windowHeight: 937px
-     * playgroundScale: 0.7354166666666667
-     */
-    // x = x * (0.36 + ratioWidth) // windowWidth 1413px
-    // y = y * (0.52 + ratioHeight) // windowHeight 937px
-    
-    
-    // console.log( {ratioWidth: windowWidth / this.playground.width, ratioHeight: windowHeight / this.playground.height} );
-    // x = (x - this.playground.x) * (windowWidth / this.playground.width)
-    // y = (y - this.playground.y) * (windowHeight / this.playground.height)
-    
-    /**
-     * windowWidth: 1413px
-     * windowHeight: 937px
-     * playgroundScale: 0.7354166666666667
-     */
-    // x = (x - this.playground.x) * (1,365)
-    // y = (y - this.playground.y) * (1,365)
-    
-    /**
-     * windowWidth: 1269px
-     * windowHeight: 937px
-     * playgroundScale: 0.6609375
-     */
-    // x = (x - this.playground.x) * (1.516)
-    // y = (y - this.playground.y) * (1.516)
-    
-    /**
-     * windowWidth: 1269px
-     * windowHeight: 937px
-     * playgroundScale: 0.6609375
-     */
     x = (x - this.playground.x) * this.playground.reverseScale
     y = (y - this.playground.y) * this.playground.reverseScale
-    
-    
-    
-    // x = x * (-0.25 + ratioWidth + this.playground.scale)
-    // y = y * (-0.25 + ratioHeight + this.playground.scale)
-    
-    // x = x * (1 + ratioWidth) * (this.playground.scale)
-    // y = y * (1 + ratioHeight) * (this.playground.scale)
 
-    // const playgroundCenterX = this.playground.width / 2
-    // const playgroundCenterY = this.playground.height / 2
-    
-    // const centeredX = x - playgroundCenterX
-    // const centeredY = y - playgroundCenterY
-    
-    // const adjustX = windowCenterX * this.playground.scale
-    // const adjustY = windowCenterY * this.playground.scale
-    
-    // console.log({x, y, adjustX, adjustY});
-    
-    return {
-      x: x,
-      y: y,
-    }
-    
-    // return {
-    //   x: x * this.playground.scale - this.playground.x,
-    //   y: y * this.playground.scale - this.playground.y,
-    // }
-    
-    // return {
-    //   x: x - this.playground.x,
-    //   y: y - this.playground.y,
-    // }
-    
-    // return {
-    //   x: centeredX * this.playground.scale,
-    //   y: centeredY * this.playground.scale,
-    // }
-    
     return { x, y }
   }
   
