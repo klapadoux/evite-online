@@ -310,10 +310,12 @@ class Game {
   }
   
   resurrectOurPlayer(event) {
-    this.ourPlayer.x = event.pageX
-    this.ourPlayer.y = event.pageY
-    this.ourPlayer.goalPos.x = event.pageX
-    this.ourPlayer.goalPos.y = event.pageY
+    const { x, y } = this.convertPosToPlaygroundScale({ x: event.pageX, y: event.pageY })
+    
+    this.ourPlayer.x = x
+    this.ourPlayer.y = y
+    this.ourPlayer.goalPos.x = x
+    this.ourPlayer.goalPos.y = y
     this.ourPlayer.velocity = this.ourPlayer.defaultVelocity
     this.socket.emit('player_resurrect', this.getOurPlayerEmitParams())
   }
