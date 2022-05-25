@@ -4,11 +4,15 @@ const settings = require('./settings')
 let objectivesAreGestating = false
 let objectivesBirthCount = 0
 const objectives = []
+const size = 40
+const spawnTop = 50 + size
+const spawnBottom = settings.PLAYGROUND_HEIGHT - 50 - size - spawnTop
+const spawnRight = settings.PLAYGROUND_WIDTH * 0.75
+const spawnLeft = 50 + size
 
 const createObjective = (data) => {
-  const size = 40
   
-  const { x, y } = Utils.getRandomCoordInRect(50 + size, 50 + size, 1600, 800)
+  const { x, y } = Utils.getRandomCoordInRect(spawnLeft, spawnTop, spawnRight, spawnBottom )
   
   return {
     x,

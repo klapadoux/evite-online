@@ -38,6 +38,10 @@ body {
   border-radius: 50px 0 0 50px;
 }
 
+.playground > * {
+  user-select: none;
+}
+
 .playground__background {
   position: absolute;
   z-index: 0;
@@ -56,7 +60,6 @@ body {
 }
 
 .player {
-  user-select: none;
   position: absolute;
   z-index: 60;
   border: 2px solid white;
@@ -100,7 +103,6 @@ body {
 }
 
 .blood {
-  user-select: none;
   display: block;
   position: absolute;
   z-index: 0;
@@ -131,7 +133,6 @@ body {
 
 
 .enemy {
-  user-select: none;
   position: absolute;
   z-index: 21;
   /* border: 2px solid black; */
@@ -146,7 +147,6 @@ body {
 }
 
 .enemy-shadow {
-  user-select: none;
   position: absolute;
   z-index: 20;
   /* border: 2px solid black; */
@@ -157,7 +157,6 @@ body {
 
 .objective {
   box-sizing: border-box;
-  user-select: none;
   position: absolute;
   z-index: 50;
   background: white;

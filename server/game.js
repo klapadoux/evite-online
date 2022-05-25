@@ -260,16 +260,22 @@ class Game {
     
     setTimeout(() => {
       // const size = Math.min(300, Math.floor(Math.random() * this.score * 4) + 40)
-      const size = (100 > this.score) ? Math.floor(Math.random() * 260) + 40 : Math.floor(Math.random() * 260) + 100
+      let size = (100 > this.score) ? Math.floor(Math.random() * 260) + 40 : Math.floor(Math.random() * 260) + this.score
       const y = Math.floor(Math.random() * this.playgroundHeight) - size / 2
-      const goalY = (100 > this.score) ? y : Math.floor(Math.random() * this.playgroundHeight) - size / 2
+      
+      let goalY = y
+      if (100 <= this.score && 0.5 < Math.random()) {
+        // Half will go diagonally past 100 score.
+        goalY = Math.floor(Math.random() * this.playgroundHeight) - size / 2
+      }
+      
+      
       this.enemies.push({
         id: ++this.enemiesBirthCount,
         x: size * -1.25,
         y: y,
         goalPos: {
           x: this.playgroundWidth,
-          // x: this.playgroundWidth - size - this.safeZoneWidth,
           y: goalY,
         },
         // velocity: Math.floor(Math.random() * 475) + 100, // Pixels by ms
@@ -279,7 +285,7 @@ class Game {
       })
       
       this.enemiesAreGestating = false
-    }, Math.max(500, 5000 / (this.score + 1 / 2)));
+    }, Math.max(450, 5000 / (this.score + 1 / 2)));
   }
   
   updateEnemies(delta) {
