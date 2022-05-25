@@ -194,6 +194,8 @@ class Game {
     this.scoreCounters.forEach(counter => {
       counter.innerHTML = score
     })
+    
+    this.playground.setBackgroundOpacity(1 - (score / 500 - 0.2))
   }
   
   addPlayerDeathBlood(player) {

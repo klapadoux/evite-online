@@ -16,12 +16,14 @@ class Playground {
     this.y = 0
     
     this.node = null
+    this.backgroundNode = null
     
     this.init()
   }
   
   init() {
     this.node = document.getElementById('playground') // An already existing node.
+    this.backgroundNode = this.node.querySelector('.playground__background')
     
     this.node.style.width = `${this.width}px`
     this.node.style.height = `${this.height}px`
@@ -77,6 +79,10 @@ class Playground {
   
   append(node) {
     this.node.append(node)
+  }
+  
+  setBackgroundOpacity(opacity) {
+    this.backgroundNode.style.opacity = opacity
   }
 }
 

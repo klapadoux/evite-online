@@ -10,15 +10,25 @@ body {
   background: #333;
 }
 
-#playground {
+.playground {
   box-sizing: border-box;
   overflow: hidden;
   position: absolute;
   top: 0;
   left: 0;
   border: 1px solid black;
-  background: #acbcbf;
+  background: no-repeat center / cover url("../images/cage-space-cloud-purple-opt.jpg");
   transform-origin: 0 0;
+}
+
+.playground__background {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: #acbcbf;
+  transition: opacity 1s;
 }
 
 .debug-canvas {
