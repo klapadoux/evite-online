@@ -19,6 +19,8 @@ class Game {
     this.playgroundWidth = settings.PLAYGROUND_WIDTH
     this.playgroundHeight = settings.PLAYGROUND_HEIGHT
     
+    this.safeZoneWidth = settings.SAFE_ZONE_SIZE
+    
     this.fpms = settings.FPMS
   }
   
@@ -57,8 +59,9 @@ class Game {
       
       const { x, y, size } = player
       const playerRadius = size / 2
+      const playerIsInSafeZone = x >= this.playgroundWidth - this.safeZoneWidth
       
-      if (! player.invincible) {
+      if (! player.invincible && ! playerIsInSafeZone) {
         this.enemies.forEach(enemy => {
           if (
             enemy.y <= y + playerRadius &&
@@ -100,7 +103,7 @@ class Game {
         )
         
         if (distance <= objective.size / 2 + playerRadius) {
-          this.score += 1
+          this.score += settings.OBJECTIVE_SCORE
           objective.dead = true
         }
       })
@@ -248,28 +251,35 @@ class Game {
   ////////// ENEMIES
   checkEnemiesGestation() {
     // Entamer la création d'enemies si ce n'est pas déjà en cours.
-    if (! this.enemiesAreGestating) {
-      this.enemiesAreGestating = true
-      setTimeout(() => {
-        const size = Math.min(275, Math.floor(Math.random() * 100) + 40 + this.score)
-        const y = Math.floor(Math.random() * 1080) - size
-        const goalY = (100 > this.score) ? y : Math.floor(Math.random() * 1080) - size
-        this.enemies.push({
-          id: ++this.enemiesBirthCount,
-          x: size * -1.25,
-          y: y,
-          goalPos: {
-            x: 1920,
-            y: goalY,
-          },
-          velocity: Math.floor(Math.random() * 475) + 100, // Pixels by ms
-          size: size,
-          dead: false,
-        })
-        
-        this.enemiesAreGestating = false
-      }, Math.max(500, 5000 / (Math.max(this.score, 1) / 2)));
+    if (this.enemiesAreGestating) {
+      // BAIL. Already gestating.
+      return
     }
+    
+    this.enemiesAreGestating = true
+    
+    setTimeout(() => {
+      // const size = Math.min(300, Math.floor(Math.random() * this.score * 4) + 40)
+      const size = (100 > this.score) ? Math.floor(Math.random() * 260) + 40 : Math.floor(Math.random() * 260) + 100
+      const y = Math.floor(Math.random() * this.playgroundHeight) - size / 2
+      const goalY = (100 > this.score) ? y : Math.floor(Math.random() * this.playgroundHeight) - size / 2
+      this.enemies.push({
+        id: ++this.enemiesBirthCount,
+        x: size * -1.25,
+        y: y,
+        goalPos: {
+          x: this.playgroundWidth,
+          // x: this.playgroundWidth - size - this.safeZoneWidth,
+          y: goalY,
+        },
+        // velocity: Math.floor(Math.random() * 475) + 100, // Pixels by ms
+        velocity: Math.max(100, 1000 - size * 5) + Math.min(500, this.score) + Math.random() * 100, // Pixels by ms
+        size: size,
+        dead: false,
+      })
+      
+      this.enemiesAreGestating = false
+    }, Math.max(500, 5000 / (this.score + 1 / 2)));
   }
   
   updateEnemies(delta) {
