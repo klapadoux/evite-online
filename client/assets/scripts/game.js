@@ -172,10 +172,10 @@ class Game {
   }
   
   teleportAtMouseUp(event) {
-    const pos = {
+    const pos = this.convertPosToPlaygroundScale({
       x: event.pageX,
       y: event.pageY,
-    }
+    })
     
     this.ourPlayer.teleportTo(pos)
     

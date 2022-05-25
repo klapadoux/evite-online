@@ -9,5 +9,5 @@ module.exports = {
   PLAYGROUND_HEIGHT: 1080,
   
   // SERVER CONTROL
-  FPMS: 1000 / 30,
+  FPMS: 1000 / 40,
 }

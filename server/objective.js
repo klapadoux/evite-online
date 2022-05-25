@@ -6,7 +6,7 @@ let objectivesBirthCount = 0
 const objectives = []
 
 const createObjective = (data) => {
-  const size = 30
+  const size = 40
   
   const { x, y } = Utils.getRandomCoordInRect(50 + size, 50 + size, 1600, 800)
   
