@@ -4,6 +4,7 @@ import Playground from './playground.js'
 import Player from './player.js'
 import Enemy from './enemy.js'
 import Objective from './objective.js'
+import TeamObjective from './team-objective.js'
 import * as settings from './settings.js'
 
 const PREPARED_ENEMIES_BODY_MAX_COUNT = 10
@@ -21,6 +22,7 @@ class Game {
     this.players = {}
     this.enemies = {}
     this.objectives = {}
+    this.teamObjectives = {}
     this.enemiesBodyOnHold = []
     this.cleanupList = []
     this.playground = new Playground(gameArgs)
@@ -57,7 +59,7 @@ class Game {
     })
     
     this.socket.on('tick_update', tickInfo => {
-      const { enemies, players, objectives, score } = tickInfo
+      const { enemies, players, objectives, teamObjectives, score } = tickInfo
       
       players.forEach(playerData => {
         this.updatePlayer(playerData)
@@ -72,6 +74,14 @@ class Game {
       })
       
       objectives.forEach(objectiveData => {
+        if (objectiveData.dead) {
+          this.deleteObjective(objectiveData)
+        } else {
+          this.updateObjective(objectiveData)
+        }
+      })
+      
+      teamObjectives.forEach(objectiveData => {
         if (objectiveData.dead) {
           this.deleteObjective(objectiveData)
         } else {

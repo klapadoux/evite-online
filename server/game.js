@@ -2,6 +2,7 @@ const gameloop = require('node-gameloop')
 const settings = require('./settings.js')
 const Utils = require('./utils.js')
 const { checkObjectivesGestation, getObjectives, deleteDeadObjectives } = require('./objective')
+const { createTeamObjective, getTeamObjectives, deleteDeadTeamObjectives } = require('./team-objective')
 
 class Game {
   constructor() {
@@ -22,6 +23,8 @@ class Game {
     this.safeZoneWidth = settings.SAFE_ZONE_SIZE
     
     this.fpms = settings.FPMS
+    
+    this.hasTeamObjective = false
   }
   
   ////////// GENERAL
@@ -114,6 +117,11 @@ class Game {
     if (this.doGameLoopEnemiesCheck) {
       checkObjectivesGestation(this.playerCount)
       
+      if (! this.hasTeamObjective) {
+        this.hasTeamObjective = true
+        createTeamObjective()
+      }
+      
       this.checkEnemiesGestation()
       this.checkCollisions()
       this.updateEnemies(delta)
@@ -137,6 +145,7 @@ class Game {
       enemies: this.enemies,
       players: this.getPlayersEmitParams(),
       objectives: getObjectives(),
+      teamObjectives: getTeamObjectives(),
     })
   }
   
