@@ -12,11 +12,15 @@
     
     <section class="user-section">
       
-      <form action="" method="post" id="user-info-form">
+      <form id="user-info-form" class="form form--one-line" action="" method="post">
         
         <div class="field">
           <label for="player-name">Pseudonyme</label>
-          <input id ="player-name" name="player_name" type="text">
+          <input id ="player-name" name="player_name" type="text" maxlength="20" required>
+        </div>
+        
+        <div class="form__footer">
+          <button type="submit">GO</button>
         </div>
       </form>
     </section>
