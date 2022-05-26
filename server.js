@@ -2,7 +2,7 @@ const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
 
-const db = require('./server/database')
+// const db = require('./server/database')
 
 const User = require('./server/user')
 const Gameroom = require('./server/gameroom')
