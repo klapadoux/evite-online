@@ -2,21 +2,26 @@ import Game from './game.js'
 import Player from './player.js'
 
 const socket = io()  
+const startButton = document.getElementById('join-game-button')
 let userGame = null
 
-socket.once('connect', () => {
-  const form = document.getElementById('user-info-form')
-  form.addEventListener('submit', (event) => {
-    event.preventDefault()
-    
-    socket.emit('user_is_ready_to_play', {
-      id: socket.id,
-      name: document.querySelector('input').value
-    })
-    
-    const section = document.querySelector('.user-section')
-    section.classList.add('user-section--disabled')
+const startGame = () => {
+  console.log('yooo');
+  
+  socket.emit('user_is_ready_to_play', {
+    id: socket.id,
+    name: document.querySelector('input[name="player_name"]').value
   })
+  
+  const section = document.querySelector('.user-section')
+  section.classList.add('user-section--disabled')
+  
+  startButton.removeEventListener('mouseup', startGame)
+}
+
+
+socket.once('connect', () => {
+  startButton.addEventListener('mouseup', startGame)
   
   socket.emit('get_game', game => {
     userGame = new Game(socket, game)
@@ -26,7 +31,6 @@ socket.once('connect', () => {
 });
 
 
-
 socket.on('init_user_as_player', player => {  
   player.isUser = true
   
@@ -34,4 +38,20 @@ socket.on('init_user_as_player', player => {
   console.log( 'This is you:', ourPlayer );
   
   userGame.addOurPlayer(ourPlayer)
+})
+
+
+const form = document.getElementById('user-info-form')
+form.addEventListener('submit', (event) => {
+  event.preventDefault()
+})
+
+const playerNameInput = document.getElementById('player-name')
+playerNameInput.addEventListener('keyup', (event) => {
+  console.log(event.target.value);
+  if ('' !== event.target.value) {
+    startButton.classList.add('join-game-button--active')
+  } else {
+    startButton.classList.remove('join-game-button--active')
+  }
 })
