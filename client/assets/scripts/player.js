@@ -2,9 +2,12 @@ import Utils from './utils.js'
 
 export class Player {
   constructor(args) {
-    const { id, color, x, y, goalPos, velocity, size, dead } = args
+    const { id, name, color, x, y, goalPos, velocity, size, dead, isUser } = args
+    
+    console.log({x, y});
     
     this.id = id
+    this.name = name
     this.color = color ? color : '#000000'
     this.x = x ? x : 0
     this.y = y ? y : 0
@@ -16,6 +19,9 @@ export class Player {
     this.defaultVelocity = this.velocity
     this.deathCount = 0
     this.currentAction = 'none'
+    
+    this.isUser = !! isUser
+    console.log(this.isUser);
     
     this.init()
   }
@@ -33,14 +39,38 @@ export class Player {
     this.setCurrentAction(currentAction)
   }
   
+  updateData(data) {
+    const { name, color } = data
+    
+    if (name) {
+      this.name = name
+      this.node.querySelector('.player__name').innerText = name
+    }
+    
+    if (color) {
+      this.color = color
+      this.node.style.color = this.color
+    }
+  }
+  
   createNode() {
     this.node = document.createElement('div')
     this.node.classList.add('player')
     this.node.style.backgroundColor = this.color
+    this.node.style.color = this.color
     this.node.style.width = this.size + 'px'
     this.node.style.height = this.size + 'px'
     this.node.style.top = this.y + 'px'
     this.node.style.left = this.x + 'px'
+    
+    if (! this.isUser) {
+      console.log('CREATE IIIIT', this);
+      const nameNode = document.createElement('div')
+      nameNode.classList.add('player__name')
+      nameNode.innerText = this.name
+      
+      this.node.append(nameNode)
+    }
   }
   
   moveTo({ x, y }) {

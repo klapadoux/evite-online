@@ -27,13 +27,9 @@ const gameroom = new Gameroom()
 ///// USERS MANAGEMENT /////
 const createUserFromSocket = (socket) => {
   users[socket.id] = new User(socket)
+  console.log(`New user connected: ${socket.id}`);
   
-  gameroom.addUserById(socket.id)
-  
-  // socket.on('user_enter_game', function () {
-  //   console.log( 'USER ENTER GAME', this );
-  //   gameroom.addUserById(this.id)
-  // })
+  global.sendUserToGameroomById(socket.id)
 }
 
 global.getUserById = (id) => {
@@ -42,6 +38,12 @@ global.getUserById = (id) => {
   }
   
   return false
+}
+
+global.sendUserToGameroomById = (id) => {
+  if ('undefined' !== typeof users[id]) {
+    gameroom.registerUser(users[id])
+  }
 }
 
 /**

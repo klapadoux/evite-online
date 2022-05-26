@@ -3,6 +3,7 @@ const settings = require('./settings')
 const createPlayer = (data) => {
   return {
     id: data.id ? data.id : 0,
+    name: data.name ? data.name : 'undefined',
     pseudo: data.pseudo ? data.pseudo : 'undefined',
     color: data.color ? data.color : '#000000',
     x: data.x ? data.x : 300,

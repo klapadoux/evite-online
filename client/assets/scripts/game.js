@@ -33,7 +33,11 @@ class Game {
 
     this.initHandlers()
     this.initSocketEvents()
-    this.addPlayerToGame(this.ourPlayer)
+    
+    if (this.ourPlayer) {
+      this.addPlayerToGame(this.ourPlayer)
+    }
+    
     this.refillWithPreparedEnemiesBody()
     
     window.requestAnimationFrame(this.doAnimationLoopHandler)
@@ -76,6 +80,16 @@ class Game {
       })
       
       this.updateScoreCounters(score)
+    })
+    
+    this.socket.on('player_data', (data) => {
+      console.log(data);
+      
+      const { id } = data
+      const player = this.getPlayerById(id)
+      if (player) {
+        player.updateData(data)
+      }
     })
     
     /**
@@ -139,7 +153,7 @@ class Game {
   }
   
   isThisOurPlayer(player) {
-    return this.ourPlayer.id === player.id
+    return this.ourPlayer && this.ourPlayer.id === player.id
   }
   
   doEventMouseMove(event) {
@@ -349,6 +363,14 @@ class Game {
     return null
   }
   
+  addOurPlayer(player) {
+    this.ourPlayer = player
+    
+    if ('undefined' === typeof this.players[player.id]) {
+      this.addPlayerToGame(player)
+    }
+  }
+  
   updatePlayer(playerArgs) {
     const player = this.getPlayerById(playerArgs.id)
     
@@ -356,11 +378,16 @@ class Game {
       player.update(playerArgs)
     } else {
       console.log( 'Update an Unknown player', playerArgs );
+      const newPlayer = new Player(playerArgs)
       this.addPlayerToGame(new Player(playerArgs))
+      
+      this.setOncePlayerDataFromServer(newPlayer)
     }
   }
   
-  
+  setOncePlayerDataFromServer(player) {
+    this.socket.emit('get_player_data_by_id', player.id)
+  }
   
   ////////// ENEMIES
   

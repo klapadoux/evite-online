@@ -8,6 +8,13 @@ body {
 
 body {
   background: #333;
+  font-family: arial;
+}
+
+.ui-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .playground {
@@ -100,6 +107,18 @@ body {
   height: 100%;
   background: inherit;
   border-radius: 100%;
+}
+
+.player__name {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  letter-spacing: 2px;
+  color: white;
+  transform: translate(-50%, -100%);
+}
+.player--dead .player__name {
+  display: none;
 }
 
 .blood {
