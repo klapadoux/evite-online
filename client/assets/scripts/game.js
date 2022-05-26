@@ -83,8 +83,6 @@ class Game {
     })
     
     this.socket.on('player_data', (data) => {
-      console.log(data);
-      
       const { id } = data
       const player = this.getPlayerById(id)
       if (player) {

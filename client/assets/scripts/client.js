@@ -6,8 +6,6 @@ const startButton = document.getElementById('join-game-button')
 let userGame = null
 
 const startGame = () => {
-  console.log('yooo');
-  
   socket.emit('user_is_ready_to_play', {
     id: socket.id,
     name: document.querySelector('input[name="player_name"]').value
@@ -48,7 +46,6 @@ form.addEventListener('submit', (event) => {
 
 const playerNameInput = document.getElementById('player-name')
 playerNameInput.addEventListener('keyup', (event) => {
-  console.log(event.target.value);
   if ('' !== event.target.value) {
     startButton.classList.add('join-game-button--active')
   } else {

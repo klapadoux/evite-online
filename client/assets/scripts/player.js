@@ -4,8 +4,6 @@ export class Player {
   constructor(args) {
     const { id, name, color, x, y, goalPos, velocity, size, dead, isUser } = args
     
-    console.log({x, y});
-    
     this.id = id
     this.name = name
     this.color = color ? color : '#000000'
@@ -21,7 +19,6 @@ export class Player {
     this.currentAction = 'none'
     
     this.isUser = !! isUser
-    console.log(this.isUser);
     
     this.init()
   }
@@ -64,7 +61,6 @@ export class Player {
     this.node.style.left = this.x + 'px'
     
     if (! this.isUser) {
-      console.log('CREATE IIIIT', this);
       const nameNode = document.createElement('div')
       nameNode.classList.add('player__name')
       nameNode.innerText = this.name
@@ -113,7 +109,6 @@ export class Player {
     
     this.node.style.backgroundColor = Utils.changeColor( 0.75, this.color, '#acbcbf')
     this.deathCount++
-    console.log(this);
   }
   
   resurrect() {
@@ -127,8 +122,6 @@ export class Player {
       // BAIL. No change here.
       return
     }
-    
-    console.log('Set action', action);
     
     this.node.classList.remove(`player--${this.currentAction}`)
     

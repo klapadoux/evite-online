@@ -260,7 +260,21 @@ class Game {
     
     setTimeout(() => {
       // const size = Math.min(300, Math.floor(Math.random() * this.score * 4) + 40)
-      let size = (100 > this.score) ? Math.floor(Math.random() * 260) + 40 : Math.floor(Math.random() * 260) + this.score
+      // let size = (100 > this.score) ? Math.floor(Math.random() * 260) + 40 : Math.floor(Math.random() * 260) + this.score
+      let size = 0
+      if (10 > this.score) {
+        size = Math.floor(Math.random() * 100) + 30
+      } else if (30 > this.score) {
+        size = Math.floor(Math.random() * 200) + 30
+      } else if (50 > this.score) {
+        size = Math.floor(Math.random() * 270) + 40
+      } else if (100 > this.score) {
+        size = Math.floor(Math.random() * 280) + 50
+      } else {
+        size = Math.floor(Math.random() * 250) + this.score
+      }
+      
+      
       const y = Math.floor(Math.random() * this.playgroundHeight) - size / 2
       
       let goalY = y
@@ -279,7 +293,7 @@ class Game {
           y: goalY,
         },
         // velocity: Math.floor(Math.random() * 475) + 100, // Pixels by ms
-        velocity: Math.max(100, 1000 - size * 5) + Math.min(500, this.score) + Math.random() * 100, // Pixels by ms
+        velocity: Math.max(100, 900 - size * 5) + Math.min(400, this.score) + Math.random() * 100, // Pixels by ms
         size: size,
         dead: false,
       })
