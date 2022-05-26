@@ -7,8 +7,35 @@
   <link rel="stylesheet" href="assets/styles/main.css">
 </head>
 <body>
-  <main id="playground">
+  
+  <main class="ui-container">
     
+    <section class="user-section">
+      
+      <div class="helper-box">
+        <p><strong>DÉPLACEMENT :</strong> Bouge la souris</p>
+        <p><strong>TÉLÉPORTATION :</strong> Tiens le clique. Bouge la souris. Relâche le clique.</p>
+        <p><strong>RESURRECTER :</strong> Attendre 1 seconde. Clique où tu veux apparaître.</p>
+      </div>
+      
+      <form id="user-info-form" class="form form--one-line" action="" method="post">
+        
+        <div class="field">
+          <label for="player-name">Pseudonyme</label>
+          <input id ="player-name" name="player_name" type="text" maxlength="20" required>
+        </div>
+        
+        <!-- <div class="form__footer">
+          <button type="submit">GO</button>
+        </div> -->
+      </form>
+      
+      <button id="join-game-button" class="join-game-button">GO</button>
+    </section>
+    
+    <section id="playground" class="playground">
+      <div class="playground__background"></div>
+    </section>
   </main>
   
   <div class="score-counter score-counter--overlay">0</div>

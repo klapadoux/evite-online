@@ -1,3 +1,6 @@
+import * as settings from './settings.js'
+import DebugCanvas from './debug-canvas.js'
+
 /**
  * SAME AS SERVER
  * 
@@ -44,7 +47,32 @@ export const Utils = {
     const dx = pos1.x - pos2.x
     const dy = pos1.y - pos2.y
     return Math.sqrt(dx * dx + dy * dy)
-  }
+  },
+  
+  getRandomCoordInRect(rectX, rectY, rectWidth, rectHeight, debugLabel = '') {
+    const x = Math.floor(Math.random() * rectWidth + rectX)
+    const y = Math.floor(Math.random() * rectHeight + rectY)
+    
+    if (settings.SHOW_SPAWN_RECT) {
+      DebugCanvas.drawRect({
+        x: rectX,
+        y: rectY,
+        width: rectWidth,
+        height: rectHeight,
+        label: debugLabel,
+      })
+    }
+    
+    return {x, y}
+  },
+  
+  addTestPoint(node, {x, y}) {
+    const point = document.createElement('div')
+    point.classList.add('test-center')
+    point.style.left = `${x}px`
+    point.style.top = `${y}px`
+    node.append(point)
+  },
 };
 
 export default Utils

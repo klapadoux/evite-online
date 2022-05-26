@@ -1,281 +1,59 @@
 const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
-const randomColor = require('randomcolor')
-const gameloop = require('node-gameloop')
 
-const Utils = require('./server/utils')
-const {createPlayer} = require('./server/player')
-const {checkObjectivesGestation, getObjectives, deleteDeadObjectives} = require('./server/objective')
+const db = require('./server/database')
 
-
+const User = require('./server/user')
+const Gameroom = require('./server/gameroom')
 
 const app = express()
 app.use(express.static(`${__dirname}/client`))
 const server = http.createServer(app)
-const io = socketio(server)
+
+global.io = socketio(server)
+
+const users = {}
+
+/**
+ * @todo Avoir multiples salles.
+ */
+// const gamerooms = []
+// gamerooms.push(new Gameroom())
+const gameroom = new Gameroom()
 
 
-const players = {}
-const enemies = []
-const usedColors = []
-let score = 0
 
-let gameLoopId = null
+///// USERS MANAGEMENT /////
+const createUserFromSocket = (socket) => {
+  users[socket.id] = new User(socket)
+  console.log(`New user connected: ${socket.id}`);
+  
+  global.sendUserToGameroomById(socket.id)
+}
 
-let doGameLoopEnnemiesCheck = true
-let ennemiesBirthCount = 0
-let enemiesAreGestating = false
-
-
-const checkEnnemiesGestation = () => {
-  // Entamer la création d'ennemies si ce n'est pas déjà en cours.
-  if (!enemiesAreGestating) {
-    enemiesAreGestating = true
-    setTimeout(() => {
-      const size = Math.min(275, Math.floor(Math.random() * 100) + 40 + score)
-      const y = Math.floor(Math.random() * 1080) - size
-      const goalY = (100 > score) ? y : Math.floor(Math.random() * 1080) - size
-      enemies.push({
-        id: ++ennemiesBirthCount,
-        x: size * -1.25,
-        y: y,
-        goalPos: {
-          x: 1920,
-          y: goalY,
-        },
-        velocity: Math.floor(Math.random() * 475) + 100, // Pixels by ms
-        size: size,
-        dead: false,
-      })
-      
-      enemiesAreGestating = false
-    }, Math.max(500, 5000 / (Math.max(score, 1) / 2)));
+global.getUserById = (id) => {
+  if ('undefined' !== typeof users[id]) {
+    return users[id]
   }
+  
+  return false
 }
 
-const updateEnemies = (delta) => {
-  enemies.forEach(enemy => {
-    enemy.dead = moveElement(enemy, delta)
-  })
-}
-
-const deleteDeadEnemies = () => {
-  enemies.forEach((enemy, index) => {
-    if (enemy.dead) {
-      enemies.splice(index, 1)
-    }
-  })
+global.sendUserToGameroomById = (id) => {
+  if ('undefined' !== typeof users[id]) {
+    gameroom.registerUser(users[id])
+  }
 }
 
 /**
- * @todo Corriger les collisions
+ * @todo Séparer le "Connection" du "Ajout joueur au jeu"
  */
-const checkCollisions = () => {
-  // Players circle against enemies square.
-  for (let playerId in players) {
-    if (players[playerId].dead) {
-      continue
-    }
-    
-    const {x, y, size} = players[playerId]
-    const playerRadius = size / 2
-    
-    enemies.forEach(enemy => {
-      if (
-        enemy.y <= y + playerRadius &&
-        enemy.x + enemy.size >= x - playerRadius &&
-        enemy.y + enemy.size >= y - playerRadius &&
-        enemy.x <= x + playerRadius
-      ) {
-        players[playerId].dead = true
-        players[playerId].velocity = enemy.velocity
-        players[playerId].goalPos = enemy.goalPos
-        
-        moveElement(players[playerId], 0.33)
-        
-        score -= 1
-        
-        io.emit('player_death', players[playerId].color)
-      }
-    })
-    
-    // Check again for player death.
-    if (players[playerId].dead) {
-      continue
-    }
-    
-    const objectives = getObjectives()
-    objectives.forEach(objective => {
-      const distance = Utils.get2PosDistance(
-        {x: x, y: y},
-        {x: objective.x + objective.size / 2, y: objective.y + objective.size / 2}
-      )
-      if ( distance <= objective.size / 2 + playerRadius ) {
-        score += 2
-        objective.dead = true
-      }
-    })
-  }
-}
-
-const updateAllPlayers = (delta) => {
-  for (playerId in players) {
-    if (!players[playerId].dead) {
-      moveElement(players[playerId], delta)
-    }
-  }
-}
-
-const getPlayerByColor = (playerColor) => {
-  for(playerId in players) {
-    if ('undefined' !== typeof players[playerId].color && playerColor === players[playerId].color) {
-      return players[playerId]
-    }
-  }
-  
-  return null
-}
-
-const updatePlayer = (data, isPlayerResurrecting = false) => {
-  const {color, velocity} = data
-  const player = getPlayerByColor(color)
-  
-  if (player) {
-    player.goalPos = data.goalPos
-    player.velocity = data.velocity
-    
-    if (isPlayerResurrecting) {
-      player.x = data.goalPos.x
-      player.y = data.goalPos.y
-      player.dead = false
-    }
-  }
-}
-
-const getPlayersEmitParams = () => {
-  const playersParams = []
-  for (player in players) {
-    const {x, y, goalPos, velocity, color, dead} = players[player]
-    playersParams.push({
-      x: x,
-      y: y,
-      color: color,
-      goalPos: goalPos,
-      velocity: velocity, // Pixels by ms
-      dead: dead,
-    })
-  }
-  return playersParams
-}
-
-const moveElement = (element, delta = 1) => {
-  // Calculating next step.
-  const nextStep = element.velocity * delta
-  const remainingDistance = Utils.get2PosDistance(element.goalPos, {x: element.x, y: element.y})
-  let reachedGoal = false
-  if (nextStep < remainingDistance) {
-    const ratio = nextStep / remainingDistance
-    const stepX = (element.goalPos.x - element.x) * ratio
-    const stepY = (element.goalPos.y - element.y) * ratio
-    element.x = element.x + stepX
-    element.y = element.y + stepY
-  } else {
-    element.x = element.goalPos.x
-    element.y = element.goalPos.y
-    reachedGoal = true
-  }
-  
-  return reachedGoal
-}
-
-const updateGameboard = (delta) => {
-  if (doGameLoopEnnemiesCheck) {
-    checkObjectivesGestation()
-    
-    checkEnnemiesGestation()
-    checkCollisions()
-    updateEnemies(delta)
-  }
-  
-  updateAllPlayers(delta)
-  
-  emitUpdateToClients()
-  
-  if (doGameLoopEnnemiesCheck) {
-    deleteDeadEnemies()
-    deleteDeadObjectives()
-  }
-  
-  doGameLoopEnnemiesCheck =  ! doGameLoopEnnemiesCheck
-}
-
-const emitUpdateToClients = () => {
-  io.emit('tick_update', {
-    enemies: enemies,
-    players: getPlayersEmitParams(),
-    objectives: getObjectives(),
-    score: score,
-  })
-}
-
-const startGameloopIfNeeded = () => {
-  if (!gameLoopId) {
-    gameLoopId = gameloop.setGameLoop(updateGameboard, 1000 / 30)
-  }
-}
-
-const stopGameloopIfNeeded = () => {
-  if (!Object.keys(players).length) {
-    gameloop.clearGameLoop(gameLoopId)
-    gameLoopId = null
-  }
-}
-
-const getRandomColor = (tries = 0) => {
-  const newColor = randomColor()
-  if (usedColors.some(testColor => testColor === newColor)) {
-    if (10 > tries) {
-      tries++
-      return getRandomColor(tries)
-    }
-    
-    return '#000'
-  }
-  
-  usedColors.push(newColor)
-  return newColor
-}
-
-
-
-io.on('connection', socket => {
-  players[socket.id] = createPlayer({ color: getRandomColor() })
-  socket.emit('init_this_connection', players[socket.id])
-  
-  socket.on('mousemove', playerParams => {
-    updatePlayer(playerParams)
-  })
-  
-  socket.on('player_resurrect', playerParams => {
-    updatePlayer(playerParams, true)
-    io.emit('player_resurrect', playerParams.color)
-  })
-  
-  socket.on('disconnect', reason => {
-    const colorIndex = usedColors.indexOf(players[socket.id].color)
-    if (-1 < colorIndex) {
-      usedColors.splice(colorIndex, 1)
-    }
-    console.log(`Player ${players[socket.id].color} (${socket.id}) has disconnected. Reason:`, reason, usedColors);
-    io.emit('player_disconnect', players[socket.id].color)
-    delete players[socket.id]
-
-    stopGameloopIfNeeded()
-  })
-  
-  startGameloopIfNeeded()
+global.io.on('connection', socket => {
+  createUserFromSocket(socket)
 })
+
+
 
 server.on('error', error => {
   console.log(error);

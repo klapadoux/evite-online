@@ -1,27 +1,44 @@
+const Utils = require('./utils')
+const settings = require('./settings')
+
 let objectivesAreGestating = false
 let objectivesBirthCount = 0
 const objectives = []
+const size = 40
+const spawnTop = 50 + size
+const spawnBottom = settings.PLAYGROUND_HEIGHT - 50 - size - spawnTop
+const spawnRight = settings.PLAYGROUND_WIDTH * 0.75
+const spawnLeft = 50 + size
 
 const createObjective = (data) => {
-  const size = 30
+  
+  const { x, y } = Utils.getRandomCoordInRect(spawnLeft, spawnTop, spawnRight, spawnBottom )
   
   return {
+    x,
+    y,
+    size,
     id: ++objectivesBirthCount,
-    x: Math.floor(Math.random() * (1920 - size * 4)) + size,
-    y: Math.floor(Math.random() * (1080 - size * 4)) + size,
-    size: size,
     dead: false,
   }
 }
 
-const checkObjectivesGestation = () => {
-  // Entamer la création d'ennemies si ce n'est pas déjà en cours.
-  if (5 > objectives.length && !objectivesAreGestating) {
+/**
+ * @param {int} modifier Higher the number, faster the spawning. 0 and lower means no spawning.
+ */
+const checkObjectivesGestation = (modifier = 1) => {
+  if (0 >= modifier) {
+    // BAIL. No spawning.
+    return
+  }
+  
+  // Entamer la création d'enemies si ce n'est pas déjà en cours.
+  if (settings.MAX_OBJECTIVES_AT_ONCE > objectives.length && ! objectivesAreGestating) {
     objectivesAreGestating = true
     setTimeout(() => {
       objectives.push(createObjective())
       objectivesAreGestating = false
-    }, 1500);
+    }, 1250 * (1 / modifier));
   }
 }
 
