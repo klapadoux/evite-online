@@ -1,12 +1,11 @@
 const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
-const randomColor = require('randomcolor')
 
-const Game = require('./server/game')
-const {createPlayer} = require('./server/player')
+const db = require('./server/database')
 
-
+const User = require('./server/user')
+const Gameroom = require('./server/gameroom')
 
 const app = express()
 app.use(express.static(`${__dirname}/client`))
@@ -14,54 +13,47 @@ const server = http.createServer(app)
 
 global.io = socketio(server)
 
-const usedColors = []
+const users = {}
 
-const game = new Game(io)
+/**
+ * @todo Avoir multiples salles.
+ */
+// const gamerooms = []
+// gamerooms.push(new Gameroom())
+const gameroom = new Gameroom()
 
 
-const getRandomColor = (tries = 0) => {
-  const newColor = randomColor()
-  if (usedColors.some(testColor => testColor === newColor)) {
-    if (10 > tries) {
-      tries++
-      return getRandomColor(tries)
-    }
-    
-    return '#000'
-  }
+
+///// USERS MANAGEMENT /////
+const createUserFromSocket = (socket) => {
+  users[socket.id] = new User(socket)
+  console.log(`New user connected: ${socket.id}`);
   
-  usedColors.push(newColor)
-  return newColor
+  global.sendUserToGameroomById(socket.id)
 }
 
+global.getUserById = (id) => {
+  if ('undefined' !== typeof users[id]) {
+    return users[id]
+  }
+  
+  return false
+}
 
-io.on('connection', socket => {
-  game.players[socket.id] = createPlayer({ color: getRandomColor() })
-  socket.emit('init_this_connection', game.players[socket.id])
-  
-  socket.on('mousemove', playerParams => {
-    game.updatePlayer(playerParams)
-  })
-  
-  socket.on('player_resurrect', playerParams => {
-    game.updatePlayer(playerParams, true)
-    io.emit('player_resurrect', playerParams.color)
-  })
-  
-  socket.on('disconnect', reason => {
-    const colorIndex = usedColors.indexOf(game.players[socket.id].color)
-    if (-1 < colorIndex) {
-      usedColors.splice(colorIndex, 1)
-    }
-    console.log(`Player ${game.players[socket.id].color} (${socket.id}) has disconnected. Reason:`, reason, usedColors);
-    io.emit('player_disconnect', game.players[socket.id].color)
-    delete game.players[socket.id]
+global.sendUserToGameroomById = (id) => {
+  if ('undefined' !== typeof users[id]) {
+    gameroom.registerUser(users[id])
+  }
+}
 
-    game.stopGameloopIfNeeded()
-  })
-  
-  game.startGameloopIfNeeded()
+/**
+ * @todo Séparer le "Connection" du "Ajout joueur au jeu"
+ */
+global.io.on('connection', socket => {
+  createUserFromSocket(socket)
 })
+
+
 
 server.on('error', error => {
   console.log(error);

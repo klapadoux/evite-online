@@ -1,5 +1,5 @@
 const game = require('./game')
-const Settings = require('./settings')
+const settings = require('./settings')
 
 /**
  * SAME AS CLIENT
@@ -53,7 +53,7 @@ const Utils = {
     const x = Math.floor(Math.random() * rectWidth + rectX)
     const y = Math.floor(Math.random() * rectHeight + rectY)
     
-    if (Settings.SHOW_SPAWN_RECT) {
+    if (settings.SHOW_SPAWN_RECT) {
       global.io.emit('display_spawning_rect', {
         x: rectX,
         y: rectY,

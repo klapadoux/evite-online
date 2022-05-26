@@ -1,4 +1,4 @@
-import * as Settings from './settings.js'
+import * as settings from './settings.js'
 import DebugCanvas from './debug-canvas.js'
 
 /**
@@ -53,7 +53,7 @@ export const Utils = {
     const x = Math.floor(Math.random() * rectWidth + rectX)
     const y = Math.floor(Math.random() * rectHeight + rectY)
     
-    if (Settings.SHOW_SPAWN_RECT) {
+    if (settings.SHOW_SPAWN_RECT) {
       DebugCanvas.drawRect({
         x: rectX,
         y: rectY,
@@ -64,7 +64,15 @@ export const Utils = {
     }
     
     return {x, y}
-  }
+  },
+  
+  addTestPoint(node, {x, y}) {
+    const point = document.createElement('div')
+    point.classList.add('test-center')
+    point.style.left = `${x}px`
+    point.style.top = `${y}px`
+    node.append(point)
+  },
 };
 
 export default Utils
