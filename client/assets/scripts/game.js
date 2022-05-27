@@ -23,6 +23,7 @@ class Game {
     this.enemies = {}
     this.objectives = {}
     this.teamObjectives = {}
+    
     this.enemiesBodyOnHold = []
     this.cleanupList = []
     this.playground = new Playground(gameArgs)
@@ -32,7 +33,38 @@ class Game {
     this.actualScore = 0
     
     this.activeColorIndex = COLORS.length - 1
-
+    
+    this.newItemByType = {
+      players: (args) => { return new Player(args) },
+      enemies: (args) => { return new Enemy(args) },
+      objectives: (args) => { return new Objective(args) },
+      teamObjectives: (args) => { return new TeamObjective(args) },
+    }
+    this.do = {
+      players: {
+        getById: (id) => { this.getTypeItemById('players', id) },
+        addToGame: (item) => { this.addPlayerToGame(item) },
+        update: (args) => { this.updatePlayer(args) },
+        delete: (args) => { /* Players have no delete */ },
+        removeFromGame: (item) => { this.removeTypeItemFromGame('players', item) },
+      },
+      enemies: {
+        getById: (id) => { this.getTypeItemById('enemies', id) },
+        addToGame: (item) => { this.addEnemyToGame(item) },
+        update: (args) => { this.updateEnemy(args) },
+        delete: (args) => { this.deleteEnemy(args) },
+        removeFromGame: (item) => { this.removeEnemyFromGame(item) },
+      },
+      objectives: {
+        getById: (id) => { this.getTypeItemById('objectives', id) },
+        addToGame: (item) => { this.addTypeItemToGame('objectives', item) },
+        update: (args) => { this.updateTypeItem('objectives', args) },
+        delete: (args) => { this.deleteTypeItem('objectives', args) },
+        removeFromGame: (item) => { this.removeTypeItemFromGame('objectives', item) },
+      },
+    }
+    this.do.teamObjectives = this.do.objectives
+    
     this.initHandlers()
     this.initSocketEvents()
     
@@ -47,54 +79,39 @@ class Game {
   
   initSocketEvents() {
     this.socket.on('player_death', playerId => {
-      this.killPlayer(this.getPlayerById(playerId))
+      this.killPlayer(this.do['players']['getById'](playerId))
     })
     
     this.socket.on('player_resurrect', playerId => {
-      this.resurrectPlayer(this.getPlayerById(playerId))
+      this.resurrectPlayer(this.do['players']['getById'](playerId))
     })
     
     this.socket.on('player_disconnect', playerId => {
-      this.removePlayerFromGame(this.getPlayerById(playerId))
+      this.removePlayerFromGame(this.do['players']['getById'](playerId))
     })
     
     this.socket.on('tick_update', tickInfo => {
-      const { enemies, players, objectives, teamObjectives, score } = tickInfo
-      
-      players.forEach(playerData => {
-        this.updatePlayer(playerData)
-      })
-      
-      enemies.forEach(enemyData => {
-        if (enemyData.dead) {
-          this.deleteEnemy(enemyData)
-        } else {
-          this.updateEnemy(enemyData)
-        }
-      })
-      
-      objectives.forEach(objectiveData => {
-        if (objectiveData.dead) {
-          this.deleteObjective(objectiveData)
-        } else {
-          this.updateObjective(objectiveData)
-        }
-      })
-      
-      teamObjectives.forEach(objectiveData => {
-        if (objectiveData.dead) {
-          this.deleteObjective(objectiveData)
-        } else {
-          this.updateObjective(objectiveData)
-        }
-      })
-      
+      // const { enemies, players, objectives, teamObjectives, score } = tickInfo
+      const { score } = tickInfo
+      delete tickInfo.score
+
+
       this.updateScoreCounters(score)
+      
+      for (const itemType in tickInfo) {
+        tickInfo[itemType].forEach(itemData => {
+          if (itemData.dead) {
+            this.do[itemType]['delete'](itemData)
+          } else {
+            this.do[itemType]['update'](itemData)
+          }
+        })
+      }
     })
     
     this.socket.on('player_data', (data) => {
       const { id } = data
-      const player = this.getPlayerById(id)
+      const player = this.do['players']['getById'](id)
       if (player) {
         player.updateData(data)
       }
@@ -122,16 +139,16 @@ class Game {
   }
   
   doAnimationLoop() {
-    this.changeActiveColor()
+    this.changeEnemiesActiveColor()
     
     // Change color for enemies
     for (const enemy in this.enemies) {
-      this.enemies[enemy].node.style.backgroundColor = this.getActiveColor()
+      this.enemies[enemy].node.style.backgroundColor = this.getEnemiesActiveColor()
     }
     
     // Also change color for prepred bodies.
     this.enemiesBodyOnHold.forEach((enemyBody, index) => {
-      enemyBody.style.backgroundColor = this.getActiveColor()
+      enemyBody.style.backgroundColor = this.getEnemiesActiveColor()
       
       if (settings.SHOW_PREPARED_ENEMIES_BODY) {
         enemyBody.style.transform = `translate3d(${index * 101}px, 0, 0)`
@@ -342,14 +359,6 @@ class Game {
     this.socket.emit('player_resurrect', this.getOurPlayerEmitParams())
   }
   
-  removePlayerFromGame(player) {
-    if (player) {
-      console.log( `Player with id ${player.id} has been removed.`, this.players )
-      player.node.remove()
-      delete this.players[player.id]
-    }
-  }
-  
   addOurPlayerEvents() {
     window.addEventListener('mousemove', this.doEventMouseMoveHandler)
     window.addEventListener('mousedown', this.doEventMouseDownHandler)
@@ -363,14 +372,7 @@ class Game {
     window.removeEventListener('mouseup', this.teleportAtMouseUpHandler)
   }
   
-  getPlayerById(playerId) {
-    if ( 'undefined' !== typeof this.players[playerId] ) {
-      return this.players[playerId]
-    }
-    
-    return null
-  }
-  
+
   addOurPlayer(player) {
     this.ourPlayer = player
     
@@ -380,7 +382,7 @@ class Game {
   }
   
   updatePlayer(playerArgs) {
-    const player = this.getPlayerById(playerArgs.id)
+    const player = this.do['players']['getById'](playerArgs.id)
     
     if (player) { 
       player.update(playerArgs)
@@ -397,15 +399,8 @@ class Game {
     this.socket.emit('get_player_data_by_id', player.id)
   }
   
-  ////////// ENEMIES
   
-  getEnemyById(id) {
-    if ('undefined' !== typeof this.enemies[id]) {
-      return this.enemies[id]
-    }
-    
-    return null
-  }
+  ////////// ENEMIES
   
   addEnemyToGame(enemy) {
     if (enemy.needToAppendMainNode) {
@@ -431,7 +426,7 @@ class Game {
   deleteEnemy(enemyArgs) {
     const { id } = enemyArgs
     if ('undefined' !== typeof this.enemies[id]) {
-      this.removeEnemyFromGame(this.getEnemyById(id))
+      this.removeEnemyFromGame(this.getTypeItemById('enemies', id))
     }
   }
   
@@ -454,59 +449,67 @@ class Game {
     this.enemyBodyBirthCount++
 
     const newNode = Enemy.createNode()
-    newNode.style.backgroundColor = this.getActiveColor()
+    newNode.style.backgroundColor = this.getEnemiesActiveColor()
     this.enemiesBodyOnHold.push(newNode)
     this.playground.append(newNode)
   }
   
-  changeActiveColor() {
+  changeEnemiesActiveColor() {
     this.activeColorIndex--
     if (0 > this.activeColorIndex) {
       this.activeColorIndex = COLORS.length - 1
     }
   }
   
-  getActiveColor() {
+  getEnemiesActiveColor() {
     return COLORS[this.activeColorIndex]
   }
   
   
-  
   ////////// OBJECTIVES
+
+
+  ////////// GENERAL
+  // TYPES:
+  //   players
+  //   enemies
+  //   objectives
+  //   teamObjectives
   
-  getObjectiveById(id) {
-    if ('undefined' !== typeof this.objectives[id]) {
-      return this.objectives[id]
+  getTypeItemById(type, id) {
+    if ('undefined' !== typeof this[type][id]) {
+      return this[type][id]
     }
     
     return null
   }
   
-  addObjectiveToGame(objective) {
-    this.playground.append(objective.node)
-    this.objectives[objective.id] = objective
+  addTypeItemToGame(type, item) {
+    this.playground.append(item.node)
+    this[type][item.id] = item
   }
   
-  updateObjective(objectiveArgs) {
-    const { id } = objectiveArgs
-    if ('undefined' === typeof this.objectives[id]) {
-      this.addObjectiveToGame(new Objective(objectiveArgs))
+  updateTypeItem(type, args) {
+    const { id } = args
+    if ('undefined' === typeof this[type][id]) {
+      const newTypeItem = this.newItemByType[type](args)
+      this.addTypeItemToGame(type, newTypeItem)
     } else {
-      this.objectives[id].update(objectiveArgs)
+      this[type][id].update(args)
     }
   }
   
-  deleteObjective(objectiveArgs) {
-    const { id } = objectiveArgs
-    if ('undefined' !== typeof this.objectives[id]) {
-      this.removeObjectiveFromGame(this.getObjectiveById(id))
+  deleteTypeItem(type, args) {
+    const { id } = args
+    if ('undefined' !== typeof this[type][id]) {
+      this.removeTypeItemFromGame(type, this.getTypeItemById(type, id))
     }
   }
   
-  removeObjectiveFromGame(objective) {
-    if (objective) {
-      objective.node.remove()
-      delete this.objectives[objective.id]
+  removeTypeItemFromGame(type, item) {
+    if (item) {
+      item.node.remove()
+      delete this[type][item.id]
     }
   }
 }

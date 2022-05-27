@@ -8,6 +8,8 @@ export class Objective {
     this.size = size ? size : 30,
     this.dead = dead ? dead : false
     
+    this.node = null
+    
     this.createNode()
   }
   
