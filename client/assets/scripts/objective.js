@@ -5,8 +5,10 @@ export class Objective {
     this.id = id
     this.x = x ? x : 0
     this.y = y ? y : 0
-    this.size = size ? size : 30,
+    this.size = size ? size : 30
     this.dead = dead ? dead : false
+    
+    this.node = null
     
     this.createNode()
   }
