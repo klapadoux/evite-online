@@ -473,6 +473,8 @@ class Game {
   
   
   ////////// OBJECTIVES
+  //////////// ICICICIICICIICICI
+  // Create teamObjectives stuffs !!!
   
   getObjectiveById(id) {
     if ('undefined' !== typeof this.objectives[id]) {

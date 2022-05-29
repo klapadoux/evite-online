@@ -1,8 +1,10 @@
 import Game from './game.js'
 import Player from './player.js'
+import ImpatientCircles from './impatient-circles.js'
 
 const socket = io()  
 const startButton = document.getElementById('join-game-button')
+const impatientCircles = new ImpatientCircles({ node: document.querySelector('.impatient-circles') })
 let userGame = null
 
 const startGame = () => {
@@ -32,8 +34,6 @@ socket.once('connect', () => {
   socket.emit('get_game', game => {
     userGame = new Game(socket, game)
   })
-  
-  console.log('END connect');
 });
 
 
@@ -44,6 +44,7 @@ socket.on('init_user_as_player', player => {
   console.log( 'This is you:', ourPlayer );
   
   userGame.addOurPlayer(ourPlayer)
+  impatientCircles.stop()
 })
 
 
@@ -57,11 +58,16 @@ const savedName = localStorage.getItem('player_name')
 if ('' !== savedName) {
   playerNameInput.setAttribute('value', savedName)
   startButton.classList.add('join-game-button--active')
+  impatientCircles.start()
 }
 playerNameInput.addEventListener('keyup', (event) => {
   if ('' !== event.target.value) {
-    startButton.classList.add('join-game-button--active')
+    if (! impatientCircles.running) {
+      startButton.classList.add('join-game-button--active')
+      impatientCircles.start()
+    }
   } else {
     startButton.classList.remove('join-game-button--active')
+    impatientCircles.stop()
   }
 })
