@@ -213,8 +213,11 @@ class Game {
     if (this.actualScore === score) {
       return
     }
+    
+    this.actualScore = score
+    
     this.scoreCounters.forEach(counter => {
-      counter.innerHTML = score
+      counter.innerText = score
     })
     
     this.playground.setBackgroundOpacity(1 - (score / 500 - 0.2))
