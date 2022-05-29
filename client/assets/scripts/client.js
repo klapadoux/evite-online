@@ -6,9 +6,17 @@ const startButton = document.getElementById('join-game-button')
 let userGame = null
 
 const startGame = () => {
+  const playerName = document.querySelector('input[name="player_name"]').value
+  if ('' === playerName) {
+    // BAIL. Need a name.
+    return
+  }
+  
+  localStorage.setItem('player_name', playerName)
+  
   socket.emit('user_is_ready_to_play', {
     id: socket.id,
-    name: document.querySelector('input[name="player_name"]').value
+    name: playerName
   })
   
   const section = document.querySelector('.user-section')
@@ -45,6 +53,11 @@ form.addEventListener('submit', (event) => {
 })
 
 const playerNameInput = document.getElementById('player-name')
+const savedName = localStorage.getItem('player_name')
+if ('' !== savedName) {
+  playerNameInput.setAttribute('value', savedName)
+  startButton.classList.add('join-game-button--active')
+}
 playerNameInput.addEventListener('keyup', (event) => {
   if ('' !== event.target.value) {
     startButton.classList.add('join-game-button--active')
