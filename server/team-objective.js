@@ -14,7 +14,7 @@ const createTeamObjective = (data) => {
   const { x, y } = Utils.getRandomCoordInRect(spawnLeft, spawnTop, spawnRight, spawnBottom )
   const goalPos = Utils.getRandomCoordInRect(spawnLeft, spawnTop, spawnRight, spawnBottom )
   
-  return {
+  const newObjective = {
     x,
     y,
     size,
@@ -22,6 +22,10 @@ const createTeamObjective = (data) => {
     id: ++objectivesBirthCount,
     dead: false,
   }
+  
+  objectives.push(newObjective)
+  
+  return newObjective
 }
 
 const getTeamObjectives = () => {
@@ -38,4 +42,4 @@ const deleteDeadTeamObjectives = () => {
 
 module.exports.createTeamObjective = createTeamObjective
 module.exports.getTeamObjectives = getTeamObjectives
-module.exports.deleteDeadObjectives = deleteDeadTeamObjectives
+module.exports.deleteDeadTeamObjectives = deleteDeadTeamObjectives

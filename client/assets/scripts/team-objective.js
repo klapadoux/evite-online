@@ -4,8 +4,6 @@ export class TeamObjective extends Objective {
   constructor(args) {
     super(args)
     
-    console.log('Hello ?');
-    
     // const { id, x, y, size, dead } = args
     
     // this.id = id

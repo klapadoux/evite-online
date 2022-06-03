@@ -83,9 +83,9 @@ class Game {
       
       teamObjectives.forEach(objectiveData => {
         if (objectiveData.dead) {
-          this.deleteObjective(objectiveData)
+          this.deleteTeamObjective(objectiveData)
         } else {
-          this.updateObjective(objectiveData)
+          this.updateTeamObjective(objectiveData)
         }
       })
       
@@ -476,9 +476,7 @@ class Game {
   
   
   ////////// OBJECTIVES
-  //////////// ICICICIICICIICICI
-  // Create teamObjectives stuffs !!!
-  
+
   getObjectiveById(id) {
     if ('undefined' !== typeof this.objectives[id]) {
       return this.objectives[id]
@@ -494,7 +492,7 @@ class Game {
   
   updateObjective(objectiveArgs) {
     const { id } = objectiveArgs
-    if ('undefined' === typeof this.objectives[id]) {
+    if ('undefined' === typeof this.objectives[id]) {      
       this.addObjectiveToGame(new Objective(objectiveArgs))
     } else {
       this.objectives[id].update(objectiveArgs)
@@ -512,6 +510,46 @@ class Game {
     if (objective) {
       objective.node.remove()
       delete this.objectives[objective.id]
+    }
+  }
+  
+  
+  
+  ////////// TEAM OBJECTIVES
+
+  getTeamObjectiveById(id) {
+    if ('undefined' !== typeof this.teamObjectives[id]) {
+      return this.teamObjectives[id]
+    }
+    
+    return null
+  }
+  
+  addTeamObjectiveToGame(objective) {
+    this.playground.append(objective.node)
+    this.teamObjectives[objective.id] = objective
+  }
+  
+  updateTeamObjective(objectiveArgs) {
+    const { id } = objectiveArgs
+    if ('undefined' === typeof this.teamObjectives[id]) {
+      this.addTeamObjectiveToGame(new TeamObjective(objectiveArgs))
+    } else {
+      this.teamObjectives[id].update(objectiveArgs)
+    }
+  }
+  
+  deleteTeamObjective(objectiveArgs) {
+    const { id } = objectiveArgs
+    if ('undefined' !== typeof this.teamObjectives[id]) {
+      this.removeTeamObjectiveFromGame(this.getTeamObjectiveById(id))
+    }
+  }
+  
+  removeTeamObjectiveFromGame(objective) {
+    if (objective) {
+      objective.node.remove()
+      delete this.teamObjectives[objective.id]
     }
   }
 }

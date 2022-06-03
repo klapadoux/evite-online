@@ -409,6 +409,25 @@ body {
   border-bottom-color: #38f8ff;
 }
 
+.objective--team .objective__star--front {
+  border-bottom-color:#ffbc3e;
+  font-size: 0.6em;
+}
+.objective--team .objective__star--front::before,
+.objective--team .objective__star--front::after {
+  border-bottom-color: #ffbc3e;
+}
+
+.objective--team .objective__star--back {
+  border-bottom-color:#ffee00;
+  font-size: calc(0.65em + 10px);
+  transform: translate3d(-50%, calc(-21% - 10px), 0);
+}
+.objective--team .objective__star--back::before,
+.objective--team .objective__star--back::after {
+  border-bottom-color: #ffee00;
+}
+
 .score-counter--overlay {
   position: absolute;
   z-index: 999;

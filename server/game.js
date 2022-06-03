@@ -15,7 +15,7 @@ class Game {
     this.enemiesBirthCount = 0
     this.enemiesAreGestating = false
     
-    this.doGameLoopEnemiesCheck = true
+    this.skipSomeChecksThisLoop = true
     
     this.playgroundWidth = settings.PLAYGROUND_WIDTH
     this.playgroundHeight = settings.PLAYGROUND_HEIGHT
@@ -110,14 +110,32 @@ class Game {
           objective.dead = true
         }
       })
+      
+      const teamObjectives = getTeamObjectives()
+      teamObjectives.forEach(objective => {
+        const distance = Utils.get2PosDistance(
+          { x, y },
+          {
+            x: objective.x + objective.size / 2,
+            y: objective.y + objective.size / 2,
+          }
+        )
+        
+        if (distance <= objective.size / 2 + playerRadius) {
+          this.score += settings.OBJECTIVE_SCORE
+          objective.dead = true
+          this.hasTeamObjective = false
+        }
+      })
     }
   }
   
   updateGameboard(delta) {
-    if (this.doGameLoopEnemiesCheck) {
+    if (this.skipSomeChecksThisLoop) {
       checkObjectivesGestation(this.playerCount)
       
       if (! this.hasTeamObjective) {
+        console.log('CREATE TEAM OBJECTIVE');
         this.hasTeamObjective = true
         createTeamObjective()
       }
@@ -131,12 +149,13 @@ class Game {
     
     this.emitUpdateToClients()
     
-    if (this.doGameLoopEnemiesCheck) {
+    if (this.skipSomeChecksThisLoop) {
       this.deleteDeadEnemies()
       deleteDeadObjectives()
+      deleteDeadTeamObjectives()
     }
     
-    this.doGameLoopEnemiesCheck =  ! this.doGameLoopEnemiesCheck
+    this.skipSomeChecksThisLoop =  ! this.skipSomeChecksThisLoop
   }
   
   emitUpdateToClients() {
