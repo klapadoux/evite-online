@@ -17,13 +17,10 @@ class ImpatientCircles {
     this.init()
   }
   
-  init() {
-    console.log(this.node);
-    
+  init() {    
     this.reinit()
     
     this.baseWidth = this.node.getBoundingClientRect().width
-    console.log(this.baseWidth, this.node.getBoundingClientRect());
   }
   
   reinit() {
@@ -48,11 +45,9 @@ class ImpatientCircles {
   
   addCircleAndSetNext() {
     this.circlesCount++
-    console.log('Circles count', this.circlesCount);
     
     const width = this.baseWidth * 1.1 * (this.circlesCount + 1)
     const animationDuration = 10 + (this.circlesCount * 5)
-    console.log(this, width);
     
     const circle = document.createElement('span')
     circle.style.width = `${width}px`
