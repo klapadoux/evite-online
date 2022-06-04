@@ -404,7 +404,21 @@ class Game {
         case 'teamObjective':
           //////////////////////////////// ICICICICICI
           console.log(this.teamObjectives[el.id]);
-          this.teamObjectives[el.id].node.style.opacity = 0.5
+          const { x:elX, y:elY, size:elSize } = this.teamObjectives[el.id]
+          const distance = Utils.get2PosDistance( this.teamObjectives[el.id], player )
+          const deg = Utils.angleDeg(this.teamObjectives[el.id], player) - 90
+          
+          const link = document.createElement('div')
+          link.style.position = 'absolute'
+          link.style.top = `${elY + elSize / 2}px`
+          link.style.left = `${elX + elSize / 2}px`
+          link.style.width = '10px'
+          link.style.height = `${distance + elSize / 2}px`
+          link.style.transform = `rotate(${deg}deg)`
+          link.style.transformOrigin = `50% 0`
+          link.style.background = `deeppink`
+          
+          this.playground.append(link)
       }
     })
   }

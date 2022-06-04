@@ -66,6 +66,13 @@ export const Utils = {
     return {x, y}
   },
   
+  /**
+   * @return {number} Angle en degré 
+   */
+  angleDeg({ x:x1, y:y1 }, { x:x2, y:y2 }) {
+    return Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI)
+  },
+  
   addTestPoint(node, {x, y}) {
     const point = document.createElement('div')
     point.classList.add('test-center')
