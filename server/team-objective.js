@@ -20,8 +20,10 @@ const createTeamObjective = (data) => {
     size,
     claimZone,
     id: ++objectivesBirthCount,
+    type: 'teamObjective',
     dead: false,
     goalPos: { x, y },
+    playersLinked: 0,
   }
   
   objectives.push(newObjective)
@@ -41,6 +43,11 @@ const deleteDeadTeamObjectives = () => {
   })
 }
 
+const resetTeamObjectivesLinkedPlayersCount = () => {
+  objectives.forEach(objective => objective.playersLinked = 0)
+}
+
 module.exports.createTeamObjective = createTeamObjective
 module.exports.getTeamObjectives = getTeamObjectives
 module.exports.deleteDeadTeamObjectives = deleteDeadTeamObjectives
+module.exports.resetTeamObjectivesLinkedPlayersCount = resetTeamObjectivesLinkedPlayersCount

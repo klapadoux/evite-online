@@ -385,7 +385,7 @@ class Game {
   updatePlayer(playerArgs) {
     const player = this.getPlayerById(playerArgs.id)
     
-    if (player) { 
+    if (player) {
       player.update(playerArgs)
     } else {
       console.log( 'Update an Unknown player', playerArgs );
@@ -394,6 +394,19 @@ class Game {
       
       this.setOncePlayerDataFromServer(newPlayer)
     }
+    
+    this.applyPlayerLinksToEls(player)
+  }
+  
+  applyPlayerLinksToEls(player) {
+    player.linksToEls.forEach(el => {
+      switch (el.type) {
+        case 'teamObjective':
+          //////////////////////////////// ICICICICICI
+          console.log(this.teamObjectives[el.id]);
+          this.teamObjectives[el.id].node.style.opacity = 0.5
+      }
+    })
   }
   
   setOncePlayerDataFromServer(player) {

@@ -2,7 +2,7 @@ const gameloop = require('node-gameloop')
 const settings = require('./settings.js')
 const Utils = require('./utils.js')
 const { checkObjectivesGestation, getObjectives, deleteDeadObjectives } = require('./objective')
-const { createTeamObjective, getTeamObjectives, deleteDeadTeamObjectives } = require('./team-objective')
+const { createTeamObjective, getTeamObjectives, deleteDeadTeamObjectives, resetTeamObjectivesLinkedPlayersCount } = require('./team-objective')
 
 class Game {
   constructor() {
@@ -52,9 +52,14 @@ class Game {
    * @todo Corriger les collisions
    */
   checkCollisions(delta) {
-    // Players circle against enemies square.
+    const objectives = getObjectives()
+    const teamObjectives = getTeamObjectives()
+    resetTeamObjectivesLinkedPlayersCount()
+    
+    // For each players, check collisions.
     for (const playerId in this.players) {
       const player = this.players[playerId]
+      this.resetPlayerLinks(player) // Reset each loop. Links will be recalculated here.
       
       if (player.dead) {
         continue
@@ -95,7 +100,7 @@ class Game {
       }
       
       
-      const objectives = getObjectives()
+      
       objectives.forEach(objective => {
         const distance = Utils.get2PosDistance(
           { x, y },
@@ -111,15 +116,15 @@ class Game {
         }
       })
       
-      const teamObjectives = getTeamObjectives()
       teamObjectives.forEach(objective => {
+        if (5 <= objective.playersLinked) {
+          // BAIL. Max player influence reached.
+          return
+        }
+        
         const halfSize = objective.size / 2
         const distance = Utils.get2PosDistance(
           { x, y },
-          // {
-          //   x: objective.x,
-          //   y: objective.y,
-          // },
           {
             x: objective.x + halfSize,
             y: objective.y + halfSize,
@@ -128,13 +133,15 @@ class Game {
         
         const pullDistance = 300
         if (pullDistance > distance) {
-          const pullForce = (pullDistance - distance) / 3
+          const pullForce = (pullDistance - distance) / 4
           objective.velocity = pullForce
           objective.goalPos = {
             x: player.x - halfSize,
             y: player.y - halfSize
           }
           this.moveElement(objective, delta)
+          objective.playersLinked++
+          this.linkPlayerToEl(player, objective)
           
           // this.score += settings.OBJECTIVE_SCORE
           // objective.dead = true
@@ -180,8 +187,6 @@ class Game {
       teamObjectives: getTeamObjectives(),
     })
   }
-  
-  
   
   ////////// GAMELOOP
   startGameloopIfNeeded() {
@@ -273,7 +278,7 @@ class Game {
   getPlayersEmitParams() {
     const playersParams = []
     for (const player in this.players) {
-      const { id, x, y, goalPos, velocity, color, dead, currentAction } = this.players[player]
+      const { id, x, y, goalPos, velocity, color, dead, currentAction, linksToEls } = this.players[player]
       playersParams.push({
         id,
         x,
@@ -283,9 +288,29 @@ class Game {
         velocity, // Pixels by ms
         dead,
         currentAction,
+        linksToEls,
       })
     }
     return playersParams
+  }
+  
+  linkPlayerToEl(player, el) {
+    player.linksToEls.push({
+      id: el.id,
+      type: el.type,
+    })
+  }
+  
+  resetPlayerLinks(player) {
+    player.linksToEls = []
+  }
+  
+  removePlayerLink(player, type, id) {
+    player.linksToEls.forEach((el, index) => {
+      if (id === el.id && type === el.type) {
+        delete el[index]
+      }
+    })
   }
   
   

@@ -17,6 +17,7 @@ export class Player {
     this.defaultVelocity = this.velocity
     this.deathCount = 0
     this.currentAction = 'none'
+    this.linksToEls = []
     
     this.isUser = !! isUser
     
@@ -29,11 +30,12 @@ export class Player {
   }
   
   update(args) {
-    const { currentAction } = args
+    const { currentAction, linksToEls } = args
     
     this.moveTo(args)
 
     this.setCurrentAction(currentAction)
+    this.setLinksToEls(linksToEls)
   }
   
   updateData(data) {
@@ -127,6 +129,10 @@ export class Player {
     
     this.node.classList.add(`player--${action}`)
     this.currentAction = action
+  }
+  
+  setLinksToEls(linksToEls) {
+    this.linksToEls = linksToEls
   }
 }
 
