@@ -51,7 +51,7 @@ class Game {
   /**
    * @todo Corriger les collisions
    */
-  checkCollisions() {
+  checkCollisions(delta) {
     // Players circle against enemies square.
     for (const playerId in this.players) {
       const player = this.players[playerId]
@@ -76,7 +76,7 @@ class Game {
             player.velocity = enemy.velocity
             player.goalPos = enemy.goalPos
             
-            this.moveElement(player, 0.33)
+            this.moveElement(player, delta)
             
             this.score -= 2
             
@@ -113,18 +113,32 @@ class Game {
       
       const teamObjectives = getTeamObjectives()
       teamObjectives.forEach(objective => {
+        const halfSize = objective.size / 2
         const distance = Utils.get2PosDistance(
           { x, y },
+          // {
+          //   x: objective.x,
+          //   y: objective.y,
+          // },
           {
-            x: objective.x + objective.size / 2,
-            y: objective.y + objective.size / 2,
+            x: objective.x + halfSize,
+            y: objective.y + halfSize,
           }
         )
         
-        if (distance <= objective.size / 2 + playerRadius) {
-          this.score += settings.OBJECTIVE_SCORE
-          objective.dead = true
-          this.hasTeamObjective = false
+        const pullDistance = 300
+        if (pullDistance > distance) {
+          const pullForce = (pullDistance - distance) / 3
+          objective.velocity = pullForce
+          objective.goalPos = {
+            x: player.x - halfSize,
+            y: player.y - halfSize
+          }
+          this.moveElement(objective, delta)
+          
+          // this.score += settings.OBJECTIVE_SCORE
+          // objective.dead = true
+          // this.hasTeamObjective = false
         }
       })
     }
@@ -135,13 +149,12 @@ class Game {
       checkObjectivesGestation(this.playerCount)
       
       if (! this.hasTeamObjective) {
-        console.log('CREATE TEAM OBJECTIVE');
         this.hasTeamObjective = true
         createTeamObjective()
       }
       
       this.checkEnemiesGestation()
-      this.checkCollisions()
+      this.checkCollisions(delta)
       this.updateEnemies(delta)
     }
     

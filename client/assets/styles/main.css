@@ -409,6 +409,10 @@ body {
   border-bottom-color: #38f8ff;
 }
 
+.objective--team {
+  transition: top 0.08s, left 0.08s
+}
+
 .objective--team .objective__star--front {
   border-bottom-color:#ffbc3e;
   font-size: 0.6em;
