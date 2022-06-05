@@ -304,6 +304,7 @@ class Game {
       link = document.createElement('div')
       link.id = elsId
       link.style.position = 'absolute'
+      link.style.zIndex = '45'
       link.style.transformOrigin = `0 0`
       link.style.background = 'white'
       
