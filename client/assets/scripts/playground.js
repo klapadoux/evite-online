@@ -75,6 +75,12 @@ class Playground {
     this.node.style.transform = `scale(${this.scale})`
     this.node.style.top = `${this.y}px`
     this.node.style.left = `${this.x}px`
+    
+    const btn = document.querySelector('.join-game-button')
+    btn.style.right = `${this.x - 10}px`
+    
+    const circles = document.querySelector('.impatient-circles')
+    circles.style.right = `${this.x - 10}px`
   }
   
   append(node) {

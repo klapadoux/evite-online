@@ -2,6 +2,7 @@ const gameloop = require('node-gameloop')
 const settings = require('./settings.js')
 const Utils = require('./utils.js')
 const { checkObjectivesGestation, getObjectives, deleteDeadObjectives } = require('./objective')
+const { createTeamObjective, getTeamObjectives, deleteDeadTeamObjectives, resetTeamObjectivesLinkedPlayersCount } = require('./team-objective')
 
 class Game {
   constructor() {
@@ -14,7 +15,7 @@ class Game {
     this.enemiesBirthCount = 0
     this.enemiesAreGestating = false
     
-    this.doGameLoopEnemiesCheck = true
+    this.skipSomeChecksThisLoop = true
     
     this.playgroundWidth = settings.PLAYGROUND_WIDTH
     this.playgroundHeight = settings.PLAYGROUND_HEIGHT
@@ -22,6 +23,8 @@ class Game {
     this.safeZoneWidth = settings.SAFE_ZONE_SIZE
     
     this.fpms = settings.FPMS
+    
+    this.hasTeamObjective = false
   }
   
   ////////// GENERAL
@@ -48,10 +51,15 @@ class Game {
   /**
    * @todo Corriger les collisions
    */
-  checkCollisions() {
-    // Players circle against enemies square.
+  checkCollisions(delta) {
+    const objectives = getObjectives()
+    const teamObjectives = getTeamObjectives()
+    resetTeamObjectivesLinkedPlayersCount()
+    
+    // For each players, check collisions.
     for (const playerId in this.players) {
       const player = this.players[playerId]
+      this.resetPlayerLinks(player) // Reset each loop. Links will be recalculated here.
       
       if (player.dead) {
         continue
@@ -61,6 +69,7 @@ class Game {
       const playerRadius = size / 2
       const playerIsInSafeZone = x >= this.playgroundWidth - this.safeZoneWidth
       
+      ///// PLAYER AND MORTAL OBSTACLES
       if (! player.invincible && ! playerIsInSafeZone) {
         this.enemies.forEach(enemy => {
           if (
@@ -73,7 +82,7 @@ class Game {
             player.velocity = enemy.velocity
             player.goalPos = enemy.goalPos
             
-            this.moveElement(player, 0.33)
+            this.moveElement(player, delta)
             
             this.score -= 2
             
@@ -92,7 +101,7 @@ class Game {
       }
       
       
-      const objectives = getObjectives()
+      ///// OBJECTIVES
       objectives.forEach(objective => {
         const distance = Utils.get2PosDistance(
           { x, y },
@@ -107,15 +116,57 @@ class Game {
           objective.dead = true
         }
       })
+      
+      ///// TEAM OBJECTIVES
+      teamObjectives.forEach(objective => {
+        if (5 <= objective.playersLinked) {
+          // BAIL. Max player influence reached.
+          return
+        }
+        
+        const halfSize = objective.size / 2
+        const distance = Utils.get2PosDistance(
+          { x, y },
+          {
+            x: objective.x + halfSize,
+            y: objective.y + halfSize,
+          }
+        )
+        
+        const pullDistance = 300
+        if (pullDistance > distance) {
+          const pullForce = (pullDistance - distance) / 4
+          objective.velocity = pullForce
+          objective.goalPos = {
+            x: player.x - halfSize,
+            y: player.y - halfSize
+          }
+          this.moveElement(objective, delta)
+          objective.playersLinked++
+          this.linkPlayerToEl(player, objective)
+
+          const distanceClaimZone = Utils.get2PosDistance( objective, objective.claimZone )
+          if (10 > distanceClaimZone) {
+            this.score += settings.TEAM_OBJECTIVE_SCORE
+            objective.dead = true
+            this.hasTeamObjective = false
+          }
+        }
+      })
     }
   }
   
   updateGameboard(delta) {
-    if (this.doGameLoopEnemiesCheck) {
+    if (this.skipSomeChecksThisLoop) {
       checkObjectivesGestation(this.playerCount)
       
+      if (! this.hasTeamObjective) {
+        this.hasTeamObjective = true
+        createTeamObjective()
+      }
+      
       this.checkEnemiesGestation()
-      this.checkCollisions()
+      this.checkCollisions(delta)
       this.updateEnemies(delta)
     }
     
@@ -123,12 +174,13 @@ class Game {
     
     this.emitUpdateToClients()
     
-    if (this.doGameLoopEnemiesCheck) {
+    if (this.skipSomeChecksThisLoop) {
       this.deleteDeadEnemies()
       deleteDeadObjectives()
+      deleteDeadTeamObjectives()
     }
     
-    this.doGameLoopEnemiesCheck =  ! this.doGameLoopEnemiesCheck
+    this.skipSomeChecksThisLoop =  ! this.skipSomeChecksThisLoop
   }
   
   emitUpdateToClients() {
@@ -137,10 +189,9 @@ class Game {
       enemies: this.enemies,
       players: this.getPlayersEmitParams(),
       objectives: getObjectives(),
+      teamObjectives: getTeamObjectives(),
     })
   }
-  
-  
   
   ////////// GAMELOOP
   startGameloopIfNeeded() {
@@ -232,7 +283,7 @@ class Game {
   getPlayersEmitParams() {
     const playersParams = []
     for (const player in this.players) {
-      const { id, x, y, goalPos, velocity, color, dead, currentAction } = this.players[player]
+      const { id, x, y, goalPos, velocity, color, dead, currentAction, linksToEls } = this.players[player]
       playersParams.push({
         id,
         x,
@@ -242,9 +293,29 @@ class Game {
         velocity, // Pixels by ms
         dead,
         currentAction,
+        linksToEls,
       })
     }
     return playersParams
+  }
+  
+  linkPlayerToEl(player, el) {
+    player.linksToEls.push({
+      id: el.id,
+      type: el.type,
+    })
+  }
+  
+  resetPlayerLinks(player) {
+    player.linksToEls = []
+  }
+  
+  removePlayerLink(player, type, id) {
+    player.linksToEls.forEach((el, index) => {
+      if (id === el.id && type === el.type) {
+        delete el[index]
+      }
+    })
   }
   
   

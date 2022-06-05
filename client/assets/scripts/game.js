@@ -4,6 +4,7 @@ import Playground from './playground.js'
 import Player from './player.js'
 import Enemy from './enemy.js'
 import Objective from './objective.js'
+import TeamObjective from './team-objective.js'
 import * as settings from './settings.js'
 
 const PREPARED_ENEMIES_BODY_MAX_COUNT = 10
@@ -21,6 +22,7 @@ class Game {
     this.players = {}
     this.enemies = {}
     this.objectives = {}
+    this.teamObjectives = {}
     this.enemiesBodyOnHold = []
     this.cleanupList = []
     this.playground = new Playground(gameArgs)
@@ -57,7 +59,7 @@ class Game {
     })
     
     this.socket.on('tick_update', tickInfo => {
-      const { enemies, players, objectives, score } = tickInfo
+      const { enemies, players, objectives, teamObjectives, score } = tickInfo
       
       players.forEach(playerData => {
         this.updatePlayer(playerData)
@@ -76,6 +78,14 @@ class Game {
           this.deleteObjective(objectiveData)
         } else {
           this.updateObjective(objectiveData)
+        }
+      })
+      
+      teamObjectives.forEach(objectiveData => {
+        if (objectiveData.dead) {
+          this.deleteTeamObjective(objectiveData)
+        } else {
+          this.updateTeamObjective(objectiveData)
         }
       })
       
@@ -203,8 +213,11 @@ class Game {
     if (this.actualScore === score) {
       return
     }
+    
+    this.actualScore = score
+    
     this.scoreCounters.forEach(counter => {
-      counter.innerHTML = score
+      counter.innerText = score
     })
     
     this.playground.setBackgroundOpacity(1 - (score / 500 - 0.2))
@@ -264,6 +277,49 @@ class Game {
     }, delay)
   }
   
+  createUniqueIdWith2Els(action, el1, el2) {
+    return `${action}-${el1.type}-${el1.id}-${el2.type}-${el2.id}`
+  }
+  
+  /**
+   * 
+   * @param {object} el1 Object with properties id, size, x, y
+   * @param {object} el2 Object with properties id, size, x, y
+   * @returns {string} Created ID
+   */
+  updateElsLink(el1, el2) {
+    const { x:elX, y:elY, size:elSize } = el1
+    const { color = white } = el2
+    const elCenterPos = {
+      x: elX + elSize / 2,
+      y: elY + elSize / 2,
+    }
+    const maxPullDistance = 300
+    const distance = Utils.get2PosDistance(elCenterPos, el2)
+    const elsId = this.createUniqueIdWith2Els('link', el1, el2)
+    const deg = Utils.angleDeg(elCenterPos, el2) - 90
+    
+    let link = document.getElementById(elsId)
+    if (! link) {
+      link = document.createElement('div')
+      link.id = elsId
+      link.style.position = 'absolute'
+      link.style.transformOrigin = `0 0`
+      link.style.background = 'white'
+      
+      this.playground.append(link)
+    }
+
+    const linkWidth = (maxPullDistance - distance) / 30
+    link.style.top = `${elY + elSize / 2}px`
+    link.style.left = `${elX + elSize / 2 - linkWidth / 2}px`
+    link.style.width = `${linkWidth}px`
+    link.style.height = `${distance}px`
+    link.style.transform = `rotate(${deg}deg)`
+    link.style.boxShadow = `0 0 ${linkWidth}px ${color}`
+    
+    return elsId
+  }
   
   
   ////////// PLAYERS
@@ -372,7 +428,7 @@ class Game {
   updatePlayer(playerArgs) {
     const player = this.getPlayerById(playerArgs.id)
     
-    if (player) { 
+    if (player) {
       player.update(playerArgs)
     } else {
       console.log( 'Update an Unknown player', playerArgs );
@@ -381,6 +437,33 @@ class Game {
       
       this.setOncePlayerDataFromServer(newPlayer)
     }
+    
+    this.applyPlayerLinksToEls(player)
+  }
+  
+  applyPlayerLinksToEls(player) {    
+    const newLinks = []
+    player.linksToEls.forEach(el => {
+      switch (el.type) {
+        case 'teamObjective':
+          if (this.teamObjectives[el.id]) {
+            newLinks.push(this.updateElsLink(this.teamObjectives[el.id], player))
+          }
+            break
+      }
+    })
+    
+    // Verify stored links validity
+    player.linksLookup.forEach(linkId => {
+      if (! newLinks.some(newLinkId => linkId === newLinkId)) {
+        const link = document.getElementById(linkId)
+        if (link) {
+          link.remove()
+        }
+      }
+    })
+    
+    player.linksLookup = newLinks
   }
   
   setOncePlayerDataFromServer(player) {
@@ -463,7 +546,7 @@ class Game {
   
   
   ////////// OBJECTIVES
-  
+
   getObjectiveById(id) {
     if ('undefined' !== typeof this.objectives[id]) {
       return this.objectives[id]
@@ -479,7 +562,7 @@ class Game {
   
   updateObjective(objectiveArgs) {
     const { id } = objectiveArgs
-    if ('undefined' === typeof this.objectives[id]) {
+    if ('undefined' === typeof this.objectives[id]) {      
       this.addObjectiveToGame(new Objective(objectiveArgs))
     } else {
       this.objectives[id].update(objectiveArgs)
@@ -497,6 +580,47 @@ class Game {
     if (objective) {
       objective.node.remove()
       delete this.objectives[objective.id]
+    }
+  }
+  
+  
+  
+  ////////// TEAM OBJECTIVES
+
+  getTeamObjectiveById(id) {
+    if ('undefined' !== typeof this.teamObjectives[id]) {
+      return this.teamObjectives[id]
+    }
+    
+    return null
+  }
+  
+  addTeamObjectiveToGame(objective) {
+    this.playground.append(objective.node)
+    this.teamObjectives[objective.id] = objective
+  }
+  
+  updateTeamObjective(objectiveArgs) {
+    const { id } = objectiveArgs
+    if ('undefined' === typeof this.teamObjectives[id]) {
+      this.addTeamObjectiveToGame(new TeamObjective(objectiveArgs))
+    } else {
+      this.teamObjectives[id].update(objectiveArgs)
+    }
+  }
+  
+  deleteTeamObjective(objectiveArgs) {
+    const { id } = objectiveArgs
+    if ('undefined' !== typeof this.teamObjectives[id]) {
+      this.removeTeamObjectiveFromGame(this.getTeamObjectiveById(id))
+    }
+  }
+  
+  removeTeamObjectiveFromGame(objective) {
+    if (objective) {
+      objective.node.remove()
+      objective.claimZoneNode.remove()
+      delete this.teamObjectives[objective.id]
     }
   }
 }
