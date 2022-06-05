@@ -221,7 +221,8 @@ body {
   user-select: none;
 }
 
-.playground__background {
+.playground__background,
+.playground__gore {
   position: absolute;
   z-index: 0;
   top: 0;
@@ -230,6 +231,15 @@ body {
   left: 0;
   background: #acbcbf;
   transition: opacity 1s;
+}
+
+.playground__background {
+  background: #acbcbf;
+  transition: opacity 1s;
+}
+
+.playground__gore-canvas {
+  
 }
 
 .debug-canvas {

@@ -1,6 +1,7 @@
 import Utils from './utils.js'
 import DebugCanvas from './debug-canvas.js'
 import Playground from './playground.js'
+import Canvas from './canvas.js'
 import Player from './player.js'
 import Enemy from './enemy.js'
 import Objective from './objective.js'
@@ -30,11 +31,13 @@ class Game {
     
     this.enemyBodyBirthCount = 0
     this.actualScore = 0
+    this.canvas = null
     
     this.activeColorIndex = COLORS.length - 1
 
     this.initHandlers()
     this.initSocketEvents()
+    this.initCanvas(gameArgs)
     
     if (this.ourPlayer) {
       this.addPlayerToGame(this.ourPlayer)
@@ -119,6 +122,18 @@ class Game {
     this.teleportAtMouseUpHandler = this.teleportAtMouseUp.bind(this)
     
     this.doAnimationLoopHandler = this.doAnimationLoop.bind(this)
+  }
+  
+  initCanvas(gameArgs) {
+    const { playgroundWidth, playgroundHeight } = gameArgs
+    
+    this.goreCanvas = new Canvas({ width: playgroundWidth, height: playgroundHeight })
+    this.playground.node.append(this.goreCanvas.node)
+    
+    setTimeout(() => {
+      this.goreCanvas.testTriangle()
+      this.goreCanvas.testSquare()
+    }, 1000);
   }
   
   doAnimationLoop() {
