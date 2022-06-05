@@ -63,7 +63,7 @@ export const Utils = {
       })
     }
     
-    return {x, y}
+    return { x, y }
   },
   
   /**
