@@ -69,6 +69,7 @@ class Game {
       const playerRadius = size / 2
       const playerIsInSafeZone = x >= this.playgroundWidth - this.safeZoneWidth
       
+      ///// PLAYER AND MORTAL OBSTACLES
       if (! player.invincible && ! playerIsInSafeZone) {
         this.enemies.forEach(enemy => {
           if (
@@ -100,7 +101,7 @@ class Game {
       }
       
       
-      
+      ///// OBJECTIVES
       objectives.forEach(objective => {
         const distance = Utils.get2PosDistance(
           { x, y },
@@ -116,6 +117,7 @@ class Game {
         }
       })
       
+      ///// TEAM OBJECTIVES
       teamObjectives.forEach(objective => {
         if (5 <= objective.playersLinked) {
           // BAIL. Max player influence reached.

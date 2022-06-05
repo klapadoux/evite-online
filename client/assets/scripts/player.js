@@ -14,10 +14,13 @@ export class Player {
     this.size = size ? size : 26
     this.dead = dead ? dead : false
     
+    this.type = 'player'
+    
     this.defaultVelocity = this.velocity
     this.deathCount = 0
     this.currentAction = 'none'
     this.linksToEls = []
+    this.linksLookup = []
     
     this.isUser = !! isUser
     

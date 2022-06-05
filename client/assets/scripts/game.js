@@ -277,6 +277,49 @@ class Game {
     }, delay)
   }
   
+  createUniqueIdWith2Els(action, el1, el2) {
+    return `${action}-${el1.type}-${el1.id}-${el2.type}-${el2.id}`
+  }
+  
+  /**
+   * 
+   * @param {object} el1 Object with properties id, size, x, y
+   * @param {object} el2 Object with properties id, size, x, y
+   * @returns {string} Created ID
+   */
+  updateElsLink(el1, el2) {
+    const { x:elX, y:elY, size:elSize } = el1
+    const { color = white } = el2
+    const elCenterPos = {
+      x: elX + elSize / 2,
+      y: elY + elSize / 2,
+    }
+    const maxPullDistance = 300
+    const distance = Utils.get2PosDistance(elCenterPos, el2)
+    const elsId = this.createUniqueIdWith2Els('link', el1, el2)
+    const deg = Utils.angleDeg(elCenterPos, el2) - 90
+    
+    let link = document.getElementById(elsId)
+    if (! link) {
+      link = document.createElement('div')
+      link.id = elsId
+      link.style.position = 'absolute'
+      link.style.transformOrigin = `0 0`
+      link.style.background = 'white'
+      
+      this.playground.append(link)
+    }
+
+    const linkWidth = (maxPullDistance - distance) / 30
+    link.style.top = `${elY + elSize / 2}px`
+    link.style.left = `${elX + elSize / 2 - linkWidth / 2}px`
+    link.style.width = `${linkWidth}px`
+    link.style.height = `${distance}px`
+    link.style.transform = `rotate(${deg}deg)`
+    link.style.boxShadow = `0 0 ${linkWidth}px ${color}`
+    
+    return elsId
+  }
   
   
   ////////// PLAYERS
@@ -399,28 +442,30 @@ class Game {
   }
   
   applyPlayerLinksToEls(player) {
+    // player.linksLookup.push()
+    
+    console.log(player.linksLookup);
+    
+    const newLinks = []
     player.linksToEls.forEach(el => {
       switch (el.type) {
         case 'teamObjective':
-          //////////////////////////////// ICICICICICI
-          console.log(this.teamObjectives[el.id]);
-          const { x:elX, y:elY, size:elSize } = this.teamObjectives[el.id]
-          const distance = Utils.get2PosDistance( this.teamObjectives[el.id], player )
-          const deg = Utils.angleDeg(this.teamObjectives[el.id], player) - 90
-          
-          const link = document.createElement('div')
-          link.style.position = 'absolute'
-          link.style.top = `${elY + elSize / 2}px`
-          link.style.left = `${elX + elSize / 2}px`
-          link.style.width = '10px'
-          link.style.height = `${distance + elSize / 2}px`
-          link.style.transform = `rotate(${deg}deg)`
-          link.style.transformOrigin = `50% 0`
-          link.style.background = `deeppink`
-          
-          this.playground.append(link)
+          newLinks.push(this.updateElsLink(this.teamObjectives[el.id], player))
+            break
       }
     })
+    
+    // Verify stored links validity
+    player.linksLookup.forEach(linkId => {
+      if (! newLinks.some(newLinkId => linkId === newLinkId)) {
+        const link = document.getElementById(linkId)
+        if (link) {
+          link.remove()
+        }
+      }
+    })
+    
+    player.linksLookup = newLinks
   }
   
   setOncePlayerDataFromServer(player) {
