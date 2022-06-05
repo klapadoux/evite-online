@@ -82,7 +82,7 @@ class Game {
             player.velocity = enemy.velocity
             player.goalPos = enemy.goalPos
             
-            this.moveElement(player, delta)
+            this.moveElement(player, 0.33)
             
             this.score -= 2
             

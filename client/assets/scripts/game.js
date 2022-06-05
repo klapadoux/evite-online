@@ -441,7 +441,7 @@ class Game {
     }
   }
   
-  applyPlayerLinksToEls(player) {    
+  applyPlayerLinksToEls(player) {
     const newLinks = []
     player.linksToEls.forEach(el => {
       switch (el.type) {
