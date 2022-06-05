@@ -14,13 +14,17 @@ const createObjective = (data) => {
   
   const { x, y } = Utils.getRandomCoordInRect(spawnLeft, spawnTop, spawnRight, spawnBottom )
   
-  return {
+  const newObjective = {
     x,
     y,
     size,
     id: ++objectivesBirthCount,
     dead: false,
   }
+  
+  objectives.push(newObjective)
+  
+  return newObjective
 }
 
 /**
@@ -36,7 +40,7 @@ const checkObjectivesGestation = (modifier = 1) => {
   if (settings.MAX_OBJECTIVES_AT_ONCE > objectives.length && ! objectivesAreGestating) {
     objectivesAreGestating = true
     setTimeout(() => {
-      objectives.push(createObjective())
+      createObjective()
       objectivesAreGestating = false
     }, 1250 * (1 / modifier));
   }
