@@ -441,16 +441,14 @@ class Game {
     this.applyPlayerLinksToEls(player)
   }
   
-  applyPlayerLinksToEls(player) {
-    // player.linksLookup.push()
-    
-    console.log(player.linksLookup);
-    
+  applyPlayerLinksToEls(player) {    
     const newLinks = []
     player.linksToEls.forEach(el => {
       switch (el.type) {
         case 'teamObjective':
-          newLinks.push(this.updateElsLink(this.teamObjectives[el.id], player))
+          if (this.teamObjectives[el.id]) {
+            newLinks.push(this.updateElsLink(this.teamObjectives[el.id], player))
+          }
             break
       }
     })
@@ -621,6 +619,7 @@ class Game {
   removeTeamObjectiveFromGame(objective) {
     if (objective) {
       objective.node.remove()
+      objective.claimZoneNode.remove()
       delete this.teamObjectives[objective.id]
     }
   }

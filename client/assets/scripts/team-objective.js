@@ -4,15 +4,13 @@ export class TeamObjective extends Objective {
   constructor(args) {
     super(args)
     
-    // const { id, x, y, size, dead } = args
+    const { claimZone } = args
     
-    // this.id = id
-    // this.x = x ? x : 0
-    // this.y = y ? y : 0
-    // this.size = size ? size : 30,
-    // this.dead = dead ? dead : false
+    this.claimZonePos = claimZone
     
-    // this.createNode()
+    this.claimZoneNode = null
+   
+    this.createClaimZoneNode()
   }
   
   createNode() {
@@ -20,10 +18,25 @@ export class TeamObjective extends Objective {
     
     this.node.classList.add('objective--team')
   }
+  
+  createClaimZoneNode() {
+    const { x, y } = this.claimZonePos
+    
+    this.claimZoneNode = document.createElement('div')
+    this.claimZoneNode.classList.add('claim-zone')
+    this.claimZoneNode.style.top = `${y}px`
+    this.claimZoneNode.style.left = `${x}px`
+    this.claimZoneNode.style.width = `${this.size}px`
+    this.claimZoneNode.style.height = `${this.size}px`
+    
+    document.getElementById('playground').append(this.claimZoneNode)
+  }
 
-  // update(data) {
-  //   Object.assign(this, data)
-  // }
+  update(data) {
+    super.update(data)
+    
+    this.claimZone
+  }
   
   // isDead() {
   //   return this.dead

@@ -144,10 +144,13 @@ class Game {
           this.moveElement(objective, delta)
           objective.playersLinked++
           this.linkPlayerToEl(player, objective)
-          
-          // this.score += settings.OBJECTIVE_SCORE
-          // objective.dead = true
-          // this.hasTeamObjective = false
+
+          const distanceClaimZone = Utils.get2PosDistance( objective, objective.claimZone )
+          if (10 > distanceClaimZone) {
+            this.score += settings.TEAM_OBJECTIVE_SCORE
+            objective.dead = true
+            this.hasTeamObjective = false
+          }
         }
       })
     }
