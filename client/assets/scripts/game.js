@@ -431,6 +431,7 @@ class Game {
     
     if (player) {
       player.update(playerArgs)
+      this.applyPlayerLinksToEls(player)
     } else {
       console.log( 'Update an Unknown player', playerArgs );
       const newPlayer = new Player(playerArgs)
@@ -438,8 +439,6 @@ class Game {
       
       this.setOncePlayerDataFromServer(newPlayer)
     }
-    
-    this.applyPlayerLinksToEls(player)
   }
   
   applyPlayerLinksToEls(player) {    
