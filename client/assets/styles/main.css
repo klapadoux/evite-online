@@ -154,6 +154,7 @@ body {
 }
 
 .impatient-circles {
+  pointer-events: none;
   display: block;
   position: absolute;
 }
