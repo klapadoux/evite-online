@@ -9,6 +9,7 @@ let userGame = null
 
 const startGame = () => {
   const playerName = document.querySelector('input[name="player_name"]').value
+  console.log(playerName);
   if ('' === playerName) {
     // BAIL. Need a name.
     return
@@ -55,7 +56,7 @@ form.addEventListener('submit', (event) => {
 
 const playerNameInput = document.getElementById('player-name')
 const savedName = localStorage.getItem('player_name')
-if ('' !== savedName) {
+if (null !== savedName && '' !== savedName) {
   playerNameInput.setAttribute('value', savedName)
   startButton.classList.add('join-game-button--active')
   impatientCircles.start()
