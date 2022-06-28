@@ -1,3 +1,5 @@
+import Utils from './utils.js'
+
 class Canvas {
   /**
    * Contient les classes pouvant être utilisé pour créer des éléments dans le canvas.
@@ -118,7 +120,6 @@ class Canvas {
   ellipse(crd, radiusX, radiusY, rotation = 0) {
     this.ctx.beginPath();
     this.ctx.ellipse(crd.x, crd.y, radiusX, radiusY, Utils.rad(rotation), 0, 2 * Math.PI);
-    this.ctx.stroke();
   }
 
   // copîer coller des internets, pas testé

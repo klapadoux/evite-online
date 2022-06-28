@@ -73,6 +73,18 @@ export const Utils = {
     return Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI)
   },
   
+  rad(degree) {
+    return degree * (Math.PI / 180)
+  },
+
+  deg(rad) {
+    return rad * (180 / Math.PI)
+  },
+
+  invertRad(rad) {
+    return (rad + Math.PI) % (2 * Math.PI)
+  },
+  
   addTestPoint(node, {x, y}) {
     const point = document.createElement('div')
     point.classList.add('test-center')

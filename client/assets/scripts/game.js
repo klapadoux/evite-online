@@ -129,11 +129,6 @@ class Game {
     
     this.goreCanvas = new Canvas({ width: playgroundWidth, height: playgroundHeight })
     this.playground.node.append(this.goreCanvas.node)
-    
-    setTimeout(() => {
-      this.goreCanvas.testTriangle()
-      this.goreCanvas.testSquare()
-    }, 1000);
   }
   
   doAnimationLoop() {
@@ -248,6 +243,21 @@ class Game {
     }
     this.addBloodUnderElement(player, 'same', 625)
     this.addBloodUnderElement(player, 'same', 650)
+    
+    this.explodePlayer(player)
+  }
+  
+  explodePlayer(player) {
+    ///// ALLER CHECKER COMMENT LES SPACE PEOPLES FONT
+    
+    const coord = this.convertPosToPlaygroundScale(player.node.getBoundingClientRect())
+    const coordTo = {
+      x: coord.x + 20,
+      y: coord.y,
+    }
+    
+    this.goreCanvas.ctx.lineWidth = 10
+    this.goreCanvas.line(coord, coordTo, player.color)
   }
   
   addBloodUnderElement(element, sizeType = 'same', delay = 0) {
@@ -280,6 +290,11 @@ class Game {
 
       // TEST POINT
       // Utils.addTestPoint(this.playground, bloodCoord)
+      
+      // GORE CANVAS SPOTS
+      // this.goreCanvas.ctx.fillStyle = element.color ? element.color : '#c97a7c'
+      // this.goreCanvas.ellipse( bloodCoord, bloodWidth, bloodHeight )
+      // this.goreCanvas.ctx.fill()
       
       let blood = document.createElement('span')
       blood.style.left = bloodCoord.x + 'px'
