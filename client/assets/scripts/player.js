@@ -35,8 +35,6 @@ export class Player {
   update(args) {
     const { currentAction, linksToEls } = args
 
-    console.log(args);
-
     this.moveTo(args)
 
     this.setCurrentAction(currentAction)

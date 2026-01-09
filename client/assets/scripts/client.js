@@ -65,7 +65,6 @@ if (null !== savedName && '' !== savedName) {
 }
 
 playerNameInput.addEventListener('keyup', (event) => {
-  console.log(event);
   if ('Enter' === event.key) {
     // Even though it is not best practice,
     // the user chose to appear where the mouse is using Enter
