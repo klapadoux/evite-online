@@ -7,26 +7,26 @@ const { createTeamObjective, getTeamObjectives, deleteDeadTeamObjectives, resetT
 class Game {
   constructor() {
     this.score = 0
-      
+
     this.players = {}
-    
+
     this.playerCount = 0
     this.enemies = []
     this.enemiesBirthCount = 0
     this.enemiesAreGestating = false
-    
+
     this.skipSomeChecksThisLoop = true
-    
+
     this.playgroundWidth = settings.PLAYGROUND_WIDTH
     this.playgroundHeight = settings.PLAYGROUND_HEIGHT
-    
+
     this.safeZoneWidth = settings.SAFE_ZONE_SIZE
-    
+
     this.fpms = settings.FPMS
-    
+
     this.hasTeamObjective = false
   }
-  
+
   ////////// GENERAL
   moveElement(element, delta = 1) {
     // Calculating next step.
@@ -44,10 +44,10 @@ class Game {
       element.y = element.goalPos.y
       reachedGoal = true
     }
-    
+
     return reachedGoal
   }
-  
+
   /**
    * @todo Corriger les collisions
    */
@@ -55,20 +55,20 @@ class Game {
     const objectives = getObjectives()
     const teamObjectives = getTeamObjectives()
     resetTeamObjectivesLinkedPlayersCount()
-    
+
     // For each players, check collisions.
     for (const playerId in this.players) {
       const player = this.players[playerId]
       this.resetPlayerLinks(player) // Reset each loop. Links will be recalculated here.
-      
+
       if (player.dead) {
         continue
       }
-      
+
       const { x, y, size } = player
       const playerRadius = size / 2
       const playerIsInSafeZone = x >= this.playgroundWidth - this.safeZoneWidth
-      
+
       ///// PLAYER AND MORTAL OBSTACLES
       if (! player.invincible && ! playerIsInSafeZone) {
         this.enemies.forEach(enemy => {
@@ -81,26 +81,26 @@ class Game {
             player.dead = true
             player.velocity = enemy.velocity
             player.goalPos = enemy.goalPos
-            
+
             this.moveElement(player, 0.33)
-            
+
             this.score -= 2
-            
+
             if (0 > this.score) {
               this.score = 0
             }
-            
+
             global.io.emit('player_death', player.id)
           }
         })
-        
+
         // Check again for player death.
         if (player.dead) {
           continue
         }
       }
-      
-      
+
+
       ///// OBJECTIVES
       objectives.forEach(objective => {
         const distance = Utils.get2PosDistance(
@@ -110,20 +110,20 @@ class Game {
             y: objective.y + objective.size / 2,
           }
         )
-        
+
         if (distance <= objective.size / 2 + playerRadius) {
           this.score += settings.OBJECTIVE_SCORE
           objective.dead = true
         }
       })
-      
+
       ///// TEAM OBJECTIVES
       teamObjectives.forEach(objective => {
         if (5 <= objective.playersLinked) {
           // BAIL. Max player influence reached.
           return
         }
-        
+
         const halfSize = objective.size / 2
         const distance = Utils.get2PosDistance(
           { x, y },
@@ -132,7 +132,7 @@ class Game {
             y: objective.y + halfSize,
           }
         )
-        
+
         const pullDistance = 300
         if (pullDistance > distance) {
           const pullForce = (pullDistance - distance) / 4
@@ -155,34 +155,34 @@ class Game {
       })
     }
   }
-  
+
   updateGameboard(delta) {
     if (this.skipSomeChecksThisLoop) {
       checkObjectivesGestation(this.playerCount)
-      
+
       if (! this.hasTeamObjective) {
         this.hasTeamObjective = true
         createTeamObjective()
       }
-      
+
       this.checkEnemiesGestation()
       this.checkCollisions(delta)
       this.updateEnemies(delta)
     }
-    
+
     this.updateAllPlayers(delta)
-    
+
     this.emitUpdateToClients()
-    
+
     if (this.skipSomeChecksThisLoop) {
       this.deleteDeadEnemies()
       deleteDeadObjectives()
       deleteDeadTeamObjectives()
     }
-    
+
     this.skipSomeChecksThisLoop =  ! this.skipSomeChecksThisLoop
   }
-  
+
   emitUpdateToClients() {
     global.io.emit('tick_update', {
       score: this.score,
@@ -192,42 +192,42 @@ class Game {
       teamObjectives: getTeamObjectives(),
     })
   }
-  
+
   ////////// GAMELOOP
   startGameloopIfNeeded() {
     if (! this.gameLoopId) {
       console.log( 'START GAME' );
-      
+
       this.gameLoopId = gameloop.setGameLoop(this.updateGameboard.bind(this), this.fpms)
     }
   }
-  
+
   stopGameloopIfNeeded() {
     if (! Object.keys(this.players).length) {
       console.log( 'STOP GAME' );
-      
+
       gameloop.clearGameLoop(this.gameLoopId)
       this.gameLoopId = null
     }
   }
-  
-  
+
+
   ////////// PLAYERS
   addPlayer(player) {
     this.players[player.id] = player
     this.playerCount++
   }
-  
+
   removePlayerById(playerId) {
     if ('undefined' === typeof this.players[playerId]) {
       // BAIL, already removed.
       return
     }
-    
+
     delete this.players[playerId]
     this.playerCount--
   }
-  
+
   updateAllPlayers(delta) {
     for (const playerId in this.players) {
       if (! this.players[playerId].dead) {
@@ -235,7 +235,7 @@ class Game {
       }
     }
   }
-  
+
   updatePlayer(data, isPlayerResurrecting = false) {
     const { id, velocity, goalPos, currentAction } = data
     const player = this.getPlayerById(id)
@@ -244,42 +244,58 @@ class Game {
       // BAIL, not a player.
       return
     }
-    
-    player.goalPos = goalPos
+
+    player.goalPos = this.makePlayerCoordValid(goalPos)
     player.velocity = velocity
     player.currentAction = currentAction
-    
+
     if (isPlayerResurrecting) {
       player.x = goalPos.x
       player.y = goalPos.y
       player.dead = false
     }
   }
-  
+
   setPlayerPos(data) {
     const { id, goalPos } = data
     const player = this.getPlayerById(id)
-    
+
     if (! player) {
       // BAIL, not a player.
       return
     }
-    
-    const { x, y } = goalPos
-    
+
+    const { x, y } = this.makePlayerCoordValid(goalPos)
+
     player.x = x
     player.y = y
     player.goalPos = goalPos
   }
-  
+
+  makePlayerCoordValid(coord) {
+    if (0 > coord.x) {
+      coord.x = 0
+    } else if (this.playgroundWidth < coord.x) {
+      coord.x = this.playgroundWidth
+    }
+
+    if (0 > coord.y) {
+      coord.y = 0
+    } else if (this.playgroundHeight < coord.y) {
+      coord.y = this.playgroundHeight
+    }
+
+    return coord
+  }
+
   getPlayerById(playerId) {
     if ('undefined' !== typeof this.players[playerId]) {
       return this.players[playerId]
     }
-    
+
     return false
   }
-  
+
   getPlayersEmitParams() {
     const playersParams = []
     for (const player in this.players) {
@@ -298,18 +314,18 @@ class Game {
     }
     return playersParams
   }
-  
+
   linkPlayerToEl(player, el) {
     player.linksToEls.push({
       id: el.id,
       type: el.type,
     })
   }
-  
+
   resetPlayerLinks(player) {
     player.linksToEls = []
   }
-  
+
   removePlayerLink(player, type, id) {
     player.linksToEls.forEach((el, index) => {
       if (id === el.id && type === el.type) {
@@ -317,8 +333,8 @@ class Game {
       }
     })
   }
-  
-  
+
+
   ////////// ENEMIES
   checkEnemiesGestation() {
     // Entamer la création d'enemies si ce n'est pas déjà en cours.
@@ -326,9 +342,9 @@ class Game {
       // BAIL. Already gestating.
       return
     }
-    
+
     this.enemiesAreGestating = true
-    
+
     setTimeout(() => {
       // const size = Math.min(300, Math.floor(Math.random() * this.score * 4) + 40)
       // let size = (100 > this.score) ? Math.floor(Math.random() * 260) + 40 : Math.floor(Math.random() * 260) + this.score
@@ -344,17 +360,17 @@ class Game {
       } else {
         size = Math.floor(Math.random() * 250) + this.score
       }
-      
-      
+
+
       const y = Math.floor(Math.random() * this.playgroundHeight) - size / 2
-      
+
       let goalY = y
       if (100 <= this.score && 0.5 < Math.random()) {
         // Half will go diagonally past 100 score.
         goalY = Math.floor(Math.random() * this.playgroundHeight) - size / 2
       }
-      
-      
+
+
       this.enemies.push({
         id: ++this.enemiesBirthCount,
         x: size * -1.25,
@@ -368,17 +384,17 @@ class Game {
         size: size,
         dead: false,
       })
-      
+
       this.enemiesAreGestating = false
     }, Math.max(450, 5000 / (this.score + 1 / 2)));
   }
-  
+
   updateEnemies(delta) {
     this.enemies.forEach(enemy => {
       enemy.dead = this.moveElement(enemy, delta)
     })
   }
-  
+
   deleteDeadEnemies() {
     this.enemies.forEach((enemy, index) => {
       if (enemy.dead) {
