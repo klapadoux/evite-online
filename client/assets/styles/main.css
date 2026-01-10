@@ -154,12 +154,13 @@ body {
 }
 
 .impatient-circles {
+  pointer-events: none;
   display: block;
   position: absolute;
 }
 .impatient-circles--join-button {
   z-index: 45;
-  
+
   /* Same as join btn */
   top: 50%;
   right: -10px;
@@ -232,6 +233,29 @@ body {
   transition: opacity 1s;
 }
 
+.main-message {
+  pointer-events: none;
+  opacity: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  flex-wrap: wrap;
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  font-size: 10vw;
+  font-weight: 900;
+  text-shadow: white 0 0 10px;
+  transition: opacity 1s;
+}
+.main-message.active {
+  opacity: 1;
+}
+
 .debug-canvas {
   pointer-events: none;
   user-select: none;
@@ -246,10 +270,10 @@ body {
   transform: translate(-50%, -50%);
   box-sizing: border-box;
   transition:
-    left 0.025s, 
-    top 0.025s, 
-    border-color 1s, 
-    background-color 1s, 
+    left 0.025s,
+    top 0.025s,
+    border-color 1s,
+    background-color 1s,
     opacity 0.5s;
 }
 .player--charge_teleport {
@@ -265,10 +289,10 @@ body {
   z-index: 9;
   border-color: #c97a7c;
   transition:
-    left 0.5s ease-out, 
-    top 0.5s ease-out, 
-    border-color 1s, 
-    background-color 1s, 
+    left 0.5s ease-out,
+    top 0.5s ease-out,
+    border-color 1s,
+    background-color 1s,
     opacity 0.5s;
 }
 .player::before {
@@ -336,6 +360,10 @@ body {
 .enemy.initiated {
   transition: transform 0.15s, background-color 5s linear;
 }
+.enemy.dying {
+  opacity: 0;
+  transition: transform 0.15s, opacity 0.3s;
+}
 
 .enemy-shadow {
   position: absolute;
@@ -344,6 +372,10 @@ body {
   background: black;
   box-sizing: border-box;
   transition: transform 0.15s;
+}
+.enemy-shadow.dying {
+  opacity: 0;
+  transition: transform 0.15s, opacity 0.3s;
 }
 
 .objective {
@@ -358,7 +390,7 @@ body {
 }
 
 .objective__star {
-  position: absolute;  
+  position: absolute;
   top: 0;
   left: 50%;
   display: block;
@@ -368,7 +400,7 @@ body {
   border-bottom: 1em  solid transparent;
   border-left:   0.3em solid transparent;
 }
-  
+
 .objective__star::before,
 .objective__star::after {
   content: '';
@@ -451,7 +483,13 @@ body {
   color: #fff;
   background: #000;
 }
+.score-counter .score {
 
+}
+.score-counter .objective-score {
+  font-weight: 900;
+  color: #62cdff;
+}
 
 .test-center {
   position: absolute;
@@ -461,6 +499,14 @@ body {
   background-color: white;
 }
 
+.rainbow--animated {
+  background: linear-gradient(to right, #6666ff, #0099ff , #00ff00, #ff3399, #6666ff, #0099ff , #00ff00, #ff3399);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rainbow-animation 2s linear infinite forwards;
+  background-size: 250% 100%;
+}
 
 @keyframes star-rotation {
   0% {
@@ -509,7 +555,7 @@ body {
     transform: translate3d(-35%, -35%, 0) scale(0.95);
   }
   40% {
-    transform: translate3d(-55%, -35%, 0) scale(0.75); 
+    transform: translate3d(-55%, -35%, 0) scale(0.75);
   }
   50% {
     transform: translate3d(-65%, -65%, 0) scale(0.9);
@@ -545,7 +591,7 @@ body {
     transform: translate3d(2%, -48%, 0) scale(0.99);
   }
   40% {
-    transform: translate3d(-2%, -51%, 0) scale(0.95); 
+    transform: translate3d(-2%, -51%, 0) scale(0.95);
   }
   50% {
     transform: translate3d(-1%, -47%, 0) scale(0.96);
@@ -588,5 +634,15 @@ body {
   }
   100% {
     transform: translate(-50%, -50%) rotate(359deg) scale(1);
+  }
+}
+
+@keyframes rainbow-animation {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 100% 0;
   }
 }

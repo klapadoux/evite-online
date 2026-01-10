@@ -1,8 +1,8 @@
 const Utils = require('./utils')
 const settings = require('./settings')
 
-let objectivesAreGestating = false
 let objectivesBirthCount = 0
+let gestatingPressure = 0
 const objectives = []
 const size = 40
 const spawnTop = 50 + size
@@ -11,9 +11,9 @@ const spawnRight = settings.PLAYGROUND_WIDTH * 0.75
 const spawnLeft = 50 + size
 
 const createObjective = (data) => {
-  
+
   const { x, y } = Utils.getRandomCoordInRect(spawnLeft, spawnTop, spawnRight, spawnBottom )
-  
+
   const newObjective = {
     x,
     y,
@@ -21,9 +21,9 @@ const createObjective = (data) => {
     id: ++objectivesBirthCount,
     dead: false,
   }
-  
+
   objectives.push(newObjective)
-  
+
   return newObjective
 }
 
@@ -35,14 +35,16 @@ const checkObjectivesGestation = (modifier = 1) => {
     // BAIL. No spawning.
     return
   }
-  
+
+  gestatingPressure += modifier
+
   // Entamer la création d'enemies si ce n'est pas déjà en cours.
-  if (settings.MAX_OBJECTIVES_AT_ONCE > objectives.length && ! objectivesAreGestating) {
-    objectivesAreGestating = true
-    setTimeout(() => {
-      createObjective()
-      objectivesAreGestating = false
-    }, 1250 * (1 / modifier));
+  if (
+    settings.MAX_OBJECTIVES_AT_ONCE > objectives.length &&
+    30 < gestatingPressure
+  ) {
+    gestatingPressure = 0
+    createObjective()
   }
 }
 
@@ -51,11 +53,11 @@ const getObjectives = () => {
 }
 
 const deleteDeadObjectives = () => {
-  objectives.forEach((objective, index) => {
-    if (objective.dead) {
+  for(let index = objectives.length - 1; 0 <= index; index--) {
+    if (objectives[index].dead) {
       objectives.splice(index, 1)
     }
-  })
+  }
 }
 
 module.exports.checkObjectivesGestation = checkObjectivesGestation

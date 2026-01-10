@@ -7,44 +7,53 @@
   <link rel="stylesheet" href="assets/styles/main.css">
 </head>
 <body>
-  
+
   <main class="ui-container">
-    
+
     <section class="user-section">
-      
+
       <div class="helper-box">
         <h2 class="helper-box__title">Notes</h2>
         <p><strong>DÉPLACEMENT :</strong> Bouge la souris</p>
         <p><strong>TÉLÉPORTATION :</strong> Tiens le clique. Bouge la souris. Relâche le clique.</p>
         <p><strong>RÉSURRECTION :</strong> Attendre 1 seconde. Clique où tu veux apparaître.</p>
       </div>
-      
+
       <form id="user-info-form" class="form form--one-line" action="" method="post">
-        
+
         <div class="field">
           <label for="player-name">Pseudonyme</label>
           <input id ="player-name" name="player_name" type="text" maxlength="20" required>
         </div>
-        
+
         <!-- <div class="form__footer">
           <button type="submit">GO</button>
         </div> -->
       </form>
-      
+
       <button id="join-game-button" class="join-game-button" tabindex="-1">
         GO
       </button>
-      
+
       <div class="impatient-circles impatient-circles--join-button"></div>
     </section>
-    
+
     <section id="playground" class="playground">
       <div class="playground__background"></div>
     </section>
+
+    <section id="main-message" class="main-message">
+      <div class="main-message__inner rainbow rainbow--animated"></div>
+    </section>
+
   </main>
-  
-  <div class="score-counter score-counter--overlay">0</div>
-  
+
+  <div class="score-counter score-counter--overlay">
+    <span class="score">0</span>
+    /
+    <span class="objective-score">0</span>
+  </div>
+
   <script src="/socket.io/socket.io.js"></script>
   <script type="module" src="assets/scripts/client.js"></script>
 </body>
