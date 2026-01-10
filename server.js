@@ -28,7 +28,7 @@ const gameroom = new Gameroom()
 const createUserFromSocket = (socket) => {
   users[socket.id] = new User(socket)
   console.log(`New user connected: ${socket.id}`);
-  
+
   global.sendUserToGameroomById(socket.id)
 }
 
@@ -36,7 +36,7 @@ global.getUserById = (id) => {
   if ('undefined' !== typeof users[id]) {
     return users[id]
   }
-  
+
   return false
 }
 
@@ -56,7 +56,7 @@ global.io.on('connection', socket => {
 
 
 server.on('error', error => {
-  console.log(error);
+  console.error(error);
 })
 
 const port = process.env.PORT || 8080
