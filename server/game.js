@@ -13,9 +13,9 @@ class Game {
     this.playerCount = 0
     this.enemies = []
     this.enemiesBirthCount = 0
-    this.enemiesAreGestating = false
+    this.enemyGestatingPressure = 0
 
-    this.skipSomeChecksThisLoop = true
+    this.skipSomeChecksThisLoop = false
 
     this.playgroundWidth = settings.PLAYGROUND_WIDTH
     this.playgroundHeight = settings.PLAYGROUND_HEIGHT
@@ -24,7 +24,10 @@ class Game {
 
     this.fpms = settings.FPMS
 
-    this.hasTeamObjective = false
+    this.gameHasTeamObjective = false
+
+    this.victoryEmitted = false
+    this.newGameStartPressure = 0
   }
 
   ////////// GENERAL
@@ -84,7 +87,7 @@ class Game {
 
             this.moveElement(player, 0.33)
 
-            this.score -= 2
+            this.score -= 5
 
             if (0 > this.score) {
               this.score = 0
@@ -119,8 +122,8 @@ class Game {
 
       ///// TEAM OBJECTIVES
       teamObjectives.forEach(objective => {
-        if (5 <= objective.playersLinked) {
-          // BAIL. Max player influence reached.
+        if (objective.dead || 5 <= objective.playersLinked) {
+          // BAIL. Dead or Max player influence reached.
           return
         }
 
@@ -136,6 +139,10 @@ class Game {
         const pullDistance = 300
         if (pullDistance > distance) {
           const pullForce = (pullDistance - distance) / 4
+
+          // TEST DEBUG
+          // const pullForce = (pullDistance - distance)
+
           objective.velocity = pullForce
           objective.goalPos = {
             x: player.x - halfSize,
@@ -149,7 +156,7 @@ class Game {
           if (10 > distanceClaimZone) {
             this.score += settings.TEAM_OBJECTIVE_SCORE
             objective.dead = true
-            this.hasTeamObjective = false
+            this.gameHasTeamObjective = false
           }
         }
       })
@@ -157,11 +164,42 @@ class Game {
   }
 
   updateGameboard(delta) {
-    if (this.skipSomeChecksThisLoop) {
+    if (this.isVictory()) {
+
+      if (! this.victoryEmitted) {
+        this.killAllNonPlayers()
+      }
+
+      this.updateAllPlayers(delta)
+      this.emitUpdateToClients()
+
+
+      if (! this.victoryEmitted) {
+        this.deleteDeadEnemies()
+        deleteDeadObjectives()
+        deleteDeadTeamObjectives()
+
+        this.emitVictoryToClients()
+      }
+
+      this.newGameStartPressure++
+      if (settings.FPMS * 10 < this.newGameStartPressure) {
+        this.startNewGame()
+      }
+
+      // BAIL. No need for the rest since they won!
+      return
+    }
+
+    ///// DEBUG TEST
+    // this.score += 0.2
+
+    if (! this.skipSomeChecksThisLoop) {
+
       checkObjectivesGestation(this.playerCount)
 
-      if (! this.hasTeamObjective) {
-        this.hasTeamObjective = true
+      if (! this.gameHasTeamObjective) {
+        this.gameHasTeamObjective = true
         createTeamObjective()
       }
 
@@ -174,13 +212,33 @@ class Game {
 
     this.emitUpdateToClients()
 
-    if (this.skipSomeChecksThisLoop) {
+    if (! this.skipSomeChecksThisLoop) {
       this.deleteDeadEnemies()
       deleteDeadObjectives()
       deleteDeadTeamObjectives()
     }
 
-    this.skipSomeChecksThisLoop =  ! this.skipSomeChecksThisLoop
+    this.skipSomeChecksThisLoop = ! this.skipSomeChecksThisLoop
+  }
+
+  killAllNonPlayers() {
+    const objectives = getObjectives()
+    const teamObjectives = getTeamObjectives()
+
+    ///// ENNEMIES
+    this.enemies.forEach(enemy => {
+      enemy.dead = true
+    })
+
+    ///// OBJECTIVES
+    objectives.forEach(objective => {
+      objective.dead = true
+    })
+
+    ///// TEAM OBJECTIVES
+    teamObjectives.forEach(objective => {
+      objective.dead = true
+    })
   }
 
   emitUpdateToClients() {
@@ -209,6 +267,13 @@ class Game {
       gameloop.clearGameLoop(this.gameLoopId)
       this.gameLoopId = null
     }
+  }
+
+  startNewGame() {
+    console.log( 'NEW GAME' );
+    this.victoryEmitted = false
+    this.score = 0
+    this.newGameStartPressure = 0
   }
 
 
@@ -337,56 +402,52 @@ class Game {
 
   ////////// ENEMIES
   checkEnemiesGestation() {
+    this.enemyGestatingPressure += Math.min(settings.FPMS * 4, this.score)
+
     // Entamer la création d'enemies si ce n'est pas déjà en cours.
-    if (this.enemiesAreGestating) {
-      // BAIL. Already gestating.
+    if (1000 > this.enemyGestatingPressure) {
+      // BAIL. Still not enough pressure.
       return
     }
 
-    this.enemiesAreGestating = true
+    this.enemyGestatingPressure = 0
 
-    setTimeout(() => {
-      // const size = Math.min(300, Math.floor(Math.random() * this.score * 4) + 40)
-      // let size = (100 > this.score) ? Math.floor(Math.random() * 260) + 40 : Math.floor(Math.random() * 260) + this.score
-      let size = 0
-      if (10 > this.score) {
-        size = Math.floor(Math.random() * 100) + 30
-      } else if (30 > this.score) {
-        size = Math.floor(Math.random() * 200) + 30
-      } else if (50 > this.score) {
-        size = Math.floor(Math.random() * 270) + 40
-      } else if (100 > this.score) {
-        size = Math.floor(Math.random() * 280) + 50
-      } else {
-        size = Math.floor(Math.random() * 250) + this.score
-      }
+    let size = 0
+    if (10 > this.score) {
+      size = Math.floor(Math.random() * 100) + 30
+    } else if (30 > this.score) {
+      size = Math.floor(Math.random() * 150) + 30
+    } else if (50 > this.score) {
+      size = Math.floor(Math.random() * 200) + 30
+    } else if (100 > this.score) {
+      size = Math.floor(Math.random() * 220) + 50
+    } else {
+      size = Math.floor(Math.random() * 230) + this.score / 2
+    }
 
 
-      const y = Math.floor(Math.random() * this.playgroundHeight) - size / 2
+    const y = Math.floor(Math.random() * this.playgroundHeight) - size / 2
 
-      let goalY = y
-      if (100 <= this.score && 0.5 < Math.random()) {
-        // Half will go diagonally past 100 score.
-        goalY = Math.floor(Math.random() * this.playgroundHeight) - size / 2
-      }
+    let goalY = y
+    if (100 <= this.score && 0.5 < Math.random()) {
+      // Half will go diagonally past 100 score.
+      goalY = Math.floor(Math.random() * this.playgroundHeight) - size / 2
+    }
 
 
-      this.enemies.push({
-        id: ++this.enemiesBirthCount,
-        x: size * -1.25,
-        y: y,
-        goalPos: {
-          x: this.playgroundWidth,
-          y: goalY,
-        },
-        // velocity: Math.floor(Math.random() * 475) + 100, // Pixels by ms
-        velocity: Math.max(100, 900 - size * 5) + Math.min(400, this.score) + Math.random() * 100, // Pixels by ms
-        size: size,
-        dead: false,
-      })
-
-      this.enemiesAreGestating = false
-    }, Math.max(450, 5000 / (this.score + 1 / 2)));
+    this.enemies.push({
+      id: ++this.enemiesBirthCount,
+      x: size * -1.25,
+      y: y,
+      goalPos: {
+        x: this.playgroundWidth,
+        y: goalY,
+      },
+      // velocity: Math.floor(Math.random() * 475) + 100, // Pixels by ms
+      velocity: Math.max(100, 900 - size * 5) + Math.min(400, this.score) + Math.random() * 100, // Pixels by ms
+      size: size,
+      dead: false,
+    })
   }
 
   updateEnemies(delta) {
@@ -396,11 +457,26 @@ class Game {
   }
 
   deleteDeadEnemies() {
-    this.enemies.forEach((enemy, index) => {
-      if (enemy.dead) {
+    for(let index = this.enemies.length - 1; 0 <= index; index--) {
+      if (this.enemies[index].dead) {
         this.enemies.splice(index, 1)
       }
-    })
+    }
+  }
+
+  isVictory() {
+    return settings.VICTORY_SCORE <= this.score
+  }
+
+  emitVictoryToClients() {
+    console.log('VICTORY!!!');
+
+    this.victoryEmitted = true
+
+    /**
+     * @todo Add a MVP to the data.
+     */
+    global.io.emit('victory', {})
   }
 }
 

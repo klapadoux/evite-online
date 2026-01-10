@@ -10,10 +10,10 @@ const spawnBottom = settings.PLAYGROUND_HEIGHT - 50 - size - spawnTop
 const spawnRight = settings.PLAYGROUND_HEIGHT - 50 - size - spawnLeft
 
 const createTeamObjective = (data) => {
-  
+
   const { x, y } = Utils.getRandomCoordInRect(spawnLeft, spawnTop, spawnRight, spawnBottom )
   const claimZone = Utils.getRandomCoordInRect(spawnLeft, spawnTop, spawnRight, spawnBottom )
-  
+
   const newObjective = {
     x,
     y,
@@ -25,9 +25,9 @@ const createTeamObjective = (data) => {
     goalPos: { x, y },
     playersLinked: 0,
   }
-  
+
   objectives.push(newObjective)
-  
+
   return newObjective
 }
 
@@ -36,11 +36,11 @@ const getTeamObjectives = () => {
 }
 
 const deleteDeadTeamObjectives = () => {
-  objectives.forEach((objective, index) => {
-    if (objective.dead) {
+  for(let index = objectives.length - 1; 0 <= index; index--) {
+    if (objectives[index].dead) {
       objectives.splice(index, 1)
     }
-  })
+  }
 }
 
 const resetTeamObjectivesLinkedPlayersCount = () => {
