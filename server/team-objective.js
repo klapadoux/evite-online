@@ -11,8 +11,8 @@ const spawnRight = settings.PLAYGROUND_HEIGHT - 50 - size - spawnLeft
 
 const createTeamObjective = (data) => {
 
-  const { x, y } = Utils.getRandomCoordInRect(spawnLeft, spawnTop, spawnRight, spawnBottom )
-  const claimZone = Utils.getRandomCoordInRect(spawnLeft, spawnTop, spawnRight, spawnBottom )
+  const { x, y } = Utils.getRandomCoordInRect(spawnLeft, spawnTop, spawnRight, spawnBottom)
+  const claimZone = Utils.getRandomCoordInRect(spawnLeft, spawnTop, spawnRight, spawnBottom)
 
   const newObjective = {
     x,

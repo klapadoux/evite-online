@@ -28,6 +28,12 @@ class Game {
 
     this.victoryEmitted = false
     this.newGameStartPressure = 0
+
+    // Try to always give a safe path to the players by making enemies not spawn to that Y.
+    this.safeY = Math.floor(Math.random() * this.playgroundHeight)
+    this.safeYGoal = this.safeY
+    this.safeYHeight = 40
+    this.safeYVelocity = 5
   }
 
   ////////// GENERAL
@@ -153,7 +159,7 @@ class Game {
           this.linkPlayerToEl(player, objective)
 
           const distanceClaimZone = Utils.get2PosDistance( objective, objective.claimZone )
-          if (10 > distanceClaimZone) {
+          if (14 > distanceClaimZone) {
             this.score += settings.TEAM_OBJECTIVE_SCORE
             objective.dead = true
             this.gameHasTeamObjective = false
@@ -196,9 +202,12 @@ class Game {
 
     if (! this.skipSomeChecksThisLoop) {
 
+      this.checkSafeY()
+
       checkObjectivesGestation(this.playerCount)
 
-      if (! this.gameHasTeamObjective) {
+
+      if (! this.gameHasTeamObjective && 10 < this.score) {
         this.gameHasTeamObjective = true
         createTeamObjective()
       }
@@ -406,6 +415,7 @@ class Game {
     this.enemyGestatingPressure += Math.min(settings.FPMS * 4, this.score)
 
     // Entamer la création d'enemies si ce n'est pas déjà en cours.
+    // if (250 > this.enemyGestatingPressure) { // TEST DEBUG
     if (1000 > this.enemyGestatingPressure) {
       // BAIL. Still not enough pressure.
       return
@@ -427,14 +437,26 @@ class Game {
     }
 
 
-    const y = Math.floor(Math.random() * this.playgroundHeight) - size / 2
-
+    let y = Math.floor(Math.random() * this.playgroundHeight) - size / 2
     let goalY = y
-    if (100 <= this.score && 0.5 < Math.random()) {
-      // Half will go diagonally past 100 score.
+    if (this.isDiagonalEnemy()) {
       goalY = Math.floor(Math.random() * this.playgroundHeight) - size / 2
-    }
 
+    } else if (
+      goalY <= this.safeY + this.safeYHeight &&
+      goalY + size >= this.safeY
+    ) {
+      // It is too close to the safe path. Offset it a little.
+      const diff = goalY + size - this.safeY
+      if (0 > diff) {
+        goalY = this.safeY - this.safeYHeight - size
+      } else {
+        goalY = this.safeY + this.safeYHeight
+      }
+
+      // Still go in a straight line.
+      y = goalY
+    }
 
     this.enemies.push({
       id: ++this.enemiesBirthCount,
@@ -445,7 +467,7 @@ class Game {
         y: goalY,
       },
       // velocity: Math.floor(Math.random() * 475) + 100, // Pixels by ms
-      velocity: Math.max(100, 800 - size * 5) + Math.min(300, this.score) + Math.random() * 100, // Pixels by ms
+      velocity: Math.max(80, 650 - size * 5) + Math.min(250, this.score) + Math.random() * 50, // Pixels by ms
       size: size,
       dead: false,
     })
@@ -465,6 +487,35 @@ class Game {
     }
   }
 
+  isDiagonalEnemy() {
+    return (this.score - 100) * 100 / settings.VICTORY_SCORE / 100 > Math.random()
+  }
+
+  ///// SAFE Y
+  checkSafeY() {
+    if (this.isNewSafeYGoalNeeded()) {
+      this.createNewMoveSafeYGoal()
+    }
+
+    if (this.safeY !== this.safeYGoal) {
+      const dist = this.safeY - this.safeYGoal
+      if (Math.abs(dist) < this.safeYVelocity) {
+        this.safeY = this.safeYGoal
+      } else {
+        this.safeY += 0 < dist ? -this.safeYVelocity : this.safeYVelocity
+      }
+    }
+  }
+
+  isNewSafeYGoalNeeded() {
+    return 0.005 > Math.random()
+  }
+
+  createNewMoveSafeYGoal() {
+    this.safeYGoal = Math.floor(Math.random() * this.playgroundHeight)
+  }
+
+  ///// VICTORY
   isVictory() {
     return settings.VICTORY_SCORE <= this.score
   }
