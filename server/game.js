@@ -274,6 +274,7 @@ class Game {
     this.victoryEmitted = false
     this.score = 0
     this.newGameStartPressure = 0
+    this.gameHasTeamObjective = false
   }
 
 
@@ -444,7 +445,7 @@ class Game {
         y: goalY,
       },
       // velocity: Math.floor(Math.random() * 475) + 100, // Pixels by ms
-      velocity: Math.max(100, 900 - size * 5) + Math.min(400, this.score) + Math.random() * 100, // Pixels by ms
+      velocity: Math.max(100, 800 - size * 5) + Math.min(300, this.score) + Math.random() * 100, // Pixels by ms
       size: size,
       dead: false,
     })
