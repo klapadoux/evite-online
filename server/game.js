@@ -93,7 +93,7 @@ class Game {
 
             this.moveElement(player, 0.33)
 
-            this.score -= 5
+            this.score -= settings.PLAYER_DEATH_SCORE
 
             if (0 > this.score) {
               this.score = 0
@@ -207,7 +207,7 @@ class Game {
       checkObjectivesGestation(this.playerCount)
 
 
-      if (! this.gameHasTeamObjective && 10 < this.score) {
+      if (! this.gameHasTeamObjective && 10 <= this.score) {
         this.gameHasTeamObjective = true
         createTeamObjective()
       }
