@@ -510,6 +510,17 @@ body {
   background-size: 250% 100%;
 }
 
+.text-pop {
+  position: absolute;
+  z-index: 70;
+  font-size: 1.5em;
+  font-weight: 700;
+  text-shadow: white 0 0 10px, white 0 0 1px, white 0 0 2px, white 0 0 3px;
+}
+.text-pop--objective {
+  color: #62cdff;
+}
+
 @keyframes star-rotation {
   0% {
     transform: scale(0.9) rotate(45deg);

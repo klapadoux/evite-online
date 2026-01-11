@@ -6,6 +6,7 @@ import Enemy from './enemy.js'
 import Objective from './objective.js'
 import TeamObjective from './team-objective.js'
 import * as settings from './settings.js'
+import TextPop from './text-pop.js'
 
 const PREPARED_ENEMIES_BODY_MAX_COUNT = 10
 const COLORS = [
@@ -32,6 +33,8 @@ class Game {
     this.actualScore = 0
 
     this.activeColorIndex = COLORS.length - 1
+
+    this.showScoreText = true
 
     this.initHandlers()
     this.initSocketEvents()
@@ -102,8 +105,10 @@ class Game {
     })
 
     this.socket.on('victory', (data) => {
+      this.showScoreText = false
       this.cleanGameboard()
       this.displayVictory()
+      this.showScoreText = true
     })
 
     /**
@@ -619,6 +624,15 @@ class Game {
 
   removeObjectiveFromGame(objective) {
     if (objective) {
+      const pop = new TextPop({
+        text: '+' + settings.OBJECTIVE_SCORE,
+        type: 'objective',
+        x: objective.x,
+        y: objective.y,
+      })
+      this.playground.append(pop.node)
+      pop.startAnimation()
+
       objective.node.remove()
       delete this.objectives[objective.id]
     }
@@ -659,6 +673,15 @@ class Game {
 
   removeTeamObjectiveFromGame(objective) {
     if (objective) {
+      const pop = new TextPop({
+        text: '+' + settings.OBJECTIVE_SCORE,
+        type: 'team-objective',
+        x: objective.x,
+        y: objective.y,
+      })
+      this.playground.append(pop.node)
+      pop.startAnimation()
+
       objective.node.remove()
       objective.claimZoneNode.remove()
       delete this.teamObjectives[objective.id]
