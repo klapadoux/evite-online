@@ -53,7 +53,6 @@ export class Enemy {
   }
 
   die() {
-    console.log('ENEMY DIE');
     this.node.classList.add('dying')
     this.shadowNode.classList.add('dying')
     setTimeout(() => {
