@@ -485,8 +485,10 @@ body {
   color: #fff;
   background: #000;
 }
+.score-counter{
+  user-select: none;
+}
 .score-counter .score {
-
 }
 .score-counter .objective-score {
   font-weight: 900;
@@ -511,14 +513,28 @@ body {
 }
 
 .text-pop {
+  pointer-events: none;
   position: absolute;
   z-index: 70;
   font-size: 1.5em;
   font-weight: 700;
-  text-shadow: white 0 0 10px, white 0 0 1px, white 0 0 2px, white 0 0 3px;
+  color: white;
 }
 .text-pop--objective {
-  color: #62cdff;
+  text-shadow: #62cdff 0 0 10px, #62cdff 0 0 1px, #62cdff 0 0 2px, #62cdff 0 0 3px;
+}
+.text-pop--team-objective {
+  font-size: 3em;
+  text-shadow: #ffee00 0 0 10px, #ffee00 0 0 1px, #ffee00 0 0 2px, #ffee00 0 0 3px;
+}
+.text-pop--player {
+  font-size: 2em;
+  color: #e91b53;
+  text-shadow: white 0 0 10px, white 0 0 1px, white 0 0 2px, white 0 0 3px;
+}
+
+.text-pop.animated {
+  animation: text-pop 0.75s 0s linear 1 forwards;
 }
 
 @keyframes star-rotation {
@@ -654,8 +670,26 @@ body {
   0% {
     background-position: 0 0;
   }
-
   100% {
     background-position: 100% 0;
+  }
+}
+
+@keyframes text-pop {
+  0% {
+    opacity: 0.8;
+    transform: scale(0.8) translate(-50%, -60%);
+  }
+  35% {
+    opacity: 1;
+    transform: scale(0.9) translate(-40%, -75%);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1) translate(-25%, -100%);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95) translate(-15%, -115%);
   }
 }

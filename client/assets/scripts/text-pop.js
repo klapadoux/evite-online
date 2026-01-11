@@ -16,6 +16,7 @@ export class TextPop {
 
   init() {
     this.createNode()
+    this.startAnimation()
   }
 
   createNode() {
@@ -24,6 +25,7 @@ export class TextPop {
       type,
       x,
       y,
+      parentNode,
     } = this.args
 
     this.node = document.createElement('div')
@@ -32,7 +34,7 @@ export class TextPop {
     this.node.style.left = `${x}px`
     this.node.innerHTML = text
 
-    console.log(this.node);
+    parentNode.append(this.node)
   }
 
   startAnimation() {

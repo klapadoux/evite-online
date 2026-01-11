@@ -394,6 +394,16 @@ class Game {
       return false;
     }
 
+    if (this.showScoreText) {
+      new TextPop({
+        text: '-' + settings.PLAYER_DEATH_SCORE,
+        type: 'player',
+        x: player.x + player.size / 2,
+        y: player.y + player.size / 2,
+        parentNode: this.playground.node,
+      })
+    }
+
     player.die()
     this.addNodeToCleanupList(player.node)
 
@@ -624,14 +634,15 @@ class Game {
 
   removeObjectiveFromGame(objective) {
     if (objective) {
-      const pop = new TextPop({
-        text: '+' + settings.OBJECTIVE_SCORE,
-        type: 'objective',
-        x: objective.x,
-        y: objective.y,
-      })
-      this.playground.append(pop.node)
-      pop.startAnimation()
+      if (this.showScoreText) {
+        new TextPop({
+          text: '+' + settings.OBJECTIVE_SCORE,
+          type: 'objective',
+          x: objective.x + objective.size / 2,
+          y: objective.y + objective.size / 2,
+          parentNode: this.playground.node,
+        })
+      }
 
       objective.node.remove()
       delete this.objectives[objective.id]
@@ -673,14 +684,15 @@ class Game {
 
   removeTeamObjectiveFromGame(objective) {
     if (objective) {
-      const pop = new TextPop({
-        text: '+' + settings.OBJECTIVE_SCORE,
-        type: 'team-objective',
-        x: objective.x,
-        y: objective.y,
-      })
-      this.playground.append(pop.node)
-      pop.startAnimation()
+      if (this.showScoreText) {
+        new TextPop({
+          text: '+' + settings.TEAM_OBJECTIVE_SCORE,
+          type: 'team-objective',
+          x: objective.x + objective.size / 2,
+          y: objective.y + objective.size / 2,
+          parentNode: this.playground.node,
+        })
+      }
 
       objective.node.remove()
       objective.claimZoneNode.remove()

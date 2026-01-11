@@ -207,7 +207,7 @@ class Game {
       checkObjectivesGestation(this.playerCount)
 
 
-      if (! this.gameHasTeamObjective && 10 < this.score) {
+      if (! this.gameHasTeamObjective && 10 <= this.score) {
         this.gameHasTeamObjective = true
         createTeamObjective()
       }
