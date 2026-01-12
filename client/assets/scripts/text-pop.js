@@ -41,7 +41,7 @@ export class TextPop {
     this.node.classList.add('animated')
     setTimeout(() => {
       this.node.remove()
-    }, 1500); // Change timing in CSS as well.
+    }, 800); // Change timing in CSS as well.
   }
 }
 

@@ -5,6 +5,7 @@ let objectivesBirthCount = 0
 let gestatingPressure = 0
 const objectives = []
 const size = 40
+const hitboxSize = 60 // Slightly bigger to reduce misses at high speed.
 const spawnTop = 50 + size
 const spawnBottom = settings.PLAYGROUND_HEIGHT - 50 - size - spawnTop
 const spawnRight = settings.PLAYGROUND_WIDTH * 0.75
@@ -18,6 +19,7 @@ const createObjective = (data) => {
     x,
     y,
     size,
+    hitboxSize,
     id: ++objectivesBirthCount,
     dead: false,
   }

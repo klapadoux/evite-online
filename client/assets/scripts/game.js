@@ -243,15 +243,20 @@ class Game {
   }
 
   addPlayerDeathBlood(player) {
-    const bloodCount = Math.floor(Math.random() * 5)
-    const bloodTypes = ['small', 'medium']
-    for (let i = 0; i <= bloodCount; i++) {
-      const type = bloodTypes[Math.floor(Math.random() * bloodTypes.length)]
-      const delay = Math.random() * 600
-      this.addBloodUnderElement(player, type, delay)
+    if (settings.userSettings.objectAnimation) {
+      const bloodCount = Math.floor(Math.random() * 5)
+      const bloodTypes = ['small', 'medium']
+      for (let i = 0; i <= bloodCount; i++) {
+        const type = bloodTypes[Math.floor(Math.random() * bloodTypes.length)]
+        const delay = Math.random() * 600
+        this.addBloodUnderElement(player, type, delay)
+      }
+      this.addBloodUnderElement(player, 'same', 625)
+      this.addBloodUnderElement(player, 'same', 650)
+    } else {
+      this.addBloodUnderElement(player, 'same')
+      this.addBloodUnderElement(player, 'same')
     }
-    this.addBloodUnderElement(player, 'same', 625)
-    this.addBloodUnderElement(player, 'same', 650)
   }
 
   addBloodUnderElement(element, sizeType = 'same', delay = 0) {
@@ -407,9 +412,16 @@ class Game {
     }
 
     player.die()
-    this.addNodeToCleanupList(player.node)
 
-    this.addPlayerDeathBlood(player)
+    if (settings.userSettings.corpse) {
+      this.addNodeToCleanupList(player.node)
+    } else {
+      player.node.remove()
+    }
+
+    if (settings.userSettings.blood) {
+      this.addPlayerDeathBlood(player)
+    }
 
     if (this.isThisOurPlayer(player)) {
       this.ourPlayer.setCurrentAction()

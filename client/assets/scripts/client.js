@@ -89,11 +89,14 @@ if (null !== savedName && '' !== savedName) {
 }
 
 ///// INIT USER SETTINGS
-const classes = []
+let classes = ''
 if (userSettings.objectTransition) {
-  classes.push('object-has-transition')
+  classes += ' object-has-transition'
+}
+if (userSettings.objectAnimation) {
+  classes += ' object-has-animation'
 }
 
-if (classes.length) {
-  document.body.classList.add(classes)
+if ('' !== classes) {
+  document.body.setAttribute('class', document.body.class + ' ' + classes)
 }

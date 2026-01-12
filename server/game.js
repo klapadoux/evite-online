@@ -111,16 +111,19 @@ class Game {
 
 
       ///// OBJECTIVES
+      /**
+       * @todo Add better collisions
+       */
       objectives.forEach(objective => {
         const distance = Utils.get2PosDistance(
           { x, y },
           {
-            x: objective.x + objective.size / 2,
-            y: objective.y + objective.size / 2,
+            x: objective.x + objective.hitboxSize / 2,
+            y: objective.y + objective.hitboxSize / 2,
           }
         )
 
-        if (distance <= objective.size / 2 + playerRadius) {
+        if (distance <= objective.hitboxSize / 2 + playerRadius) {
           this.score += settings.OBJECTIVE_SCORE
           objective.dead = true
         }

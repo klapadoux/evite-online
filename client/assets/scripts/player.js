@@ -1,3 +1,4 @@
+import { userSettings } from './settings.js'
 import Utils from './utils.js'
 
 export class Player {
@@ -35,7 +36,13 @@ export class Player {
   update(args) {
     const { currentAction, linksToEls } = args
 
-    this.moveTo(args)
+    if (! args.dead) {
+      this.moveTo(args)
+    } else if (userSettings.objectTransition) {
+      // Only do the last move if there are transitions.
+      // Otherwise, the body teleports and it's not great to see.
+      this.moveTo(args)
+    }
 
     this.setCurrentAction(currentAction)
     this.setLinksToEls(linksToEls)
