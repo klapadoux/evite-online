@@ -1,18 +1,10 @@
 // USER SETTINGS
-// export const userSettings = {
-//   enemyShadow: true,
-//   blood: true,
-//   corpse: true,
-//   objectTransition: true,
-//   objectAnimation: true,
-// }
-// TEST DEBUG
 export const userSettings = {
   enemyShadow: true,
   blood: true,
   corpse: true,
-  objectTransition: false,
-  objectAnimation: false,
+  objectTransition: true,
+  objectAnimation: true,
 }
 
 // SERVER SETTINGS REPLICATED

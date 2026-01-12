@@ -1,3 +1,5 @@
+import { userSettings } from './settings.js'
+
 export class Enemy {
   constructor(args) {
     const {id, x, y, goalPos, velocity, size, dead, node} = args
@@ -13,7 +15,10 @@ export class Enemy {
     this.needToAppendMainNode = ! node
 
     this.initNode()
-    this.initShadowNode()
+
+    if (userSettings.shadow) {
+      this.initShadowNode()
+    }
 
     this.moveTowardsGoal()
 
@@ -54,10 +59,17 @@ export class Enemy {
 
   die() {
     this.node.classList.add('dying')
-    this.shadowNode.classList.add('dying')
+
+    if (this.shadowNode) {
+      this.shadowNode.classList.add('dying')
+    }
+
     setTimeout(() => {
       this.node.remove()
-      this.shadowNode.remove()
+
+      if (this.shadowNode) {
+        this.shadowNode.remove()
+      }
     }, 300)
   }
 
@@ -69,7 +81,10 @@ export class Enemy {
     this.x = x
     this.y = y
     this.node.style.transform = `translate3d(${x}px, ${y}px, 0)`
-    this.shadowNode.style.transform = `translate3d(${x - 2}px, ${y - 2}px, 0)`
+
+    if (this.shadowNode) {
+      this.shadowNode.style.transform = `translate3d(${x - 2}px, ${y - 2}px, 0)`
+    }
   }
 
   static createNode() {

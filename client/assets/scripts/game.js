@@ -243,7 +243,7 @@ class Game {
   }
 
   addPlayerDeathBlood(player) {
-    if (settings.userSettings.objectAnimation) {
+    if (settings.userSettings.objectAnimation && settings.userSettings.corpse) {
       const bloodCount = Math.floor(Math.random() * 5)
       const bloodTypes = ['small', 'medium']
       for (let i = 0; i <= bloodCount; i++) {
@@ -413,12 +413,6 @@ class Game {
 
     player.die()
 
-    if (settings.userSettings.corpse) {
-      this.addNodeToCleanupList(player.node)
-    } else {
-      player.node.remove()
-    }
-
     if (settings.userSettings.blood) {
       this.addPlayerDeathBlood(player)
     }
@@ -430,6 +424,15 @@ class Game {
       setTimeout(() => {
         window.addEventListener('mousedown', this.resurrectOurPlayerHandler)
       }, 1000)
+    }
+
+    if (settings.userSettings.corpse) {
+      this.addNodeToCleanupList(player.node)
+    } else {
+      // In case there is blood to be added, give it a little setTimeout.
+      setTimeout(() => {
+        player.node.remove()
+      }, 1)
     }
   }
 
@@ -554,7 +557,9 @@ class Game {
     if (enemy.needToAppendMainNode) {
       this.playground.append(enemy.node)
     }
-    this.playground.append(enemy.shadowNode)
+    if (enemy.shadowNode) {
+      this.playground.append(enemy.shadowNode)
+    }
     this.enemies[enemy.id] = enemy
     this.prepareNewEnemyBody()
   }

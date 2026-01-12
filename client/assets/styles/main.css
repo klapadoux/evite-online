@@ -1,3 +1,7 @@
+* {
+  user-select: none;
+}
+
 html,
 body {
   width: 100dvw;
@@ -377,7 +381,7 @@ body {
   transition: transform 0.15s;
 }
 
-.object-has-transition .enemy.initiated {
+.object-has-transition .enemy {
   transition: transform 0.15s, background-color 5s linear;
 }
 
