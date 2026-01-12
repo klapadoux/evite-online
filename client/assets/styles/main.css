@@ -34,6 +34,8 @@ body {
 }
 .user-section--disabled {
   transform: translate3d(0, -101%, 0);
+}
+.object-has-transition .user-section--disabled {
   transition: transform 0.5s EASE-IN-OUT;
 }
 
@@ -232,6 +234,8 @@ body {
   bottom: 0;
   left: 0;
   background: #acbcbf;
+}
+.object-has-transition .playground__background {
   transition: opacity 1s;
 }
 
@@ -271,6 +275,8 @@ body {
   border-radius: 30px;
   transform: translate(-50%, -50%);
   box-sizing: border-box;
+}
+.object-has-transition .player {
   transition:
     left 0.025s,
     top 0.025s,
@@ -281,7 +287,7 @@ body {
 .player--charge_teleport {
   animation: shake-player 1s 0s infinite forwards;
 }
-.player--teleport {
+.object-has-transition .player--teleport {
   transition:
     border-color 1s,
     background-color 1s,
@@ -290,6 +296,8 @@ body {
 .player--dead {
   z-index: 9;
   border-color: #c97a7c;
+}
+.object-has-transition .player--dead {
   transition:
     left 0.5s ease-out,
     top 0.5s ease-out,
@@ -331,9 +339,12 @@ body {
   border-radius: 100%;
   transform: translate(-50%, -50%);
   transform-origin: 0 0;
-  transition: opacity 0.5s;
   animation: blood 4s 0s 1 forwards;
 }
+.object-has-transition .blood {
+  transition: opacity 0.5s;
+}
+
 .blood--small,
 .blood--medium {
   animation: none;
@@ -356,14 +367,22 @@ body {
   background: #e91b53;
   box-sizing: border-box;
   transform: translate3d(-100%, 0, 0);
-  transition: background-color 5s linear;
   /* animation: colors 10s 0s infinite forwards; */
 }
+
 .enemy.initiated {
+  /* Always add transform transition, otherwise it is too jittery. */
+  transition: transform 0.15s;
+}
+
+.object-has-transition .enemy.initiated {
   transition: transform 0.15s, background-color 5s linear;
 }
+
 .enemy.dying {
   opacity: 0;
+}
+.object-has-transition .enemy.dying {
   transition: transform 0.15s, opacity 0.3s;
 }
 
@@ -373,10 +392,15 @@ body {
   /* border: 2px solid black; */
   background: black;
   box-sizing: border-box;
+
+  /* Always add transform transition, otherwise it is too jittery. */
   transition: transform 0.15s;
 }
+
 .enemy-shadow.dying {
   opacity: 0;
+}
+.object-has-transition .enemy-shadow.dying {
   transition: transform 0.15s, opacity 0.3s;
 }
 
@@ -389,6 +413,9 @@ body {
   box-shadow: 0 0 0.5em 5px white;
   transition: opacity 0.3s, transform 0.3s;
   animation: star-rotation linear 4s 0s infinite;
+}
+.object-has-transition .objective {
+  transition: opacity 0.3s, transform 0.3s;
 }
 
 .objective__star {
@@ -443,8 +470,8 @@ body {
   border-bottom-color: #38f8ff;
 }
 
-.objective--team {
-  transition: top 0.08s, left 0.08s
+.object-has-transition .objective--team {
+  transition: top 0.08s, left 0.08s;
 }
 
 .objective--team .objective__star--front {

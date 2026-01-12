@@ -46,7 +46,9 @@ class Game {
 
     this.refillWithPreparedEnemiesBody()
 
-    window.requestAnimationFrame(this.doAnimationLoopHandler)
+    if (settings.userSettings.objectTransition && settings.userSettings.objectAnimation) {
+      window.requestAnimationFrame(this.doAnimationLoopHandler)
+    }
   }
 
   initSocketEvents() {

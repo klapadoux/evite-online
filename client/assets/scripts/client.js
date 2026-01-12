@@ -1,6 +1,7 @@
 import Game from './game.js'
 import Player from './player.js'
 import ImpatientCircles from './impatient-circles.js'
+import { userSettings } from './settings.js'
 
 const socket = io()
 const startButton = document.getElementById('join-game-button')
@@ -57,13 +58,6 @@ form.addEventListener('submit', (event) => {
   event.preventDefault()
 })
 
-playerNameInput.focus();
-if (null !== savedName && '' !== savedName) {
-  playerNameInput.setAttribute('value', savedName)
-  startButton.classList.add('join-game-button--active')
-  impatientCircles.start()
-}
-
 playerNameInput.addEventListener('keyup', (event) => {
   if ('Enter' === event.key) {
     // Even though it is not best practice,
@@ -85,3 +79,21 @@ playerNameInput.addEventListener('keyup', (event) => {
     impatientCircles.stop()
   }
 })
+
+///// INIT
+playerNameInput.focus();
+if (null !== savedName && '' !== savedName) {
+  playerNameInput.setAttribute('value', savedName)
+  startButton.classList.add('join-game-button--active')
+  impatientCircles.start()
+}
+
+///// INIT USER SETTINGS
+const classes = []
+if (userSettings.objectTransition) {
+  classes.push('object-has-transition')
+}
+
+if (classes.length) {
+  document.body.classList.add(classes)
+}

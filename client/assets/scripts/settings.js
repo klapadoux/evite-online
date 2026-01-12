@@ -1,5 +1,19 @@
-// PERFORMANCE
-export const HAS_SHADOW = true // Fait rien pour l'instant.
+// USER SETTINGS
+// export const userSettings = {
+//   enemyShadow: true,
+//   blood: true,
+//   corpse: true,
+//   objectTransition: true,
+//   objectAnimation: true,
+// }
+// TEST DEBUG
+export const userSettings = {
+  enemyShadow: true,
+  blood: true,
+  corpse: true,
+  objectTransition: false,
+  objectAnimation: false,
+}
 
 // SERVER SETTINGS REPLICATED
 export const VICTORY_SCORE = 350
