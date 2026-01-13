@@ -8,11 +8,40 @@ const startButton = document.getElementById('join-game-button')
 
 const playerNameInput = document.getElementById('player-name')
 const savedName = localStorage.getItem('player_name')
+const userSection = document.querySelector('.user-section')
 const impatientCircles = new ImpatientCircles({ node: document.querySelector('.impatient-circles') })
 
 let userGame = null
+let playerInitiated = false
 
-const startGame = () => {
+const maybeCloseUserSection = (event) => {
+  console.log(event);
+  if ('Escape' === event.key) {
+    // The name might not be setup.
+    // It's a good way to observe.
+    closeUserSection()
+  }
+}
+
+const openUserSection = () => {
+  userSection.classList.remove('user-section--disabled')
+
+  document.addEventListener('keyup', maybeCloseUserSection)
+
+  startButton.addEventListener('mouseup', startGame)
+}
+
+const closeUserSection = () => {
+  userSection.classList.add('user-section--disabled')
+
+  userGame.unpauseOurPlayer()
+
+  document.removeEventListener('keyup', maybeCloseUserSection)
+
+  startButton.removeEventListener('mouseup', startGame)
+}
+
+const startGame = (event) => {
   const playerName = playerNameInput.value
   if ('' === playerName) {
     // BAIL. Need a name.
@@ -21,15 +50,15 @@ const startGame = () => {
 
   localStorage.setItem('player_name', playerName)
 
-  socket.emit('user_is_ready_to_play', {
-    id: socket.id,
-    name: playerName
-  })
+  if (! playerInitiated) {
+    playerInitiated = true
+    socket.emit('user_is_ready_to_play', {
+      id: socket.id,
+      name: playerName
+    })
+  }
 
-  const section = document.querySelector('.user-section')
-  section.classList.add('user-section--disabled')
-
-  startButton.removeEventListener('mouseup', startGame)
+  closeUserSection()
 }
 
 
@@ -80,6 +109,14 @@ playerNameInput.addEventListener('keyup', (event) => {
   }
 })
 
+document.querySelector('.settings-button').addEventListener('mouseup', (event) => {
+  openUserSection()
+
+  if (playerInitiated) {
+    userGame.pauseOurPlayer()
+  }
+})
+
 ///// INIT
 playerNameInput.focus();
 if (null !== savedName && '' !== savedName) {
@@ -87,6 +124,7 @@ if (null !== savedName && '' !== savedName) {
   startButton.classList.add('join-game-button--active')
   impatientCircles.start()
 }
+openUserSection()
 
 ///// INIT USER SETTINGS
 let classes = ''

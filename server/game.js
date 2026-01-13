@@ -296,20 +296,20 @@ class Game {
     this.playerCount++
   }
 
-  removePlayerById(playerId) {
-    if ('undefined' === typeof this.players[playerId]) {
+  removePlayerById(id) {
+    if ('undefined' === typeof this.players[id]) {
       // BAIL, already removed.
       return
     }
 
-    delete this.players[playerId]
+    delete this.players[id]
     this.playerCount--
   }
 
   updateAllPlayers(delta) {
-    for (const playerId in this.players) {
-      if (! this.players[playerId].dead) {
-        this.moveElement(this.players[playerId], delta)
+    for (const id in this.players) {
+      if (! this.players[id].dead && ! this.players[id].paused) {
+        this.moveElement(this.players[id], delta)
       }
     }
   }
@@ -332,6 +332,41 @@ class Game {
       player.y = goalPos.y
       player.dead = false
     }
+  }
+
+  doesPlayerExists(id) {
+    return !! this.getPlayerById(id)
+  }
+
+  pausePlayer(id) {
+    console.log(`Pause player ${id}`);
+    const player = this.getPlayerById(id)
+    if (! player) {
+      console.log(`Player ${id} does not exists. Cannot pause.`)
+      return
+    }
+
+    player.paused = true
+  }
+
+  unpausePlayer(id) {
+    console.log(`Unpause player ${id}`);
+    const player = this.getPlayerById(id)
+    if (! player) {
+      console.log(`Player ${id} does not exists. Cannot unpause.`)
+      return
+    }
+
+    player.paused = false
+  }
+
+  setPlayerName(id, name) {
+    const player = this.getPlayerById(id)
+    if (! player) {
+      console.log(`Player ${id} does not exists. Cannot set name.`)
+      return
+    }
+    player.name = name
   }
 
   setPlayerPos(data) {

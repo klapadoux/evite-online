@@ -75,9 +75,26 @@ class Gameroom {
 
       this.addUserToGame(this.users[id])
     })
+
+    user.socket.on('pause_player', (args) => {
+      const { id } = args
+      this.game.pausePlayer(id)
+    })
+    user.socket.on('unpause_player', (args) => {
+      const { id } = args
+      this.game.unpausePlayer(id)
+    })
   }
 
   addUserToGame(user) {
+    if (this.game.doesPlayerExists(user.id)) {
+      console.log( `User Id "${user.id}" is back to game`, user.name );
+      this.game.setPlayerName(user.id, user.name)
+
+      // BAIL. User already exists. No need to do the whole setup again.
+      return
+    }
+
     // Register the User as a new player
     console.log( `Adding user Id "${user.id}" to game`, user.name );
     const x = this.game.playgroundWidth - 25;

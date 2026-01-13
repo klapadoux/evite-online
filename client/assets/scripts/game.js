@@ -395,6 +395,42 @@ class Game {
     }
   }
 
+  pauseOurPlayer() {
+    if (! this.ourPlayer) {
+      // BAIL. Our player is not set yet. Cannot pause.
+      return
+    }
+
+    // Other event might take over.
+    // Activate pause in setTimeout to make sure it overrules all.
+    setTimeout(() => {
+      console.log('PAUSE PLAYER');
+      this.ourPlayer.paused = true
+
+      this.removeOurPlayerEvents()
+      this.ourPlayer.setCurrentAction()
+
+      this.socket.emit('pause_player', {
+        id: this.socket.id,
+      })
+    }, 1)
+  }
+
+  unpauseOurPlayer() {
+    if (! this.ourPlayer) {
+      // BAIL. Our player is not set yet. Cannot unpause.
+      return
+    }
+
+    this.ourPlayer.paused = false
+
+    this.addOurPlayerEvents()
+
+    this.socket.emit('unpause_player', {
+      id: this.socket.id,
+    })
+  }
+
   killPlayer(player) {
     if (! player) {
       // BAIL if that player no longer exist
