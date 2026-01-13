@@ -1,3 +1,11 @@
+:root {
+  --gear_radius: 5rem;
+  --gear_color: black;
+  --gear_thickness: 1.5rem;
+  --gear_pin_length: 1.5rem;
+  --gear_pin_gap: 1.5rem;
+}
+
 * {
   user-select: none;
 }
@@ -572,6 +580,25 @@ body {
 
 .object-has-animation .text-pop.animated {
   animation: text-pop 0.75s 0s linear 1 forwards;
+}
+
+.settings-button {
+  display: block;
+  position: absolute;
+  z-index: 60;
+  top: 30px;
+  right: 2px;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+}
+
+.cog {
+  display: block;
+  height: 45px;
+  width: 45px;
+  background: url("../images/cog-svgrepo-com.svg") center no-repeat;
+  background-size: contain;
 }
 
 @keyframes star-rotation {
