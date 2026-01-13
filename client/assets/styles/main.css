@@ -4,6 +4,8 @@
   --gear_thickness: 1.5rem;
   --gear_pin_length: 1.5rem;
   --gear_pin_gap: 1.5rem;
+
+  --enemy_transition_duration: 0.15s;
 }
 
 * {
@@ -387,18 +389,18 @@ body {
 
 .enemy.initiated {
   /* Always add transform transition, otherwise it is too jittery. */
-  transition: transform 0.15s;
+  transition: transform var(--enemy_transition_duration);
 }
 
 .object-has-transition .enemy {
-  transition: transform 0.15s, background-color 5s linear;
+  transition: transform var(--enemy_transition_duration), background-color 5s linear;
 }
 
 .enemy.dying {
   opacity: 0;
 }
 .object-has-transition .enemy.dying {
-  transition: transform 0.15s, opacity 0.3s;
+  transition: transform var(--enemy_transition_duration), opacity 0.3s;
 }
 
 .enemy-shadow {
@@ -409,14 +411,14 @@ body {
   box-sizing: border-box;
 
   /* Always add transform transition, otherwise it is too jittery. */
-  transition: transform 0.15s;
+  transition: transform var(--enemy_transition_duration);
 }
 
 .enemy-shadow.dying {
   opacity: 0;
 }
 .object-has-transition .enemy-shadow.dying {
-  transition: transform 0.15s, opacity 0.3s;
+  transition: transform var(--enemy_transition_duration), opacity 0.3s;
 }
 
 .objective {
@@ -512,6 +514,7 @@ body {
 
 .claim-zone {
   position: absolute;
+  z-index: 10;
   border: 4px dashed #ffee00;
   background: rgba(255, 255, 255, 0.25);
   border-radius: 100%;

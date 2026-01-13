@@ -36,6 +36,8 @@ class Game {
 
     this.showScoreText = true
 
+    this.tickedFrame = 1 // Goes from 0 to 1 and then make an update before going back to 0. Starts at 1 to trigger the first update.
+
     this.initHandlers()
     this.initSocketEvents()
     this.initUI()
@@ -67,6 +69,14 @@ class Game {
     this.socket.on('tick_update', tickInfo => {
       const { enemies, players, objectives, teamObjectives, score } = tickInfo
 
+      this.tickedFrame += settings.userSettings.tickRate
+      const skipUpdate = 1 > this.tickedFrame
+      if (! skipUpdate) {
+        // console.log('NO SKIP', this.tickedFrame);
+        this.tickedFrame = 0 // Reset to 0 until next frame to begin building up to the next update frame again.
+      }
+
+      // Players are never skipped as it would look too laggy.
       players.forEach(playerData => {
         this.updatePlayer(playerData)
       })
@@ -74,7 +84,7 @@ class Game {
       enemies.forEach(enemyData => {
         if (enemyData.dead) {
           this.deleteEnemy(enemyData)
-        } else {
+        } else if (! skipUpdate) {
           this.updateEnemy(enemyData)
         }
       })
@@ -82,7 +92,7 @@ class Game {
       objectives.forEach(objectiveData => {
         if (objectiveData.dead) {
           this.deleteObjective(objectiveData)
-        } else {
+        } else if (! skipUpdate) {
           this.updateObjective(objectiveData)
         }
       })
@@ -90,7 +100,7 @@ class Game {
       teamObjectives.forEach(objectiveData => {
         if (objectiveData.dead) {
           this.deleteTeamObjective(objectiveData)
-        } else {
+        } else if (! skipUpdate) {
           this.updateTeamObjective(objectiveData)
         }
       })
