@@ -69,11 +69,12 @@ class Game {
     this.socket.on('tick_update', tickInfo => {
       const { enemies, players, objectives, teamObjectives, score } = tickInfo
 
-      this.tickedFrame += settings.userSettings.tickRate
+      this.tickedFrame += settings.userSettings.tickUpdateRate
       const skipUpdate = 1 > this.tickedFrame
       if (! skipUpdate) {
-        // console.log('NO SKIP', this.tickedFrame);
-        this.tickedFrame = 0 // Reset to 0 until next frame to begin building up to the next update frame again.
+        // Remove 1 to return to 0 or more. For a tickUpdateRate of 0.75, this would look like :
+        //   0.75 (skip), 1.5 - 1 (go), 1.25 - 1 (go), 1 -1 (go), 0.75 (skip), etc.
+        this.tickedFrame -= 1
       }
 
       // Players are never skipped as it would look too laggy.

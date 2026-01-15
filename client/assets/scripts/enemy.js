@@ -16,7 +16,7 @@ export class Enemy {
 
     this.initNode()
 
-    if (userSettings.shadow) {
+    if (userSettings.enemyShadow) {
       this.initShadowNode()
     }
 

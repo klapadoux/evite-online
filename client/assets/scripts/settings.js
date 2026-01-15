@@ -5,7 +5,7 @@ export const userSettings = {
   corpse: true,
   objectTransition: true,
   objectAnimation: true,
-  tickRate: 0.5, // Change to below 1 to update less often and save some frames. Above changes nothing.
+  tickUpdateRate: 1, // Change to below 1 to update less often and save some frames. Above changes nothing.
 }
 
 // SERVER SETTINGS REPLICATED
