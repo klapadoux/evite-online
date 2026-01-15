@@ -12,12 +12,54 @@
 
     <section class="user-section">
 
-      <div class="helper-box">
-        <h2 class="helper-box__title">Notes</h2>
+      <div class="helper-box helper-box--top-left">
+        <h2 class="helper-box__title">Comment jouer</h2>
         <p><strong>DÉPLACEMENT :</strong> Bouge la souris</p>
         <p><strong>TÉLÉPORTATION :</strong> Tiens le clique. Bouge la souris. Relâche le clique.</p>
         <p><strong>RÉSURRECTION :</strong> Attendre 1 seconde. Clique où tu veux apparaître.</p>
       </div>
+
+      <form id="user-settings-form" class="form helper-box helper-box--top-right" action="" method="post">
+
+        <h2 class="helper-box__title">Options de performances</h2>
+
+        <label for="setting-enemyShadow" class="switch loading">
+          Ombres des ennemis
+          <input id="setting-enemyShadow" type="checkbox">
+          <span class="slider round"></span>
+        </label>
+
+        <label for="setting-blood" class="switch loading">
+          Sang
+          <input id="setting-blood" type="checkbox">
+          <span class="slider round"></span>
+        </label>
+
+        <label for="setting-corpse" class="switch loading">
+          Cadavres
+          <input id="setting-corpse" type="checkbox">
+          <span class="slider round"></span>
+        </label>
+
+        <label for="setting-objectTransition" class="switch loading">
+          Transitions animées
+          <input id="setting-objectTransition" type="checkbox">
+          <span class="slider round"></span>
+        </label>
+
+        <label for="setting-objectAnimation" class="switch loading">
+          Animations
+          <input id="setting-objectAnimation" type="checkbox">
+          <span class="slider round"></span>
+        </label>
+
+        <!-- TODO: Stylise a range slider. -->
+        <label for="setting-tickUpdateRate" class="switch loading">
+          Taux de mises à jour
+          <input id="setting-tickUpdateRate" type="checkbox">
+          <span class="slider round"></span>
+        </label>
+      </form>
 
       <form id="user-info-form" class="form form--one-line" action="" method="post">
 
@@ -25,10 +67,6 @@
           <label for="player-name">Pseudonyme</label>
           <input id ="player-name" name="player_name" type="text" maxlength="20" required>
         </div>
-
-        <!-- <div class="form__footer">
-          <button type="submit">GO</button>
-        </div> -->
       </form>
 
       <button id="join-game-button" class="join-game-button" tabindex="-1">

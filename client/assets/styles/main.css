@@ -55,14 +55,20 @@ body {
 
 .helper-box {
   position: absolute;
-  top: 20px;
-  left: 20px;
   padding: 20px;
   border: 1px solid white;
   color: white;
   /* background: rgba(255, 255, 255, 0.3); */
   background: rgba(0, 0, 0, 0.3);
   border-radius: 15px;
+}
+.helper-box--top-left {
+  top: 20px;
+  left: 20px;
+}
+.helper-box--top-right {
+  top: 20px;
+  right: 60px;
 }
 
 .helper-box__title {
@@ -71,6 +77,10 @@ body {
 
 .helper-box :last-child {
   margin-bottom: 0;
+}
+
+.helper-box label + label {
+  margin-top: 1em;
 }
 
 .form--one-line {
@@ -603,6 +613,79 @@ body {
   width: 45px;
   background: url("../images/cog-svgrepo-com.svg") center no-repeat;
   background-size: contain;
+}
+
+.sr-only,
+.switch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.switch {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-content: flex-start;
+  flex-wrap: nowrap;
+  position: relative;
+}
+
+/* .switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+} */
+
+.slider {
+  display: block;
+  position: relative;
+  cursor: pointer;
+  width: 46px;
+  height: 26px;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 19px;
+  width: 19px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #00eda7;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #00eda7;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(19px);
+  -ms-transform: translateX(19px);
+  transform: translateX(19px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }
 
 @keyframes star-rotation {
