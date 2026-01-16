@@ -1,4 +1,4 @@
-import { userSettings } from './settings.js'
+import { getUserSetting } from './settings.js'
 import Utils from './utils.js'
 
 export class Player {
@@ -38,7 +38,7 @@ export class Player {
 
     if (! args.dead) {
       this.moveTo(args)
-    } else if (userSettings.objectTransition) {
+    } else if (getUserSetting('objectTransition')) {
       // Only do the last move if there are transitions.
       // Otherwise, the body teleports and it's not great to see.
       this.moveTo(args)

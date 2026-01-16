@@ -1,4 +1,4 @@
-import { userSettings } from './settings.js'
+import { getUserSetting } from './settings.js'
 
 export class Enemy {
   constructor(args) {
@@ -16,7 +16,7 @@ export class Enemy {
 
     this.initNode()
 
-    if (userSettings.enemyShadow) {
+    if (getUserSetting('enemyShadow')) {
       this.initShadowNode()
     }
 

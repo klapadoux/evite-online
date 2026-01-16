@@ -1,7 +1,7 @@
 import Game from './game.js'
 import Player from './player.js'
 import ImpatientCircles from './impatient-circles.js'
-import { userSettings } from './settings.js'
+import { getUserSetting, setUserSetting, addSettingListener } from './settings.js'
 
 const socket = io()
 const startButton = document.getElementById('join-game-button')
@@ -15,7 +15,6 @@ let userGame = null
 let playerInitiated = false
 
 const maybeCloseUserSection = (event) => {
-  console.log(event);
   if ('Escape' === event.key) {
     // The name might not be setup.
     // It's a good way to observe.
@@ -39,6 +38,23 @@ const closeUserSection = () => {
   document.removeEventListener('keyup', maybeCloseUserSection)
 
   startButton.removeEventListener('mouseup', startGame)
+}
+
+const loadUserSettings = () => {
+  const formNode = document.getElementById('user-settings-form')
+  const settingsFieldNode = formNode.querySelectorAll('.loading')
+  settingsFieldNode.forEach((fieldNode) => {
+    const input = fieldNode.querySelector('input')
+    switch (input.getAttribute('type')) {
+      case 'checkbox':
+        input.checked = getUserSetting(input.getAttribute('name'))
+        input.addEventListener('change', () => {
+          setUserSetting(input.getAttribute('name'), input.checked)
+        })
+    }
+
+    fieldNode.classList.remove('loading')
+  })
 }
 
 const startGame = (event) => {
@@ -118,6 +134,8 @@ document.querySelector('.settings-button').addEventListener('mouseup', (event) =
 })
 
 ///// INIT
+loadUserSettings()
+
 playerNameInput.focus();
 if (null !== savedName && '' !== savedName) {
   playerNameInput.setAttribute('value', savedName)
@@ -126,12 +144,28 @@ if (null !== savedName && '' !== savedName) {
 }
 openUserSection()
 
+addSettingListener('objectTransition', () => {
+  if (getUserSetting('objectTransition')) {
+    document.body.classList.add('object-has-transition')
+  } else {
+    document.body.classList.remove('object-has-transition')
+  }
+})
+
+addSettingListener('objectAnimation', () => {
+  if (getUserSetting('objectAnimation')) {
+    document.body.classList.add('object-has-animation')
+  } else {
+    document.body.classList.remove('object-has-animation')
+  }
+})
+
 ///// INIT USER SETTINGS
 let classes = ''
-if (userSettings.objectTransition) {
+if (getUserSetting('objectTransition')) {
   classes += ' object-has-transition'
 }
-if (userSettings.objectAnimation) {
+if (getUserSetting('objectAnimation')) {
   classes += ' object-has-animation'
 }
 

@@ -72,15 +72,22 @@ body {
 }
 
 .helper-box__title {
-  margin-top: 0;
 }
 
+.helper-box :first-child {
+  margin-top: 0;
+}
 .helper-box :last-child {
   margin-bottom: 0;
 }
 
 .helper-box label + label {
   margin-top: 1em;
+}
+
+.form .loading {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 .form--one-line {

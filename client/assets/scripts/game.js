@@ -48,9 +48,10 @@ class Game {
 
     this.refillWithPreparedEnemiesBody()
 
-    if (settings.userSettings.objectTransition && settings.userSettings.objectAnimation) {
-      window.requestAnimationFrame(this.doAnimationLoopHandler)
-    }
+    this.initAnimationLoop()
+
+    settings.addSettingListener('objectAnimation', this.initAnimationLoop.bind(this))
+    settings.addSettingListener('objectTransition', this.initAnimationLoop.bind(this))
   }
 
   initSocketEvents() {
@@ -69,7 +70,7 @@ class Game {
     this.socket.on('tick_update', tickInfo => {
       const { enemies, players, objectives, teamObjectives, score } = tickInfo
 
-      this.tickedFrame += settings.userSettings.tickUpdateRate
+      this.tickedFrame += settings.getUserSetting('tickUpdateRate')
       const skipUpdate = 1 > this.tickedFrame
       if (! skipUpdate) {
         // Remove 1 to return to 0 or more. For a tickUpdateRate of 0.75, this would look like :
@@ -151,6 +152,12 @@ class Game {
     })
   }
 
+  initAnimationLoop() {
+    if (settings.getUserSetting('objectTransition') && settings.getUserSetting('objectAnimation')) {
+      window.requestAnimationFrame(this.doAnimationLoopHandler)
+    }
+  }
+
   doAnimationLoop() {
     this.changeActiveColor()
 
@@ -172,7 +179,9 @@ class Game {
 
     // Do this again later.
     setTimeout(() => {
-      window.requestAnimationFrame(this.doAnimationLoopHandler)
+      if (settings.getUserSetting('objectTransition') && settings.getUserSetting('objectAnimation')) {
+        window.requestAnimationFrame(this.doAnimationLoopHandler)
+      }
     }, 5000);
   }
 
@@ -254,7 +263,7 @@ class Game {
   }
 
   addPlayerDeathBlood(player) {
-    if (settings.userSettings.objectAnimation && settings.userSettings.corpse) {
+    if (settings.getUserSetting('objectAnimation') && settings.getUserSetting('corpse')) {
       const bloodCount = Math.floor(Math.random() * 5)
       const bloodTypes = ['small', 'medium']
       for (let i = 0; i <= bloodCount; i++) {
@@ -460,7 +469,7 @@ class Game {
 
     player.die()
 
-    if (settings.userSettings.blood) {
+    if (settings.getUserSetting('blood')) {
       this.addPlayerDeathBlood(player)
     }
 
@@ -473,7 +482,7 @@ class Game {
       }, 1000)
     }
 
-    if (settings.userSettings.corpse) {
+    if (settings.getUserSetting('corpse')) {
       this.addNodeToCleanupList(player.node)
     } else {
       // In case there is blood to be added, give it a little setTimeout.
